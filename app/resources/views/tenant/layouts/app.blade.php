@@ -3,10 +3,10 @@
 @endphp
 <div class="page">
     <!-- Top Navbar -->
-    @include('central.partials.navbar.overlap-topbar')
+    @include('tenant.partials.navbar.overlap-topbar')
     <div class="page-wrapper">
         <!-- Page Content -->
         @yield('content')
-        @include('central.partials.footer.bottom')
+        @include('tenant.partials.footer.bottom')
     </div>
 </div>

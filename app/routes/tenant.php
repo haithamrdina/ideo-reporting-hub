@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Tenant\HomeController;
 use Illuminate\Support\Facades\Route;
-use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
+use Stancl\Tenancy\Middleware\InitializeTenancyByDomainOrSubdomain;
 use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 
 /*
@@ -20,13 +21,13 @@ use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 
 Route::middleware([
     'web',
-    InitializeTenancyByDomain::class,
+    InitializeTenancyByDomainOrSubdomain::class,
     PreventAccessFromCentralDomains::class,
 ])->group(function () {
-    Route::get('/', function () {
-        return 'This is your multi-tenant application. The id of the current tenant is ' . tenant('id');
-    });
-    Route::as('tenant.')->group(function(){
+    Route::name('tenant.')->group(function () {
         require __DIR__.'/tenant-auth.php';
+        Route::middleware('user.auth:user')->group(function () {
+            Route::get('/home', [HomeController::class , 'index'])->name('home');
+        });
     });
 });

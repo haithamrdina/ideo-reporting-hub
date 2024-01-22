@@ -7,18 +7,18 @@
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <!-- Fav Icon  -->
-    <link rel="shortcut icon" href="{{ asset('static/logo/favicon.ico') }}">
+    <link rel="shortcut icon" href="{{ global_asset('static/logo/favicon.ico') }}">
     {{-- Custom Meta Tags --}}
     @yield('meta_tags')
     {{-- Title --}}
     <title> @yield('title') - @yield('title_prefix', config('ideoreport.title_prefix', 'Ideo Read')) </title>
     <!-- CSS files -->
-    <link href="{{ asset('dist/css/tabler.min.css') }}" rel="stylesheet" />
+    <link href="{{ global_asset('dist/css/tabler.min.css') }}" rel="stylesheet" />
     <link href="{{ global_asset('dist/css/tabler-flags.min.css') }}" rel="stylesheet" />
-    <link href="{{ asset('dist/css/tabler-vendors.min.css') }}" rel="stylesheet" />
+    <link href="{{ global_asset('dist/css/tabler-vendors.min.css') }}" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
     @yield('ideoreport_css')
-    <link href="{{ asset('dist/css/demo.min.css') }}" rel="stylesheet" />
+    <link href="{{ global_asset('dist/css/demo.min.css') }}" rel="stylesheet" />
     <style>
         @import url('https://rsms.me/inter/inter.css');
 
@@ -34,14 +34,14 @@
 
 <body @if (isset($bodyClass)) class="{{ $bodyClass }}" @endif>
 
-    <script src="{{ asset('dist/js/demo-theme.min.js') }}"></script>
+    <script src="{{ global_asset('dist/js/demo-theme.min.js') }}"></script>
 
     @yield('page_content')
 
     @yield('ideoreport_libs')
 
-    <script src="{{ asset('dist/js/tabler.min.js') }}" defer></script>
-    <script src="{{ asset('dist/js/demo.min.js') }}" defer></script>
+    <script src="{{ global_asset('dist/js/tabler.min.js') }}" defer></script>
+    <script src="{{ global_asset('dist/js/demo.min.js') }}" defer></script>
 
     @yield('ideoreport_js')
 

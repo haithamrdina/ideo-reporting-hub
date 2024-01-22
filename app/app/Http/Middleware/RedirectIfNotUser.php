@@ -24,7 +24,7 @@ class RedirectIfNotUser
             return $next($request);
         }
 
-        $redirectToRoute = $request->expectsJson() ? '' : route('user.login');
+        $redirectToRoute = $request->expectsJson() ? '' : route('tenant.login');
 
         throw new AuthenticationException(
             'Unauthenticated.', [$guard], $redirectToRoute

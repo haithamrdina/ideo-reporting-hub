@@ -2,7 +2,7 @@
     <div class="container-xl d-flex flex-column justify-content-center">
         <div class="empty">
             <div class="empty-img">
-                <img src="{{ asset('static/illustrations/no-data-found.svg') }}" class="w-100" style="min-height: 20rem;" alt="">
+                <img src="{{ global_asset('static/illustrations/no-data-found.svg') }}" class="w-100" style="min-height: 20rem;" alt="">
             </div>
             <p class="empty-title">Aucun résultat trouvé</p>
             <p class="empty-subtitle text-muted">

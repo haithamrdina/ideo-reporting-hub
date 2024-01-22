@@ -23,9 +23,9 @@ return new class extends Migration
             $table->string('creation_date')->nullable();
             $table->string('statut')->nullable();
             $table->string('categorie')->nullable();
-            $table->unsignedBigInteger('category_id');
+            $table->unsignedBigInteger('group_id');
             $table->foreign('group_id')->references('id')->on('groups')->onDelete('cascade');
-            $table->unsignedBigInteger('category_id');
+            $table->unsignedBigInteger('project_id');
             $table->foreign('project_id')->references('id')->on('projects')->onDelete('cascade');
             $table->timestamps();
             $table->softDeletes();

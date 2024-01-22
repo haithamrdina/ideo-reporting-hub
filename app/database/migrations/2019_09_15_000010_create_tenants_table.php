@@ -19,9 +19,9 @@ class CreateTenantsTable extends Migration
             $table->string('id')->primary();
 
             /** custom columns @s */
-            $table->string('company_code');
+            $table->string('company_code')->unique();
             $table->string('company_name');
-            $table->string('docebo_org_id');
+            $table->string('docebo_org_id')->unique();
             $table->string('firstname');
             $table->string('lastname');
             $table->string('email');

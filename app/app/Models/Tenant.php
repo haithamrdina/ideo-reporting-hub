@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Facades\Hash;
 use Stancl\Tenancy\Database\Models\Tenant as BaseTenant;
 use Stancl\Tenancy\Contracts\TenantWithDatabase;
 use Stancl\Tenancy\Database\Concerns\HasDatabase;
 use Stancl\Tenancy\Database\Concerns\HasDomains;
+use Stancl\Tenancy\Database\Concerns\MaintenanceMode;
 
 class Tenant extends BaseTenant implements TenantWithDatabase
 {
@@ -18,9 +20,10 @@ class Tenant extends BaseTenant implements TenantWithDatabase
             'id',
             'company_code',
             'company_name',
+            'docebo_org_id',
             'username',
-            'last_name',
-            'first_name',
+            'lastname',
+            'firstname',
             'email',
             'password'
         ];

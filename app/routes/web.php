@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Central\HomeController;
+use App\Http\Controllers\Central\TenantController;
 use App\Http\Integrations\Docebo\DoceboConnector;
 use App\Http\Integrations\Docebo\Requests\DoceboCourseList;
 use App\Http\Integrations\Docebo\Requests\DoceboGroupeList;
@@ -47,7 +49,14 @@ Route::get('/', function () {
     $response = $speexConnector->send(new SpeexUserId('s.kamel@cig.pe'));
     dd($response->dto());
 });
-
-Route::as('admin.')->group(function(){
+Route::name('admin.')->group(function () {
     require __DIR__.'/central-auth.php';
+
+    Route::middleware('admin.auth:admin')->group(function () {
+        // Routes for authenticated admins
+        // Dashboard
+        Route::get('/home', [HomeController::class , 'index'])->name('home');
+        Route::resource('tenants', TenantController::class);
+    });
 });
+

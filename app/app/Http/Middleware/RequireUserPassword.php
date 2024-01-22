@@ -55,7 +55,7 @@ class RequireUserPassword
             }
 
             return $this->responseFactory->redirectGuest(
-                $this->urlGenerator->route($redirectToRoute ?? 'user.password.confirm')
+                $this->urlGenerator->route($redirectToRoute ?? 'tenant.password.confirm')
             );
         }
 

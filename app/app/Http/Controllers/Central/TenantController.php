@@ -3,16 +3,31 @@
 namespace App\Http\Controllers\Central;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Central\Tenant\StoreRequest;
+use App\Http\Requests\Central\Tenant\UpdateRequest;
+use App\Models\Tenant;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rules;
 
 class TenantController extends Controller
 {
+    /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->middleware('admin.auth:admin');
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+        $tenants = Tenant::all();
+        return view('central.tenants.index', compact('tenants'));
     }
 
     /**
@@ -20,15 +35,26 @@ class TenantController extends Controller
      */
     public function create()
     {
-        //
+        return view('central.tenants.create');
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreRequest $request)
     {
-        //
+        $validated = $request->validated();
+        $tenant = Tenant::create([
+            'company_code' => $validated['company_code'],
+            'company_name' => $validated['company_name'],
+            'docebo_org_id' => $validated['docebo_org_id'],
+            'firstname' => $validated['firstname'],
+            'lastname' => $validated['lastname'],
+            'email' => $validated['email'],
+            'password' => $validated['password'],
+        ]);
+        $tenant->domains()->create(['domain' => $validated['subdomain']]);
+        return redirect()->route('admin.tenants.index')->with('success', 'Tenant ajouté avec succès');
     }
 
     /**
@@ -36,7 +62,8 @@ class TenantController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $tenant = Tenant::findOrFail($id);
+        return view('central.tenants.show', compact('tenant'));
     }
 
     /**
@@ -44,13 +71,14 @@ class TenantController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $tenant = Tenant::findOrFail($id);
+        return view('central.tenants.edit', compact('tenant'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateRequest $request, string $id)
     {
         //
     }
@@ -60,6 +88,7 @@ class TenantController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        Tenant::find($id)->delete();
+        return redirect()->route('admin.tenants.index')->with('success', 'Tenant deleted successfully');
     }
 }

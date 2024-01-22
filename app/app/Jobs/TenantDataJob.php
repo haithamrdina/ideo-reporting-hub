@@ -30,9 +30,8 @@ class TenantDataJob implements ShouldQueue
     {
         $this->tenant->run(function(){
             User::create([
-                'first_name' => $this->tenant->first_name,
-                'last_name' => $this->tenant->last_name,
-                'username' => $this->tenant->username,
+                'firstname' => $this->tenant->firstname,
+                'lastname' => $this->tenant->lastname,
                 'email' => $this->tenant->email,
                 'password' => $this->tenant->password,
                 'role' => UserRoleEnum::PLATEFORME,
