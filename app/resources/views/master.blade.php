@@ -11,7 +11,7 @@
     {{-- Custom Meta Tags --}}
     @yield('meta_tags')
     {{-- Title --}}
-    <title> @yield('title') - @yield('title_prefix', config('ideoreport.title_prefix', 'Ideo Read')) </title>
+    <title> @yield('title') - @yield('title_prefix', config('ideoreport.title_prefix', 'Ideo Reporting')) </title>
     <!-- CSS files -->
     <link href="{{ asset('dist/css/tabler.min.css') }}" rel="stylesheet" />
     <link href="{{ global_asset('dist/css/tabler-flags.min.css') }}" rel="stylesheet" />

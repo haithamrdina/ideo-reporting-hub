@@ -1,4 +1,7 @@
 @extends('master')
+@section('title')
+    Tableau de bord
+@stop
 @section('ideoreport_css')
 @stop
 @section('header')
@@ -13,7 +16,7 @@
             IDEO Reporting
           </div>
           <h2 class="page-title">
-            Dashboard
+            Tableau de bord
           </h2>
         </div>
       </div>

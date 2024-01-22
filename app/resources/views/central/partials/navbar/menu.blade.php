@@ -10,7 +10,7 @@
             </svg>
         </span>
         <span class="nav-link-title text-white">
-            Home
+            Tableau de bord
         </span>
     </a>
 </li>
