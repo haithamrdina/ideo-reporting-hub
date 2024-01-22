@@ -1,0 +1,74 @@
+version: "3.9"
+
+services:
+    #Container MYSQL
+    db:
+        image: mysql
+        container_name: ideo_reporting_hub_db
+        restart: always
+        volumes:
+            - db-data-ideo-reporting-hub:/var/lib/mysql
+        environment:
+            MYSQL_ROOT_PASSWORD: root_reporting@2023
+            MYSQL_DATABASE: db_ideo_reporting_hub
+            MYSQL_USER: admin
+            MYSQL_PASSWORD: root_reporting@2023
+        networks:
+            - ideo-reporting-hub
+
+    #APACHE + PHP 8.2.3 ON FOLDER PHP INSIDE FOLDER DOCKER
+    www:
+        build: docker/php
+        container_name: ideo_reporting_hub_www
+        ports:
+            - 1770:80
+        volumes:
+            - ./docker/php/vhosts:/etc/apache2/sites-enabled
+            - ./:/var/www/
+        restart: always
+        networks:
+            - ideo-reporting-hub
+    
+    #Container PHPMYADMIN
+    phpmyadmin:
+        depends_on:
+            - db
+        image: phpmyadmin
+        container_name: ideo_reporting_hub_phpmyadmin
+        restart: always
+        environment:
+            PMA_HOST: db
+            PHP_UPLOAD_MAX_FILESIZE: 1G
+            PHP_MAX_INPUT_VARS: 1G
+            UPLOAD_LIMIT: 1G
+        ports:
+            - "1771:80"
+        networks:
+            - ideo-reporting-hub
+
+    #REDIS
+    redis:
+        image: redis:6.2.1-alpine
+        container_name: ideo_reporting_hub_redis
+        command: redis-server --requirepass redis_reporting@2023
+        ports:
+            - '1772:6379'
+        volumes: 
+            - ./docker/redis:/data
+        networks:
+            - ideo-reporting-hub
+    
+    rabbitmq:
+        image: rabbitmq:3-management
+        container_name: ideo_reporting_hub_rabbitmq
+        ports:
+            - 1773:5672
+            - 1774:15672
+        networks:
+            - ideo-reporting-hub 
+             
+networks:
+    ideo-reporting-hub:
+
+volumes:
+    db-data-ideo-reporting-hub:
