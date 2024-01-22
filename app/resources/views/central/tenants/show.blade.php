@@ -38,7 +38,9 @@
                     </div>
                     <div class="col d-flex flex-column">
                         <div class="card-body">
-
+                            <a href="{{ route('admin.majgroups' , ['id' => $tenant->id])}}" class="">
+                                MAJ GROUP
+                            </a>
                         </div>
                     </div>
                 </div>
