@@ -25,6 +25,7 @@ RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf \
 RUN docker-php-ext-configure pcntl --enable-pcntl \
     && docker-php-ext-install pcntl;
 RUN docker-php-ext-install sockets;
+RUN pecl install redis && docker-php-ext-enable redis;
 # Install node    
 RUN set -uex; \
     apt-get update; \

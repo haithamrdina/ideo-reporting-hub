@@ -74,7 +74,7 @@ return [
         'rabbitmq' => [
             'driver' => 'rabbitmq',
             'queue'  => env('RABBITMQ_QUEUE', 'default'),
-            'worker' => env('RABBITMQ_WORKER', 'horizon'),
+            // 'worker' => env('RABBITMQ_WORKER', 'horizon'),
 
             'hosts' => [
                 'host'      => env('RABBITMQ_HOST', '127.0.0.1'),
