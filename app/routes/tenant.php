@@ -26,7 +26,7 @@ Route::middleware([
     Route::get('/', function () {
         return 'This is your multi-tenant application. The id of the current tenant is ' . tenant('id');
     });
-    Route::as('admin.')->group(function(){
+    Route::as('tenant.')->group(function(){
         require __DIR__.'/tenant-auth.php';
     });
 });

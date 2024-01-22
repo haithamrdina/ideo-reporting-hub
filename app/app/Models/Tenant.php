@@ -10,4 +10,23 @@ use Stancl\Tenancy\Database\Concerns\HasDomains;
 class Tenant extends BaseTenant implements TenantWithDatabase
 {
     use HasDatabase, HasDomains;
+    use MaintenanceMode;
+
+    public static function getCustomColumns(): array
+    {
+        return [
+            'id',
+            'company_code',
+            'company_name',
+            'username',
+            'last_name',
+            'first_name',
+            'email',
+            'password'
+        ];
+    }
+
+    public function setPasswordAttribute($value){
+        return $this->attributes['password'] = Hash::make($value);
+    }
 }
