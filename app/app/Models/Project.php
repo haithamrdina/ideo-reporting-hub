@@ -17,4 +17,14 @@ class Project extends Model
     {
         return $this->belongsToMany(Group::class)->withTimestamps();
     }
+
+    public function modules()
+    {
+        return $this->belongsToMany(Module::class)->withTimestamps();
+    }
+
+    public function lps()
+    {
+        return $this->belongsToMany(Lp::class)->withTimestamps();
+    }
 }

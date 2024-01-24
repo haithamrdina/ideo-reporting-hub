@@ -7,6 +7,8 @@ use App\Http\Controllers\Central\ProjectController;
 use App\Http\Controllers\Central\TenantController;
 use App\Http\Integrations\Docebo\DoceboConnector;
 use App\Http\Integrations\Docebo\Requests\DoceboCourseList;
+use App\Http\Integrations\Docebo\Requests\DoceboCourseLosList;
+use App\Http\Integrations\Docebo\Requests\DoceboCoursesEnrollements;
 use App\Http\Integrations\Docebo\Requests\DoceboGroupeList;
 use App\Http\Integrations\Docebo\Requests\DoceboGroupeUsersList;
 use App\Http\Integrations\Docebo\Requests\DoceboLpList;
@@ -14,6 +16,7 @@ use App\Http\Integrations\Docebo\Requests\DoceboLpsEnrollements;
 use App\Http\Integrations\Speex\Requests\SpeexUserId;
 use App\Http\Integrations\Speex\SpeexConnector;
 use App\Models\Group;
+use App\Models\Project;
 use App\Models\Tenant;
 use Illuminate\Support\Facades\Route;
 
@@ -30,33 +33,21 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     $tenant = Tenant::find('a69773f7-43b4-46ab-8081-618b072a50d3');
-        tenancy()->initialize($tenant);
-            // $groups = Group::where('status' , GroupStatusEnum::ACTIVE)->get();
+    tenancy()->initialize($tenant);
+        $doceboConnector = new DoceboConnector();
+        $group = Group::find(31);
+        $modulesDoceboIds = $group->modules()->where('category', 'CEGOS')->pluck('docebo_id')->toArray();
+        $request = new DoceboCoursesEnrollements($modulesDoceboIds);
 
-            $doceboConnector = new DoceboConnector();
-            $speexConnector = new SpeexConnector();
-            // foreach($groups as $group){
-                $group = Group::where('docebo_id', '988')->first();
-                $paginator = $doceboConnector->paginate(new DoceboGroupeUsersList($group->docebo_id));
-                $result = [];
-                foreach($paginator as $pg){
-                    $data = $pg->dto();
-                    $result = array_merge($result, $data);
-                }
+        $mdenrollsResponses = $doceboConnector->paginate($request);
 
-                $filteredItems = array_map(function ($item) use($speexConnector, $group){
-                    $speexResponse = $speexConnector->send(new SpeexUserId($item['username']));
-                    $item['speex_id'] = $speexResponse->dto();
-                    $item['group_id'] = $group->id;
-                    $item['project_id'] = $group->projects()->first()->id;
-                    return  $item;
-                }, $result);
-
-
-
-            // }
-        tenancy()->end();
-        dd($filteredItems);
+        $resultMds = [];
+        foreach($mdenrollsResponses as $md){
+            $data = $md->dto();
+            $resultMds = array_merge($resultMds, $data);
+        }
+        dd($resultMds);
+    tenancy()->end();
     return view('welcome');
 });
 Route::name('admin.')->group(function () {
@@ -82,8 +73,8 @@ Route::name('admin.')->group(function () {
 
         Route::get('tenants/{tenant}/learners',[ TenantController::class, 'majLearners'])->name('tenants.learners');
         Route::get('tenants/{tenant}/maj/learners',[ TenantController::class, 'majLearners'])->name('tenants.learners.maj');
-        Route::get('tenants/{tenant}/lps',[ TenantController::class, 'majLps'])->name('tenants.lps');
-        Route::get('tenants/{tenant}/modules',[ TenantController::class, 'majModules'])->name('tenants.modules');
+        Route::get('tenants/{tenant}/maj/lps',[ TenantController::class, 'majLps'])->name('tenants.lps.maj');
+        Route::get('tenants/{tenant}/maj/modules',[ TenantController::class, 'majModules'])->name('tenants.modules.maj');
         Route::get('tenants/{tenant}/moocs',[ TenantController::class, 'majMoocs'])->name('tenants.moocs');
     });
 });

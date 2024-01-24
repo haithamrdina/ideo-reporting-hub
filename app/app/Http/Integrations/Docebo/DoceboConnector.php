@@ -55,12 +55,13 @@ class DoceboConnector extends Connector implements HasPagination
 
     public function paginate(Request $request): PagedPaginator
     {
-        return new class(connector: $this, request: $request) extends PagedPaginator
+        return new class($this, $request) extends PagedPaginator
         {
             protected ?int $perPageLimit = 200;
             protected function isLastPage(Response $response): bool
             {
-                return is_null($response->json('_links.next'));
+                // return is_null($response->json('_links.next'));
+                return !($response->json('data.has_more_data'));
             }
 
             protected function getPageItems(Response $response, Request $request): array

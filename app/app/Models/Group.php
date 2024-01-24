@@ -32,4 +32,15 @@ class Group extends Model
         return $this->belongsToMany(Project::class)->withTimestamps();
     }
 
+
+    public function modules()
+    {
+        return $this->belongsToMany(Module::class)->withTimestamps();
+    }
+
+    public function lps()
+    {
+        return $this->belongsToMany(Lp::class)->withTimestamps();
+    }
+
 }

@@ -12,11 +12,11 @@ class DoceboLpList extends Request implements Paginatable
     /**
      * The HTTP method of the request
      */
-    protected $search;
+    protected $company_code;
     protected Method $method = Method::GET;
 
-    public function __construct(string $search) {
-        $this->search = $search;
+    public function __construct(string $company_code) {
+        $this->company_code = $company_code;
     }
 
     /**
@@ -30,7 +30,7 @@ class DoceboLpList extends Request implements Paginatable
     protected function defaultQuery(): array
     {
         return [
-            'search_text' => $this->search,
+            'search_text' => $this->company_code,
             'return_courses' => 'true',
             'get_cursor' => '1'
         ];
@@ -45,9 +45,9 @@ class DoceboLpList extends Request implements Paginatable
                 'docebo_id' => $item['id'],
                 'code' => $item['code'],
                 'name' => $item['name'],
-                "courses" => array_map(function($course) {
+                "courses" => json_encode(array_map(function($course) {
                     return $course["id_course"];
-                }, $item["courses"])
+                }, $item["courses"]))
 
             ];
         }, $items);

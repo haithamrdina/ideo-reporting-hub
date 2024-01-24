@@ -7,6 +7,8 @@ use App\Http\Requests\Central\Tenant\StoreRequest;
 use App\Http\Requests\Central\Tenant\UpdateRequest;
 use App\Jobs\UpdateGroupJob;
 use App\Jobs\UpdateLearnerJob;
+use App\Jobs\UpdateLpJob;
+use App\Jobs\UpdateModuleJob;
 use App\Models\Group;
 use App\Models\Project;
 use App\Models\Tenant;
@@ -145,7 +147,9 @@ class TenantController extends Controller
      */
     public function majLps(string $id)
     {
-
+        $tenant = Tenant::findOrFail($id);
+        UpdateLpJob::dispatch($id);
+        return redirect()->route('admin.tenants.show' , ['tenant' => $tenant]);
     }
 
     /**
@@ -153,7 +157,9 @@ class TenantController extends Controller
      */
     public function majModules(string $id)
     {
-
+        $tenant = Tenant::findOrFail($id);
+        UpdateModuleJob::dispatch($id);
+        return redirect()->route('admin.tenants.show' , ['tenant' => $tenant]);
     }
 
     /**

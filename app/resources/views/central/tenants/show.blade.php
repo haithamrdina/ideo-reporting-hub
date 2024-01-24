@@ -311,7 +311,7 @@
                                                                                         Mise à jour des plans de formation
                                                                                     </td>
                                                                                     <td>
-                                                                                        <a href="." class="ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Lancer la mise à jour des plans de formation">
+                                                                                        <a href="{{route('admin.tenants.lps.maj' , ['tenant' => $tenant->id])}}" class="ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Lancer la mise à jour des plans de formation">
                                                                                             <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewbox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                                                                                 <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                                                                                                 <path d="M9 15l6 -6"/>
@@ -326,7 +326,7 @@
                                                                                         Mise à jour des modules
                                                                                     </td>
                                                                                     <td>
-                                                                                        <a href="." class="ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Lancer la mise à jour des modules">
+                                                                                        <a href="{{route('admin.tenants.modules.maj' , ['tenant' => $tenant->id])}}" class="ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Lancer la mise à jour des modules">
                                                                                             <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewbox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                                                                                 <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                                                                                                 <path d="M9 15l6 -6"/>
