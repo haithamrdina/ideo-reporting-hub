@@ -60,7 +60,7 @@
                     <div class="row row-cards">
                         <div class="col-12">
                             <div class="card">
-                                <div id="table-clients" class="table-responsive">
+                                <div id="table-tenants" class="table-responsive">
                                     <div class="card-body border-bottom py-3">
                                         <div class="d-flex">
                                             <div class="text-muted">
@@ -231,7 +231,7 @@
                 item: '<li class="page-item"><a class="btn btn-icon btn-red mx-1 page" href="#"></a></li>'
             }]
         };
-        var listjs = new List('table-clients', options);
+        var listjs = new List('table-tenants', options);
         var listjsItemsPerPage = document.getElementById('listjs-items-per-page');
         if(listjsItemsPerPage != null){
             listjsItemsPerPage.addEventListener('change', function(e) {

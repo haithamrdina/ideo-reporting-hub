@@ -48,7 +48,7 @@ class DoceboGroupeUsersList extends Request implements Paginatable
                 'username' => $item['username'],
                 'creation_date' => $item['creation_date'],
                 'last_access_date' => $item['last_access_date'],
-                'status' => $item['last_access_date'] != null ? 'active' : 'inactive',
+                'statut' => $item['last_access_date'] != null ? 'active' : 'inactive',
                 'categorie' => $item['field_159']
             ];
         }, $items);

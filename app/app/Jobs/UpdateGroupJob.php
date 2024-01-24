@@ -2,8 +2,10 @@
 
 namespace App\Jobs;
 
+use App\Enums\GroupStatusEnum;
 use App\Http\Integrations\Docebo\DoceboConnector;
 use App\Http\Integrations\Docebo\Requests\DoceboGroupeList;
+use App\Http\Integrations\Docebo\Requests\DoceboGroupeUsersList;
 use App\Models\Group;
 use App\Models\Tenant;
 use Illuminate\Bus\Queueable;

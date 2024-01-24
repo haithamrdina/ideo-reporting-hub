@@ -52,6 +52,10 @@ class SpeexUserId extends Request implements HasBody
     public function createDtoFromResponse(Response $response): mixed
     {
         $items = $response->json();
-        return $items['userId'];
+        if(isset($items['userId'])){
+            return $items['userId'];
+        }
+        return null;
+
     }
 }

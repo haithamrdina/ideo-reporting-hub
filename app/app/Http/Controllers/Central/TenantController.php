@@ -5,6 +5,10 @@ namespace App\Http\Controllers\Central;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Central\Tenant\StoreRequest;
 use App\Http\Requests\Central\Tenant\UpdateRequest;
+use App\Jobs\UpdateGroupJob;
+use App\Jobs\UpdateLearnerJob;
+use App\Models\Group;
+use App\Models\Project;
 use App\Models\Tenant;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rules;
@@ -90,5 +94,73 @@ class TenantController extends Controller
     {
         Tenant::find($id)->delete();
         return redirect()->route('admin.tenants.index')->with('success', 'Tenant deleted successfully');
+    }
+
+    /**
+     * Update Groups for the specified resource.
+     */
+    public function getProjects(string $id)
+    {
+        $tenant = Tenant::findOrFail($id);
+        tenancy()->initialize($tenant);
+            $projects = Project::with('groups')->get();
+        tenancy()->end();
+        return view('central.projects.index', compact('tenant', 'projects'));
+    }
+
+    /**
+     * Update Groups for the specified resource.
+     */
+    public function majGroups(string $id)
+    {
+        $tenant = Tenant::findOrFail($id);
+        UpdateGroupJob::dispatch($id);
+        return redirect()->route('admin.tenants.show' , ['tenant' => $tenant]);
+    }
+
+     /**
+     * Update Groups for the specified resource.
+     */
+    public function getGroups(string $id)
+    {
+        $tenant = Tenant::findOrFail($id);
+        tenancy()->initialize($tenant);
+            $groupes = Group::all();
+        tenancy()->end();
+        return view('central.groups.index', compact('tenant', 'groupes'));
+    }
+
+    /**
+     * Update Learners for the specified resource.
+     */
+    public function majLearners(string $id)
+    {
+        $tenant = Tenant::findOrFail($id);
+        UpdateLearnerJob::dispatch($id);
+        return redirect()->route('admin.tenants.show' , ['tenant' => $tenant]);
+    }
+
+    /**
+     * Update Learning plan for the specified resource.
+     */
+    public function majLps(string $id)
+    {
+
+    }
+
+    /**
+     * Update Courses for the specified resource.
+     */
+    public function majModules(string $id)
+    {
+
+    }
+
+    /**
+     * Update Moocs for the specified resource.
+     */
+    public function majMoocs(string $id)
+    {
+
     }
 }
