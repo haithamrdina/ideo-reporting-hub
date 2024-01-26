@@ -27,4 +27,26 @@ class Project extends Model
     {
         return $this->belongsToMany(Lp::class)->withTimestamps();
     }
+
+    public function learners()
+    {
+        return $this->hasMany(Learner::class);
+    }
+
+    public function enrollModules()
+    {
+        return $this->hasMany(EnrollModule::class, 'project_id', 'id');
+    }
+
+    public function enrollLangues()
+    {
+        return $this->hasMany(Langenroll::class, 'project_id', 'id');
+    }
+
+    public function enrollLps()
+    {
+        return $this->hasMany(Lpenroll::class, 'project_id', 'id');
+    }
+
+
 }

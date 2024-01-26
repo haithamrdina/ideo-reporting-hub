@@ -43,4 +43,24 @@ class Group extends Model
         return $this->belongsToMany(Lp::class)->withTimestamps();
     }
 
+    public function learners()
+    {
+        return $this->hasMany(Learner::class);
+    }
+
+    public function enrollModules()
+    {
+        return $this->hasMany(EnrollModule::class, 'group_id', 'id');
+    }
+
+    public function enrollLangues()
+    {
+        return $this->hasMany(Langenroll::class, 'group_id', 'id');
+    }
+
+    public function enrollLps()
+    {
+        return $this->hasMany(Lpenroll::class, 'group_id', 'id');
+    }
+
 }

@@ -26,4 +26,12 @@ class Lp extends Model
     {
         return $this->belongsToMany(Group::class)->withTimestamps();;
     }
+
+
+    public function enrollLps()
+    {
+        return $this->hasMany(Lpenroll::class, 'lp_docebo_id', 'docebo_id');
+    }
+
+
 }

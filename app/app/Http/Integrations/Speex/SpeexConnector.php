@@ -19,12 +19,25 @@ class SpeexConnector extends Connector
         return 'https://portal.speexx.com/api';
     }
 
+     /**
+     * Default headers for every request
+     */
+    protected function defaultHeaders(): array
+    {
+        return [
+            'Content-Type' => 'application/json',
+        ];
+    }
+
+
     /**
      * Default HTTP client options
      */
     protected function defaultConfig(): array
     {
-        return [];
+        return [
+
+        ];
     }
 
     protected function defaultAuth(): QueryAuthenticator

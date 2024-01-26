@@ -7,17 +7,17 @@ use Saloon\Http\Request;
 use Saloon\Http\Response;
 use Saloon\PaginationPlugin\Contracts\Paginatable;
 
-class DoceboCoursesEnrollements extends Request implements Paginatable
+class DoceboCoursesEnrolls extends Request implements Paginatable
 {
     /**
      * The HTTP method of the request
      */
     protected $courses;
-    protected $user;
+    protected $users;
     protected Method $method = Method::GET;
-    public function __construct(Array $courses, string $user) {
+    public function __construct(Array $courses, Array $users) {
         $this->courses = $courses;
-        $this->user = $user;
+        $this->users = $users;
     }
     /**
      * The endpoint for the request
@@ -28,13 +28,17 @@ class DoceboCoursesEnrollements extends Request implements Paginatable
         foreach ($this->courses as $course) {
             $courses .= 'course_id[]=' . $course . "&";
         }
-        return '/course/v1/courses/enrollments?'.$courses . 'user_id[]=' .$this->user ;
+
+        $users = '';
+        foreach ($this->users as $user) {
+            $users .= 'user_id[]=' . $user . "&";
+        }
+        return '/course/v1/courses/enrollments?'.$courses . $users .'get_cursor=1';
     }
     protected function defaultQuery(): array
     {
         return [
             'extra_fields[]' => 'enrollment_time_spent',
-            'get_cursor' => '1'
         ];
     }
 

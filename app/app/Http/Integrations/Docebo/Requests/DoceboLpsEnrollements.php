@@ -25,7 +25,7 @@ class DoceboLpsEnrollements extends Request implements Paginatable
     {
         $lps = '';
         foreach ($this->lps as $lp) {
-            $lps .= 'learning_plan_id[]=' . $lp['docebo_id'] . "&";
+            $lps .= 'learning_plan_id[]=' . $lp . "&";
         }
         return '/learningplan/v1/learningplans/enrollments?' . $lps;
     }

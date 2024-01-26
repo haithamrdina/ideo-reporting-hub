@@ -23,6 +23,6 @@ class DoceboAuth implements Authenticator
         }
         $response = $pendingRequest->getConnector()->send(new DoceboAccess);
 
-        $pendingRequest->headers()->add('Authorization', 'Bearer ' . $response->json('data')["access_token"]);
+        $pendingRequest->headers()->add('Authorization', 'Bearer ' . $response->dto());
     }
 }

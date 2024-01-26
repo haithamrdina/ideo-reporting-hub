@@ -5,10 +5,15 @@ namespace App\Http\Controllers\Central;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Central\Tenant\StoreRequest;
 use App\Http\Requests\Central\Tenant\UpdateRequest;
+use App\Jobs\UpdateEnrollementLangueJob;
+use App\Jobs\UpdateEnrollementModuleJob;
+use App\Jobs\UpdateEnrollementMoocJob;
+use App\Jobs\UpdateEnrollementsLpsJob;
 use App\Jobs\UpdateGroupJob;
 use App\Jobs\UpdateLearnerJob;
 use App\Jobs\UpdateLpJob;
 use App\Jobs\UpdateModuleJob;
+use App\Jobs\UpdateMoocJob;
 use App\Models\Group;
 use App\Models\Project;
 use App\Models\Tenant;
@@ -167,6 +172,49 @@ class TenantController extends Controller
      */
     public function majMoocs(string $id)
     {
+        $tenant = Tenant::findOrFail($id);
+        UpdateMoocJob::dispatch($id);
+        return redirect()->route('admin.tenants.show' , ['tenant' => $tenant]);
+    }
 
+    /**
+     * Update  Enrollements courses for the specified resource.
+     */
+    public function majEnrollsModules(string $id)
+    {
+        $tenant = Tenant::findOrFail($id);
+        UpdateEnrollementModuleJob::dispatch($id);
+        return redirect()->route('admin.tenants.show' , ['tenant' => $tenant]);
+    }
+
+    /**
+     * Update  Enrollements langues for the specified resource.
+     */
+    public function majEnrollsLangues(string $id)
+    {
+        $tenant = Tenant::findOrFail($id);
+        UpdateEnrollementLangueJob::dispatch($id);
+        return redirect()->route('admin.tenants.show' , ['tenant' => $tenant]);
+    }
+
+
+     /**
+     * Update  Enrollements langues for the specified resource.
+     */
+    public function majEnrollsMoocs(string $id)
+    {
+        $tenant = Tenant::findOrFail($id);
+        UpdateEnrollementMoocJob::dispatch($id);
+        return redirect()->route('admin.tenants.show' , ['tenant' => $tenant]);
+    }
+
+      /**
+     * Update  Enrollements langues for the specified resource.
+     */
+    public function majEnrollsLps(string $id)
+    {
+        $tenant = Tenant::findOrFail($id);
+        UpdateEnrollementsLpsJob::dispatch($id);
+        return redirect()->route('admin.tenants.show' , ['tenant' => $tenant]);
     }
 }

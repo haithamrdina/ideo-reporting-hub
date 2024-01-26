@@ -5,6 +5,7 @@ namespace App\Http\Integrations\Docebo\Requests;
 use Saloon\Contracts\Body\HasBody;
 use Saloon\Enums\Method;
 use Saloon\Http\Request;
+use Saloon\Http\Response;
 use Saloon\Traits\Body\HasJsonBody;
 
 class DoceboAccess extends Request implements HasBody
@@ -30,5 +31,10 @@ class DoceboAccess extends Request implements HasBody
             'password' => '@idEo_9Fa_cto',
             'issue_refresh_token' => true
         ];
+    }
+
+    public function createDtoFromResponse(Response $response): mixed
+    {
+        return $response->json('data')["access_token"];
     }
 }

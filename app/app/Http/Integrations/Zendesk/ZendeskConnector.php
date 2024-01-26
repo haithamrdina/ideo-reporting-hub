@@ -1,28 +1,27 @@
 <?php
 
-namespace App\Http\Integrations\Docebo;
+namespace App\Http\Integrations\Zendesk;
 
-use App\Http\Integrations\Docebo\Auth\DoceboAuth;
-use Saloon\Contracts\Authenticator;
+use Saloon\Exceptions\Request\RequestException;
+use Saloon\Http\Auth\BasicAuthenticator;
 use Saloon\Http\Connector;
 use Saloon\Http\Request;
 use Saloon\Http\Response;
 use Saloon\PaginationPlugin\Contracts\HasPagination;
 use Saloon\PaginationPlugin\CursorPaginator;
-use Saloon\PaginationPlugin\PagedPaginator;
 use Saloon\PaginationPlugin\Paginator;
 use Saloon\Traits\Plugins\AcceptsJson;
 
-class DoceboConnector extends Connector implements HasPagination
+class ZendeskConnector extends Connector implements HasPagination
 {
     use AcceptsJson;
-
+    public ?int $tries = 3;
     /**
      * The Base URL of the API
      */
     public function resolveBaseUrl(): string
     {
-        return 'https://multi-skills.docebosaas.com';
+        return 'https://ideolearninghelp.zendesk.com/api/v2';
     }
 
     /**
@@ -31,7 +30,7 @@ class DoceboConnector extends Connector implements HasPagination
     protected function defaultHeaders(): array
     {
         return [
-            'content-type' => 'application/json'
+
         ];
     }
 
@@ -45,39 +44,38 @@ class DoceboConnector extends Connector implements HasPagination
         ];
     }
 
-    /**
-     * Default HTTP client authentication
-     */
-    protected function defaultAuth(): ?Authenticator
+    protected function defaultAuth(): BasicAuthenticator
     {
-        return new DoceboAuth;
+        return new BasicAuthenticator('midrissi@ideolearning.com/token', 'u3VzAMoFa2JajiFPEoPz9SVaVQFVcHIXpX5sK9OC');
     }
 
-    public function paginate(Request $request): PagedPaginator
-    {
-        return new class($this, $request) extends PagedPaginator
-        {
 
-            protected ?int $perPageLimit = 200;
+    public function paginate(Request $request): CursorPaginator
+    {
+        return new class($this,$request) extends CursorPaginator
+        {
+            protected bool $detectInfiniteLoop = false;
+            protected function getNextCursor(Response $response): string
+            {
+                return $response->json('meta.after_cursor');
+            }
+
             protected function isLastPage(Response $response): bool
             {
-                // return is_null($response->json('_links.next'));
-                return !($response->json('data.has_more_data'));
+                // return is_null($response->json('meta.after_cursor'));
+                return !($response->json('meta.has_more'));
             }
 
             protected function getPageItems(Response $response, Request $request): array
             {
-                return $response->json('data');
+                return $response->json('results');
             }
 
             protected function applyPagination(Request $request): Request
             {
-                $request->query()->add('page', $this->currentPage + 1);
-
-                if (isset($this->perPageLimit)) {
-                    $request->query()->add('page_size', $this->perPageLimit);
+                if ($this->currentResponse instanceof Response) {
+                    $request->query()->add('page[after]', $this->getNextCursor($this->currentResponse));
                 }
-                dump($request->query());
                 return $request;
             }
         };
@@ -87,4 +85,7 @@ class DoceboConnector extends Connector implements HasPagination
     {
         return 1000;
     }
+
+
+
 }

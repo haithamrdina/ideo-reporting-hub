@@ -296,6 +296,134 @@
                                                                 <div class="col-md-12 col-lg-12 mb-3">
                                                                     <div class="card">
                                                                         <div class="card-header">
+                                                                            <h3 class="card-title">Mise à jour des inscriptions</h3>
+                                                                        </div>
+                                                                        <div class="card-table table-responsive">
+                                                                            <table class="table table-vcenter">
+                                                                                <thead>
+                                                                                    <tr>
+                                                                                        <th>Libellé</th>
+                                                                                        <th>Action</th>
+                                                                                    </tr>
+                                                                                </thead>
+                                                                                <tr>
+                                                                                    <td>
+                                                                                        Mise à jour des inscriptions aux modules softskills, digitals et sur mesure.
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        <a href="{{ route('admin.tenants.modules.enroll.maj', ['tenant' => $tenant->id]) }}" class="ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Lancer la mise à jour des inscriptions aux modules softskills">
+                                                                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewbox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                                                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                                                                                <path d="M9 15l6 -6"/>
+                                                                                                <path d="M11 6l.463 -.536a5 5 0 0 1 7.071 7.072l-.534 .464"/>
+                                                                                                <path d="M13 18l-.397 .534a5.068 5.068 0 0 1 -7.127 0a4.972 4.972 0 0 1 0 -7.071l.524 -.463"/>
+                                                                                            </svg>
+                                                                                        </a>
+                                                                                    </td>
+                                                                                </tr>
+                                                                                <tr>
+                                                                                    <td>
+                                                                                        Mise à jour des inscriptions aux modules de langue
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        <a href="{{ route('admin.tenants.langues.enroll.maj', ['tenant' => $tenant->id]) }}" class="ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Lancer la mise à jour des inscriptions aux modules digital">
+                                                                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewbox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                                                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                                                                                <path d="M9 15l6 -6"/>
+                                                                                                <path d="M11 6l.463 -.536a5 5 0 0 1 7.071 7.072l-.534 .464"/>
+                                                                                                <path d="M13 18l-.397 .534a5.068 5.068 0 0 1 -7.127 0a4.972 4.972 0 0 1 0 -7.071l.524 -.463"/>
+                                                                                            </svg>
+                                                                                        </a>
+                                                                                    </td>
+                                                                                </tr>
+                                                                                <tr>
+                                                                                    <td>
+                                                                                        Mise à jour des inscriptions aux moocs
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        <a href="{{ route('admin.tenants.moocs.enroll.maj', ['tenant' => $tenant->id]) }}" class="ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Lancer la mise à jour des inscriptions aux moocs">
+                                                                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewbox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                                                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                                                                                <path d="M9 15l6 -6"/>
+                                                                                                <path d="M11 6l.463 -.536a5 5 0 0 1 7.071 7.072l-.534 .464"/>
+                                                                                                <path d="M13 18l-.397 .534a5.068 5.068 0 0 1 -7.127 0a4.972 4.972 0 0 1 0 -7.071l.524 -.463"/>
+                                                                                            </svg>
+                                                                                        </a>
+                                                                                    </td>
+                                                                                </tr>
+                                                                                <tr>
+                                                                                    <td>
+                                                                                        Mise à jour des inscriptions aux plans de formation
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        <a href="{{ route('admin.tenants.lps.enroll.maj', ['tenant' => $tenant->id]) }}" class="ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Lancer la mise à jour des inscriptions plans de formation">
+                                                                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewbox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                                                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                                                                                <path d="M9 15l6 -6"/>
+                                                                                                <path d="M11 6l.463 -.536a5 5 0 0 1 7.071 7.072l-.534 .464"/>
+                                                                                                <path d="M13 18l-.397 .534a5.068 5.068 0 0 1 -7.127 0a4.972 4.972 0 0 1 0 -7.071l.524 -.463"/>
+                                                                                            </svg>
+                                                                                        </a>
+                                                                                    </td>
+                                                                                </tr>
+                                                                            </table>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6 col-lg-6 mt-3 mb-3">
+                                                            <div class="row">
+                                                                <div class="col-md-12 col-lg-12 mb-3">
+                                                                    <div class="card">
+                                                                        <div class="card-header">
+                                                                            <h3 class="card-title">Mise à jour des tickets et des appels</h3>
+                                                                        </div>
+                                                                        <div class="card-table table-responsive">
+                                                                            <table class="table table-vcenter">
+                                                                                <thead>
+                                                                                    <tr>
+                                                                                        <th>Libellé</th>
+                                                                                        <th>Action</th>
+                                                                                    </tr>
+                                                                                </thead>
+                                                                                <tr>
+                                                                                    <td>
+                                                                                        Mise à jour des Tickets
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        <a href="." class="ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Lancer la mise à jour des tickets">
+                                                                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewbox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                                                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                                                                                <path d="M9 15l6 -6"/>
+                                                                                                <path d="M11 6l.463 -.536a5 5 0 0 1 7.071 7.072l-.534 .464"/>
+                                                                                                <path d="M13 18l-.397 .534a5.068 5.068 0 0 1 -7.127 0a4.972 4.972 0 0 1 0 -7.071l.524 -.463"/>
+                                                                                            </svg>
+                                                                                        </a>
+                                                                                    </td>
+                                                                                </tr>
+                                                                                <tr>
+                                                                                    <td>
+                                                                                        Mise à jour des appels téléphoniques
+                                                                                    </td>
+                                                                                    <td>
+                                                                                        <a href="." class="ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Lancer la mise à jour des appels téléphoniques">
+                                                                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewbox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                                                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                                                                                <path d="M9 15l6 -6"/>
+                                                                                                <path d="M11 6l.463 -.536a5 5 0 0 1 7.071 7.072l-.534 .464"/>
+                                                                                                <path d="M13 18l-.397 .534a5.068 5.068 0 0 1 -7.127 0a4.972 4.972 0 0 1 0 -7.071l.524 -.463"/>
+                                                                                            </svg>
+                                                                                        </a>
+                                                                                    </td>
+                                                                                </tr>
+                                                                            </table>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-12 col-lg-12 mb-3">
+                                                                    <div class="card">
+                                                                        <div class="card-header">
                                                                             <h3 class="card-title">Mise à jour des plans de formation, des modules et des moocs</h3>
                                                                         </div>
                                                                         <div class="card-table table-responsive">
@@ -354,160 +482,6 @@
                                                                             </table>
                                                                         </div>
                                                                     </div>
-                                                                </div>
-                                                                <div class="col-md-12 col-lg-12 mb-3">
-                                                                    <div class="card">
-                                                                        <div class="card-header">
-                                                                            <h3 class="card-title">Mise à jour des tickets et des appels</h3>
-                                                                        </div>
-                                                                        <div class="card-table table-responsive">
-                                                                            <table class="table table-vcenter">
-                                                                                <thead>
-                                                                                    <tr>
-                                                                                        <th>Libellé</th>
-                                                                                        <th>Action</th>
-                                                                                    </tr>
-                                                                                </thead>
-                                                                                <tr>
-                                                                                    <td>
-                                                                                        Mise à jour des Tickets
-                                                                                    </td>
-                                                                                    <td>
-                                                                                        <a href="." class="ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Lancer la mise à jour des tickets">
-                                                                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewbox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                                                                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                                                                                                <path d="M9 15l6 -6"/>
-                                                                                                <path d="M11 6l.463 -.536a5 5 0 0 1 7.071 7.072l-.534 .464"/>
-                                                                                                <path d="M13 18l-.397 .534a5.068 5.068 0 0 1 -7.127 0a4.972 4.972 0 0 1 0 -7.071l.524 -.463"/>
-                                                                                            </svg>
-                                                                                        </a>
-                                                                                    </td>
-                                                                                </tr>
-                                                                                <tr>
-                                                                                    <td>
-                                                                                        Mise à jour des appels téléphoniques
-                                                                                    </td>
-                                                                                    <td>
-                                                                                        <a href="." class="ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Lancer la mise à jour des appels téléphoniques">
-                                                                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewbox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                                                                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                                                                                                <path d="M9 15l6 -6"/>
-                                                                                                <path d="M11 6l.463 -.536a5 5 0 0 1 7.071 7.072l-.534 .464"/>
-                                                                                                <path d="M13 18l-.397 .534a5.068 5.068 0 0 1 -7.127 0a4.972 4.972 0 0 1 0 -7.071l.524 -.463"/>
-                                                                                            </svg>
-                                                                                        </a>
-                                                                                    </td>
-                                                                                </tr>
-                                                                            </table>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-6 col-lg-6 mt-3 mb-3">
-                                                            <div class="card">
-                                                                <div class="card-header">
-                                                                    <h3 class="card-title">Mise à jour des inscriptions</h3>
-                                                                </div>
-                                                                <div class="card-table table-responsive">
-                                                                    <table class="table table-vcenter">
-                                                                        <thead>
-                                                                            <tr>
-                                                                                <th>Libellé</th>
-                                                                                <th>Action</th>
-                                                                            </tr>
-                                                                        </thead>
-                                                                        <tr>
-                                                                            <td>
-                                                                                Mise à jour des inscriptions aux modules softskills
-                                                                            </td>
-                                                                            <td>
-                                                                                <a href="." class="ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Lancer la mise à jour des inscriptions aux modules softskills">
-                                                                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewbox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                                                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                                                                                        <path d="M9 15l6 -6"/>
-                                                                                        <path d="M11 6l.463 -.536a5 5 0 0 1 7.071 7.072l-.534 .464"/>
-                                                                                        <path d="M13 18l-.397 .534a5.068 5.068 0 0 1 -7.127 0a4.972 4.972 0 0 1 0 -7.071l.524 -.463"/>
-                                                                                    </svg>
-                                                                                </a>
-                                                                            </td>
-                                                                        </tr>
-                                                                        <tr>
-                                                                            <td>
-                                                                                Mise à jour des inscriptions aux modules digital
-                                                                            </td>
-                                                                            <td>
-                                                                                <a href="." class="ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Lancer la mise à jour des inscriptions aux modules digital">
-                                                                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewbox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                                                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                                                                                        <path d="M9 15l6 -6"/>
-                                                                                        <path d="M11 6l.463 -.536a5 5 0 0 1 7.071 7.072l-.534 .464"/>
-                                                                                        <path d="M13 18l-.397 .534a5.068 5.068 0 0 1 -7.127 0a4.972 4.972 0 0 1 0 -7.071l.524 -.463"/>
-                                                                                    </svg>
-                                                                                </a>
-                                                                            </td>
-                                                                        </tr>
-                                                                        <tr>
-                                                                            <td>
-                                                                                Mise à jour des inscriptions aux modules langues
-                                                                            </td>
-                                                                            <td>
-                                                                                <a href="." class="ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Lancer la mise à jour des inscriptions aux modules langues">
-                                                                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewbox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                                                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                                                                                        <path d="M9 15l6 -6"/>
-                                                                                        <path d="M11 6l.463 -.536a5 5 0 0 1 7.071 7.072l-.534 .464"/>
-                                                                                        <path d="M13 18l-.397 .534a5.068 5.068 0 0 1 -7.127 0a4.972 4.972 0 0 1 0 -7.071l.524 -.463"/>
-                                                                                    </svg>
-                                                                                </a>
-                                                                            </td>
-                                                                        </tr>
-                                                                        <tr>
-                                                                            <td>
-                                                                                Mise à jour des inscriptions aux modules sur mesure
-                                                                            </td>
-                                                                            <td>
-                                                                                <a href="." class="ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Lancer la mise à jour des inscriptions aux modules sur mesure">
-                                                                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewbox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                                                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                                                                                        <path d="M9 15l6 -6"/>
-                                                                                        <path d="M11 6l.463 -.536a5 5 0 0 1 7.071 7.072l-.534 .464"/>
-                                                                                        <path d="M13 18l-.397 .534a5.068 5.068 0 0 1 -7.127 0a4.972 4.972 0 0 1 0 -7.071l.524 -.463"/>
-                                                                                    </svg>
-                                                                                </a>
-                                                                            </td>
-                                                                        </tr>
-                                                                        <tr>
-                                                                            <td>
-                                                                                Mise à jour des inscriptions aux moocs
-                                                                            </td>
-                                                                            <td>
-                                                                                <a href="." class="ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Lancer la mise à jour des inscriptions aux moocs">
-                                                                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewbox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                                                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                                                                                        <path d="M9 15l6 -6"/>
-                                                                                        <path d="M11 6l.463 -.536a5 5 0 0 1 7.071 7.072l-.534 .464"/>
-                                                                                        <path d="M13 18l-.397 .534a5.068 5.068 0 0 1 -7.127 0a4.972 4.972 0 0 1 0 -7.071l.524 -.463"/>
-                                                                                    </svg>
-                                                                                </a>
-                                                                            </td>
-                                                                        </tr>
-                                                                        <tr>
-                                                                            <td>
-                                                                                Mise à jour des inscriptions aux plans de formation
-                                                                            </td>
-                                                                            <td>
-                                                                                <a href="." class="ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Lancer la mise à jour des inscriptions plans de formation">
-                                                                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewbox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                                                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                                                                                        <path d="M9 15l6 -6"/>
-                                                                                        <path d="M11 6l.463 -.536a5 5 0 0 1 7.071 7.072l-.534 .464"/>
-                                                                                        <path d="M13 18l-.397 .534a5.068 5.068 0 0 1 -7.127 0a4.972 4.972 0 0 1 0 -7.071l.524 -.463"/>
-                                                                                    </svg>
-                                                                                </a>
-                                                                            </td>
-                                                                        </tr>
-                                                                    </table>
                                                                 </div>
                                                             </div>
                                                         </div>

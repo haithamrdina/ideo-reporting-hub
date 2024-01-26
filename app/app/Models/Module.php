@@ -39,5 +39,17 @@ class Module extends Model
         return $this->belongsToMany(Group::class)->withTimestamps();;
     }
 
+    public function enrollModules()
+    {
+        return $this->hasMany(EnrollModule::class, 'module_docebo_id', 'docebo_id');
+    }
+
+    public function enrollLangues()
+    {
+        return $this->hasMany(Langenroll::class, 'module_docebo_id', 'docebo_id');
+    }
+
+
+
 
 }
