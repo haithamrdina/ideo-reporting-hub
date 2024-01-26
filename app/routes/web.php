@@ -271,6 +271,7 @@ Route::get('/zendesk', function () {
     }
 
     $result = array_map(function ($item) use($zendeskConnector){
+        $zendeskConnector->delay()->set(500);
         $requesterResponse = $zendeskConnector->send(new ZendeskRequesterUsername($item['requester_id']));
         $learner = Learner::where('username', $requesterResponse->dto())->first();
         if($learner){

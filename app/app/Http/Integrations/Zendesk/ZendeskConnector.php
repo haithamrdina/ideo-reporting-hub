@@ -81,11 +81,4 @@ class ZendeskConnector extends Connector implements HasPagination
         };
     }
 
-    protected function defaultDelay(): ?int
-    {
-        return 1000;
-    }
-
-
-
 }
