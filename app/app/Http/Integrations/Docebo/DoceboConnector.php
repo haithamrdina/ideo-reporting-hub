@@ -61,7 +61,6 @@ class DoceboConnector extends Connector implements HasPagination
             protected ?int $perPageLimit = 200;
             protected function isLastPage(Response $response): bool
             {
-                // return is_null($response->json('_links.next'));
                 return !($response->json('data.has_more_data'));
             }
 
@@ -77,14 +76,8 @@ class DoceboConnector extends Connector implements HasPagination
                 if (isset($this->perPageLimit)) {
                     $request->query()->add('page_size', $this->perPageLimit);
                 }
-                dump($request->query());
                 return $request;
             }
         };
-    }
-
-    protected function defaultDelay(): ?int
-    {
-        return 1000;
     }
 }

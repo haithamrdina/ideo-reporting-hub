@@ -55,7 +55,7 @@
                                                 <div class="mx-2 d-inline-block">
                                                     <div class="mx-2 d-inline-block">
                                                         <select class="form-select h-5" id="listjs-items-per-page">
-                                                            <option value="10" selected>10</option>
+                                                            <option value="13" selected>13</option>
                                                             <option value="25">25</option>
                                                             <option value="50">50</option>
                                                             <option value="100">100</option>
@@ -177,7 +177,7 @@
                 'sort-name',
                 'sort-status',
             ],
-            page: 10,
+            page: 13,
             pagination: [{
                 name: "pagination",
                 paginationClass: "pagination",

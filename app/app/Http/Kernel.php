@@ -74,5 +74,8 @@ class Kernel extends HttpKernel
         'admin.guest' => \App\Http\Middleware\RedirectIfAdmin::class,
         // 'admin.verified' => \App\Http\Middleware\EnsureAdminEmailIsVerified::class,
         // 'admin.password.confirm' => \App\Http\Middleware\RequireAdminPassword::class,
+        'plateforme' => \App\Http\Middleware\PlateformeMiddleware::class,
+        'project' => \App\Http\Middleware\ProjectMiddleware::class,
+        'group' => \App\Http\Middleware\GroupMiddleware::class,
     ];
 }

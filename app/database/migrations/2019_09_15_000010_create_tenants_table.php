@@ -22,10 +22,7 @@ class CreateTenantsTable extends Migration
             $table->string('company_code')->unique();
             $table->string('company_name');
             $table->string('docebo_org_id')->unique();
-            $table->string('firstname');
-            $table->string('lastname');
-            $table->string('email');
-            $table->string('password');
+            $table->string('zendesk_org_id');
             /** custom columns @e */
 
             $table->timestamps();

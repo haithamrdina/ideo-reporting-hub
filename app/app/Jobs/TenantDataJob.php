@@ -10,6 +10,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Hash;
 
 class TenantDataJob implements ShouldQueue
 {
@@ -30,11 +31,28 @@ class TenantDataJob implements ShouldQueue
     {
         $this->tenant->run(function(){
             User::create([
-                'firstname' => $this->tenant->firstname,
-                'lastname' => $this->tenant->lastname,
-                'email' => $this->tenant->email,
-                'password' => $this->tenant->password,
+                'firstname' => $this->tenant->company_code,
+                'lastname' => 'Plateforme',
+                'email' => 'rplateforme@ideo-reporting.com',
+                'password' => Hash::make('password'),
                 'role' => UserRoleEnum::PLATEFORME,
+            ]);
+
+            User::create([
+                'firstname' => $this->tenant->company_code,
+                'lastname' => 'Branche',
+                'email' => 'rproject@ideo-reporting.com',
+                'password' => Hash::make('password'),
+                'role' => UserRoleEnum::PROJECT,
+            ]);
+
+
+            User::create([
+                'firstname' => $this->tenant->company_code,
+                'lastname' => 'Plateforme',
+                'email' => 'rgroup@ideo-reporting.com',
+                'password' => Hash::make('password'),
+                'role' => UserRoleEnum::GROUP,
             ]);
         });
     }

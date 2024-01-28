@@ -23,11 +23,7 @@ class Tenant extends BaseTenant implements TenantWithDatabase
             'company_code',
             'company_name',
             'docebo_org_id',
-            'username',
-            'lastname',
-            'firstname',
-            'email',
-            'password'
+            'zendesk_org_id',
         ];
     }
 

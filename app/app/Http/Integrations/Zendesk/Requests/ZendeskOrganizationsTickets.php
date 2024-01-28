@@ -2,6 +2,8 @@
 
 namespace App\Http\Integrations\Zendesk\Requests;
 
+use App\Http\Integrations\Zendesk\ZendeskConnector;
+use App\Models\Learner;
 use DateTime;
 use Saloon\Enums\Method;
 use Saloon\Http\Request;
@@ -44,15 +46,24 @@ class ZendeskOrganizationsTickets extends Request implements Paginatable
     {
         $items = $response->json('results');
         $filteredItems = array_map(function ($item) {
-            return [
-                'status' => $item['status'],
-                'subject' =>  preg_replace('/\p{Cf}/u', '', $item['subject']),
-                'ticket_created_at' => (new DateTime($item['created_at']))->format("Y-m-d H:i:s"),
-                'ticket_updated_at' => (new DateTime($item['created_at']))->format("Y-m-d H:i:s"),
-                'requester_id' => $item['requester_id'],
-            ];
+            $zendeskConnector = new ZendeskConnector();
+            $zendeskConnector->delay()->set(500);
+            $requesterResponse = $zendeskConnector->send(new ZendeskRequesterUsername($item['requester_id']));
+            $learner = Learner::where('username', $requesterResponse->dto())->first();
+            if($learner){
+                return [
+                    'status' => $item['status'],
+                    'subject' =>  preg_replace('/\p{Cf}/u', '', $item['subject']),
+                    'ticket_created_at' => (new DateTime($item['created_at']))->format("Y-m-d H:i:s"),
+                    'ticket_updated_at' => (new DateTime($item['created_at']))->format("Y-m-d H:i:s"),
+                    'learner_docebo_id' =>$learner->docebo_id,
+                    'project_id' => $learner->project->id,
+                    'group_id' => $learner->group->id,
+                ];
+            }
         }, $items);
 
         return $filteredItems;
     }
 }
+

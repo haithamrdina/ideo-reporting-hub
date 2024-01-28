@@ -35,7 +35,7 @@ class UpdateGroupJob implements ShouldQueue
     {
         $tenant = Tenant::find($this->tenantId);
         tenancy()->initialize($tenant);
-            $doceboConnector = new DoceboConnector();
+            $doceboConnector = new DoceboConnector;
             $paginator = $doceboConnector->paginate(new DoceboGroupeList($tenant->docebo_org_id));
             $result = [];
             foreach($paginator as $pg){

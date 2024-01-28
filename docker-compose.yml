@@ -62,7 +62,7 @@ services:
         image: rabbitmq:3-management
         container_name: ideo_reporting_hub_rabbitmq
         ports:
-            - 1773:5672
+            - 5672:5672
             - 1774:15672
         networks:
             - ideo-reporting-hub 

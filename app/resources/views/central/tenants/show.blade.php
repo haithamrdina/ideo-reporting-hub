@@ -66,7 +66,7 @@
                                                         </div>
                                                         <div class="col">
                                                             <div class="font-weight-medium">
-                                                                ******** Groupes
+                                                                {{ $stats->groups }} Groupes
                                                             </div>
                                                         </div>
                                                     </div>
@@ -92,7 +92,7 @@
                                                         </div>
                                                         <div class="col">
                                                             <div class="font-weight-medium">
-                                                                ****** Apprenants
+                                                                {{ $stats->learners }} Apprenants
                                                             </div>
                                                         </div>
                                                     </div>
@@ -116,7 +116,7 @@
                                                         </div>
                                                         <div class="col">
                                                             <div class="font-weight-medium">
-                                                                ******* tickets
+                                                                {{ $stats->tickets }} tickets
                                                             </div>
                                                         </div>
                                                     </div>
@@ -140,7 +140,7 @@
                                                         </div>
                                                         <div class="col">
                                                             <div class="font-weight-medium">
-                                                                ****** Appels
+                                                                {{ $stats->calls }} Appels
                                                             </div>
                                                         </div>
                                                     </div>
@@ -154,7 +154,7 @@
                                                     <div class="d-flex align-items-center">
                                                         <div class="subheader">Plans de formation</div>
                                                     </div>
-                                                    <div class="h1">******</div>
+                                                    <div class="h1">{{ $stats->lps }}</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -164,7 +164,7 @@
                                                     <div class="d-flex align-items-center">
                                                         <div class="subheader">SUR MESURE</div>
                                                     </div>
-                                                    <div class="h1">******</div>
+                                                    <div class="h1">{{ $stats->sm }}</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -174,7 +174,7 @@
                                                     <div class="d-flex align-items-center">
                                                         <div class="subheader">CEGOS</div>
                                                     </div>
-                                                    <div class="h1">******</div>
+                                                    <div class="h1">{{ $stats->cegos }}</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -184,7 +184,7 @@
                                                     <div class="d-flex align-items-center">
                                                         <div class="subheader">ENI</div>
                                                     </div>
-                                                    <div class="h1">******</div>
+                                                    <div class="h1">{{ $stats->eni }}</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -194,7 +194,7 @@
                                                     <div class="d-flex align-items-center">
                                                         <div class="subheader">SPEEX</div>
                                                     </div>
-                                                    <div class="h1">******</div>
+                                                    <div class="h1">{{ $stats->speex }}</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -204,7 +204,7 @@
                                                     <div class="d-flex align-items-center">
                                                         <div class="subheader">Mooc</div>
                                                     </div>
-                                                    <div class="h1">******</div>
+                                                    <div class="h1">{{ $stats->moocs }}</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -392,7 +392,7 @@
                                                                                         Mise à jour des Tickets
                                                                                     </td>
                                                                                     <td>
-                                                                                        <a href="." class="ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Lancer la mise à jour des tickets">
+                                                                                        <a href="{{ route('admin.tenants.tickets.maj', ['tenant' => $tenant->id]) }}" class="ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Lancer la mise à jour des tickets">
                                                                                             <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewbox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                                                                                 <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                                                                                                 <path d="M9 15l6 -6"/>
@@ -407,7 +407,7 @@
                                                                                         Mise à jour des appels téléphoniques
                                                                                     </td>
                                                                                     <td>
-                                                                                        <a href="." class="ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Lancer la mise à jour des appels téléphoniques">
+                                                                                        <a href="{{ route('admin.tenants.calls.maj', ['tenant' => $tenant->id]) }}" class="ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Lancer la mise à jour des appels téléphoniques">
                                                                                             <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewbox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                                                                                 <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                                                                                                 <path d="M9 15l6 -6"/>
@@ -469,7 +469,7 @@
                                                                                         Mise à jour des mooc
                                                                                     </td>
                                                                                     <td>
-                                                                                        <a href="." class="ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Lancer la mise à jour des moocs">
+                                                                                        <a href="{{ route('admin.tenants.moocs.maj', ['tenant' => $tenant->id]) }}" class="ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Lancer la mise à jour des moocs">
                                                                                             <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewbox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                                                                                 <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                                                                                                 <path d="M9 15l6 -6"/>

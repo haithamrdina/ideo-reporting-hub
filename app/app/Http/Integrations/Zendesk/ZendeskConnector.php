@@ -2,20 +2,30 @@
 
 namespace App\Http\Integrations\Zendesk;
 
-use Saloon\Exceptions\Request\RequestException;
+use Illuminate\Support\Facades\Cache;
 use Saloon\Http\Auth\BasicAuthenticator;
 use Saloon\Http\Connector;
 use Saloon\Http\Request;
 use Saloon\Http\Response;
 use Saloon\PaginationPlugin\Contracts\HasPagination;
 use Saloon\PaginationPlugin\CursorPaginator;
-use Saloon\PaginationPlugin\Paginator;
+use Saloon\RateLimitPlugin\Contracts\RateLimitStore;
 use Saloon\Traits\Plugins\AcceptsJson;
+
+use Saloon\RateLimitPlugin\Limit;
+use Saloon\RateLimitPlugin\Stores\LaravelCacheStore;
+use Saloon\RateLimitPlugin\Traits\HasRateLimits;
 
 class ZendeskConnector extends Connector implements HasPagination
 {
     use AcceptsJson;
+    use HasRateLimits;
+
     public ?int $tries = 3;
+    public function __construct()
+    {
+        $this->detectTooManyAttempts = false;
+    }
     /**
      * The Base URL of the API
      */
@@ -24,13 +34,10 @@ class ZendeskConnector extends Connector implements HasPagination
         return 'https://ideolearninghelp.zendesk.com/api/v2';
     }
 
-    /**
-     * Default headers for every request
-     */
-    protected function defaultHeaders(): array
+    protected function resolveLimits(): array
     {
         return [
-
+            Limit::allow(100000)->everyMinute(),
         ];
     }
 
@@ -42,6 +49,11 @@ class ZendeskConnector extends Connector implements HasPagination
         return [
             'timeout' => 60,
         ];
+    }
+
+    protected function resolveRateLimitStore(): RateLimitStore
+    {
+        return new LaravelCacheStore(Cache::store('redis'));
     }
 
     protected function defaultAuth(): BasicAuthenticator

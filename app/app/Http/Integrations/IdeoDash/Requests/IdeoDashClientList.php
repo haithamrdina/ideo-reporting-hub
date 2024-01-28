@@ -1,13 +1,12 @@
 <?php
 
-namespace App\Http\Integrations\Zendesk\Requests;
+namespace App\Http\Integrations\IdeoDash\Requests;
 
 use Saloon\Enums\Method;
 use Saloon\Http\Request;
 use Saloon\Http\Response;
-use Saloon\PaginationPlugin\Contracts\Paginatable;
 
-class ZendeskOrganizations extends Request implements Paginatable
+class IdeoDashClientList extends Request
 {
     /**
      * The HTTP method of the request
@@ -19,22 +18,20 @@ class ZendeskOrganizations extends Request implements Paginatable
      */
     public function resolveEndpoint(): string
     {
-        return '/organizations';
+        return '/allclients';
     }
 
     public function createDtoFromResponse(Response $response): mixed
     {
-        $items = $response->json('organizations');
+        $items = $response->json('Clients');
         $filteredItems = array_map(function ($item) {
             return (Object)[
-                'zendesk_org_id' => $item['id'],
-                'zendesk_org_name' => $item['name'],
+                'client_org_id' => $item['idOrg'],
+                'client_org_name' => $item['name'],
 
             ];
         }, $items);
 
         return $filteredItems;
     }
-
-
 }

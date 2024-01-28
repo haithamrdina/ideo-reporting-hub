@@ -62,4 +62,29 @@ class User extends Authenticatable
     {
         $this->notify(new VerifyEmail);
     }
+
+    public function group()
+    {
+        return $this->belongsTo(Group::class);
+    }
+
+    public function project()
+    {
+        return $this->belongsTo(Project::class);
+    }
+
+    public function isPlateforme()
+    {
+        return $this->role === UserRoleEnum::PLATEFORME;
+    }
+
+    public function isProject()
+    {
+        return $this->role === UserRoleEnum::PROJECT;
+    }
+
+    public function isGroup()
+    {
+        return $this->role === UserRoleEnum::GROUP;
+    }
 }

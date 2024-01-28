@@ -2,9 +2,16 @@
 
 namespace App\Http\Controllers\Central;
 
+use App\Enums\CourseStatusEnum;
+use App\Enums\GroupStatusEnum;
 use App\Http\Controllers\Controller;
+use App\Http\Integrations\IdeoDash\IdeoDashConnector;
+use App\Http\Integrations\IdeoDash\Requests\IdeoDashClientList;
+use App\Http\Integrations\Zendesk\Requests\ZendeskOrganizations;
+use App\Http\Integrations\Zendesk\ZendeskConnector;
 use App\Http\Requests\Central\Tenant\StoreRequest;
 use App\Http\Requests\Central\Tenant\UpdateRequest;
+use App\Jobs\UpdateCallJob;
 use App\Jobs\UpdateEnrollementLangueJob;
 use App\Jobs\UpdateEnrollementModuleJob;
 use App\Jobs\UpdateEnrollementMoocJob;
@@ -14,9 +21,16 @@ use App\Jobs\UpdateLearnerJob;
 use App\Jobs\UpdateLpJob;
 use App\Jobs\UpdateModuleJob;
 use App\Jobs\UpdateMoocJob;
+use App\Jobs\UpdateTicketJob;
+use App\Models\Call;
 use App\Models\Group;
+use App\Models\Learner;
+use App\Models\Lp;
+use App\Models\Module;
+use App\Models\Mooc;
 use App\Models\Project;
 use App\Models\Tenant;
+use App\Models\Ticket;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rules;
 
@@ -46,7 +60,13 @@ class TenantController extends Controller
      */
     public function create()
     {
-        return view('central.tenants.create');
+        $ideoDashConnector = new IdeoDashConnector();
+        $clientResponse = $ideoDashConnector->send(new IdeoDashClientList());
+        $clients = $clientResponse->dto();
+        $zendeskConnector = new ZendeskConnector;
+        $zendeskResponse = $zendeskConnector->send(new ZendeskOrganizations());
+        $organizations = $zendeskResponse->dto();
+        return view('central.tenants.create' , compact('clients' , 'organizations'));
     }
 
     /**
@@ -59,10 +79,7 @@ class TenantController extends Controller
             'company_code' => $validated['company_code'],
             'company_name' => $validated['company_name'],
             'docebo_org_id' => $validated['docebo_org_id'],
-            'firstname' => $validated['firstname'],
-            'lastname' => $validated['lastname'],
-            'email' => $validated['email'],
-            'password' => $validated['password'],
+            'zendesk_org_id' => $validated['zendesk_org_id']
         ]);
         $tenant->domains()->create(['domain' => $validated['subdomain']]);
         return redirect()->route('admin.tenants.index')->with('success', 'Tenant ajouté avec succès');
@@ -74,7 +91,21 @@ class TenantController extends Controller
     public function show(string $id)
     {
         $tenant = Tenant::findOrFail($id);
-        return view('central.tenants.show', compact('tenant'));
+        tenancy()->initialize($tenant);
+            $stats = (Object) [
+                'groups' => Group::where('status', GroupStatusEnum::ACTIVE)->count(),
+                'learners' => Learner::count(),
+                'tickets' => Ticket::count(),
+                'calls' => Call::count(),
+                'lps' => Lp::count(),
+                'sm' => Module::where(['category' => 'SM' , 'status' => CourseStatusEnum::ACTIVE])->count() ,
+                'cegos' =>Module::where(['category' => 'CEGOS' , 'status' => CourseStatusEnum::ACTIVE])->count() ,
+                'eni' =>Module::where(['category' => 'ENI' , 'status' => CourseStatusEnum::ACTIVE])->count() ,
+                'speex' => Module::where(['category' => 'SPEEX' , 'status' => CourseStatusEnum::ACTIVE])->count(),
+                'moocs' => Mooc::count(),
+            ];
+        tenancy()->end();
+        return view('central.tenants.show', compact('tenant' , 'stats'));
     }
 
     /**
@@ -83,7 +114,13 @@ class TenantController extends Controller
     public function edit(string $id)
     {
         $tenant = Tenant::findOrFail($id);
-        return view('central.tenants.edit', compact('tenant'));
+        $ideoDashConnector = new IdeoDashConnector();
+        $clientResponse = $ideoDashConnector->send(new IdeoDashClientList());
+        $clients = $clientResponse->dto();
+        $zendeskConnector = new ZendeskConnector;
+        $zendeskResponse = $zendeskConnector->send(new ZendeskOrganizations());
+        $organizations = $zendeskResponse->dto();
+        return view('central.tenants.edit', compact('tenant','clients' , 'organizations'));
     }
 
     /**
@@ -176,6 +213,27 @@ class TenantController extends Controller
         UpdateMoocJob::dispatch($id);
         return redirect()->route('admin.tenants.show' , ['tenant' => $tenant]);
     }
+
+    /**
+     * Update Moocs for the specified resource.
+     */
+    public function majTickets(string $id)
+    {
+        $tenant = Tenant::findOrFail($id);
+        UpdateTicketJob::dispatch($id);
+        return redirect()->route('admin.tenants.show' , ['tenant' => $tenant]);
+    }
+
+     /**
+     * Update Moocs for the specified resource.
+     */
+    public function majCalls(string $id)
+    {
+        $tenant = Tenant::findOrFail($id);
+        UpdateCallJob::dispatch($id);
+        return redirect()->route('admin.tenants.show' , ['tenant' => $tenant]);
+    }
+
 
     /**
      * Update  Enrollements courses for the specified resource.

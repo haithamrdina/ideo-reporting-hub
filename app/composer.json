@@ -16,6 +16,7 @@
         "saloonphp/laravel-http-sender": "^2.1",
         "saloonphp/laravel-plugin": "^3.2",
         "saloonphp/pagination-plugin": "^2.2",
+        "saloonphp/rate-limit-plugin": "^2.0",
         "stancl/tenancy": "^3.7"
     },
     "require-dev": {

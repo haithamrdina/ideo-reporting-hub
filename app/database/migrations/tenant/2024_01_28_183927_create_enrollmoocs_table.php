@@ -11,19 +11,27 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tickets', function (Blueprint $table) {
+        Schema::create('enrollmoocs', function (Blueprint $table) {
             $table->id();
-            $table->string('status')->nullable();
-            $table->text('subject')->nullable();
-            $table->timestamp('ticket_created_at')->nullable();
-            $table->timestamp('ticket_updated_at')->nullable();
             $table->unsignedBigInteger('project_id');
             $table->unsignedBigInteger('group_id');
             $table->string('learner_docebo_id');
+            $table->string('mooc_docebo_id');
+            $table->string('status')->nullable();
+            $table->string('session_time')->nullable();
+            $table->string('calculated_time')->nullable();
+            $table->string('recommended_time')->nullable();
+            $table->timestamp('enrollment_created_at')->nullable();
+            $table->timestamp('enrollment_updated_at')->nullable();
+            $table->timestamp('enrollment_completed_at')->nullable();
+
             $table->foreign('project_id')->references('id')->on('projects');
             $table->foreign('group_id')->references('id')->on('groups');
+
             $table->foreign('learner_docebo_id')->references('docebo_id')->on('learners');
-            $table->unique(['learner_docebo_id', 'ticket_created_at']);
+            $table->foreign('mooc_docebo_id')->references('docebo_id')->on('moocs');
+
+            $table->unique(['learner_docebo_id', 'mooc_docebo_id']);
             $table->timestamps();
         });
     }
@@ -33,6 +41,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tickets');
+        Schema::dropIfExists('enrollmoocs');
     }
 };

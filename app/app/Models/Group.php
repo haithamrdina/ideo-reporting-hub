@@ -38,6 +38,12 @@ class Group extends Model
         return $this->belongsToMany(Module::class)->withTimestamps();
     }
 
+    public function moocs()
+    {
+        return $this->belongsToMany(Mooc::class)->withTimestamps();
+    }
+
+
     public function lps()
     {
         return $this->belongsToMany(Lp::class)->withTimestamps();
@@ -61,6 +67,11 @@ class Group extends Model
     public function enrollLps()
     {
         return $this->hasMany(Lpenroll::class, 'group_id', 'id');
+    }
+
+    public function users()
+    {
+        return $this->hasMany(User::class);
     }
 
 }

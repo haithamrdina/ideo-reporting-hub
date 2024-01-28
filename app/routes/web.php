@@ -10,18 +10,26 @@ use App\Http\Integrations\Docebo\Requests\DoceboCoursesEnrollements;
 use App\Http\Integrations\Docebo\Requests\DoceboCoursesEnrolls;
 use App\Http\Integrations\Docebo\Requests\DoceboGetLoCmiData;
 use App\Http\Integrations\Docebo\Requests\DoceboLpsEnrollements;
+use App\Http\Integrations\Docebo\Requests\DoceboMoocsEnrollements;
+use App\Http\Integrations\Docebo\Requests\DoceboMoocsList;
+use App\Http\Integrations\IdeoDash\IdeoDashConnector;
+use App\Http\Integrations\IdeoDash\Requests\IdeoDashCallsList;
+use App\Http\Integrations\IdeoDash\Requests\IdeoDashClientList;
 use App\Http\Integrations\Speex\Requests\SpeexUserArticleResult;
 use App\Http\Integrations\Speex\SpeexConnector;
 use App\Http\Integrations\Zendesk\Requests\ZendeskOrganizations;
 use App\Http\Integrations\Zendesk\Requests\ZendeskOrganizationsTickets;
 use App\Http\Integrations\Zendesk\Requests\ZendeskRequesterUsername;
 use App\Http\Integrations\Zendesk\ZendeskConnector;
+use App\Models\Call;
 use App\Models\Enrollmodule;
+use App\Models\Enrollmooc;
 use App\Models\Langenroll;
 use App\Models\Learner;
 use App\Models\Lp;
 use App\Models\Lpenroll;
 use App\Models\Module;
+use App\Models\Mooc;
 use App\Models\Tenant;
 use App\Models\Ticket;
 use Illuminate\Support\Facades\DB;
@@ -37,277 +45,80 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
-Route::get('/test', function () {
-    $tenant = Tenant::find('a69773f7-43b4-46ab-8081-618b072a50d3');
+
+Route::get('/', function () {
+    $tenant = Tenant::find('e13bef2d-5e06-4f25-acdc-7d1f3f67b90d');
     tenancy()->initialize($tenant);
     $doceboConnector = new DoceboConnector();
-    $lpsDoceboIds = Lp::pluck('docebo_id')->toArray();
-    $request = new DoceboLpsEnrollements($lpsDoceboIds);
-    $lpenrollsResponses = $doceboConnector->paginate($request);
-    $resultMds = [];
-    foreach($lpenrollsResponses as $md){
-        $data = $md->dto();
-        $resultMds = array_merge($resultMds, $data);
-    }
-    if(!empty($resultMds)){
-        $result = array_map(function ($item){
-            $modulesIds = Lp::where('docebo_id' , $item['lp_docebo_id'])->first()->courses;
-            $learner = Learner::where('docebo_id',$item['learner_docebo_id'])->first();
-            if($learner){
-                if($item['status'] != 'not_started')
-                {
-                    $sumData = Enrollmodule::where('learner_docebo_id', $learner->docebo_id)
-                            ->whereIn('module_docebo_id', $modulesIds)
-                            ->selectRaw('SUM(session_time) as total_session_time')
-                            ->selectRaw('SUM(cmi_time) as total_cmi_time')
-                            ->selectRaw('SUM(calculated_time) as total_calculated_time')
-                            ->selectRaw('SUM(recommended_time) as total_recommended_time')
-                            ->first();
-
-                    $item['session_time'] = intval($sumData->total_session_time);
-                    $item['cmi_time'] = intval($sumData->total_cmi_time);
-                    $item['calculated_time'] = intval($sumData->total_calculated_time);
-                    $item['recommended_time'] = intval($sumData->total_recommended_time);
-
-                }else{
-                    $item['session_time'] = 0;
-                    $item['cmi_time'] = 0;
-                    $item['calculated_time'] = 0;
-                    $item['recommended_time'] = 0;
-                }
-
-                $item['group_id'] = $learner->group->id;
-                $item['project_id'] = $learner->project->id;
-                return $item;
-            }
-        }, $resultMds);
-        // Remove null values
-        $result = array_chunk(array_filter($result), 1000);
-        $upsertFunction = function ($chunk) {
-            DB::transaction(function () use ($chunk) {
-                Lpenroll::upsert(
-                    $chunk,
-                    [
-                        'learner_docebo_id',
-                        'lp_docebo_id',
-                    ],
-                    [
-                        'status',
-                        'enrollment_completion_percentage',
-                        'enrollment_created_at',
-                        'enrollment_updated_at',
-                        'enrollment_completed_at',
-                        'session_time',
-                        'cmi_time',
-                        'calculated_time',
-                        'recommended_time',
-                        'group_id',
-                        'project_id',
-                    ]
-                );
-            });
-        };
-
-        // Use array_map to apply the upsert function to each chunk
-        array_map($upsertFunction, $result);
-    }
-
-    tenancy()->end();
-    return view('welcome');
-});
-Route::get('/', function () {
-    $tenant = Tenant::find('a69773f7-43b4-46ab-8081-618b072a50d3');
-    tenancy()->initialize($tenant);
-        $doceboConnector = new DoceboConnector();
-
-        $lpsDoceboIds = Lp::pluck('docebo_id')->toArray();
-        $learners = Learner::all();
-        foreach( $learners as $learner){
-            $request = new DoceboLpsEnrollements($lpsDoceboIds, $learner->docebo_id);
-            $lpenrollsResponses = $doceboConnector->paginate($request);
-            $resultMds = [];
-            foreach($lpenrollsResponses as $md){
-                $data = $md->dto();
-                $resultMds = array_merge($resultMds, $data);
-            }
-            if(!empty($resultMds)){
-                $result = array_map(function ($item) use($learner){
-                    if($item['status'] != 'not_started')
-                    {
-                        $modulesIds = Lp::where('docebo_id' , $item['lp_docebo_id'])->first()->courses;
-
-                        $sumData = Enrollmodule::where('learner_docebo_id', $learner->docebo_id)
-                                ->whereIn('module_docebo_id', $modulesIds)
-                                ->selectRaw('SUM(session_time) as total_session_time')
-                                ->selectRaw('SUM(cmi_time) as total_cmi_time')
-                                ->selectRaw('SUM(calculated_time) as total_calculated_time')
-                                ->selectRaw('SUM(recommended_time) as total_recommended_time')
-                                ->first();
-
-                        $item['session_time'] = intval($sumData->total_session_time);
-                        $item['cmi_time'] = intval($sumData->total_cmi_time);
-                        $item['calculated_time'] = intval($sumData->total_calculated_time);
-                        $item['recommended_time'] = intval($sumData->total_recommended_time);
-
-                    }else{
-                        $item['session_time'] = 0;
-                        $item['cmi_time'] = 0;
-                        $item['calculated_time'] = 0;
-                        $item['recommended_time'] = 0;
-                    }
-
-                    $item['group_id'] = $learner->group->id;
-                    $item['project_id'] = $learner->project->id;
-                    return $item;
-
-                }, $resultMds);
-                DB::transaction(function () use ($result) {
-                    Lpenroll::upsert(
-                        $result,
-                        [
-                            'learner_docebo_id',
-                            'lp_docebo_id',
-                        ],
-                        [
-                            'status',
-                            'enrollment_completion_percentage',
-                            'enrollment_created_at',
-                            'enrollment_updated_at',
-                            'enrollment_completed_at',
-                            'session_time',
-                            'cmi_time',
-                            'calculated_time',
-                            'recommended_time',
-                            'group_id',
-                            'project_id',
-                        ]
-                    );
-                });
-            }
-        }
-    tenancy()->end();
-    return view('welcome');
-});
-Route::get('/langue', function () {
-    $tenant = Tenant::find('a69773f7-43b4-46ab-8081-618b072a50d3');
-    tenancy()->initialize($tenant);
-        $doceboConnector = new DoceboConnector();
-        $speexConnector = new SpeexConnector();
-
-        $modulesDoceboIds = Module::where(['category'=> 'SPEEX', 'status' => CourseStatusEnum::ACTIVE])->pluck('docebo_id')->toArray();
-
-
-        $learners = Learner::whereNotNull('speex_id')->get();
-        foreach( $learners as $learner){
-            $request = new DoceboCoursesEnrollements($modulesDoceboIds, $learner->docebo_id);
-
-            $mdenrollsResponses = $doceboConnector->paginate($request);
-            $resultMds = [];
-            foreach($mdenrollsResponses as $md){
-                $data = $md->dto();
-                $resultMds = array_merge($resultMds, $data);
-            }
-            if(!empty($resultMds)){
-                $result = array_map(function ($item) use($speexConnector, $learner){
-                    $module = Module::where('docebo_id', $item['module_docebo_id'])->first();
-                    if($item['status'] != 'enrolled' || $item['status'] != 'waiting')
-                    {
-                        $articleId = $module->article_id;
-                        $speexId = $learner->speex_id;
-
-                        $speexResponse = $speexConnector->send(new SpeexUserArticleResult($speexId, $articleId));
-                        $speexReponseData = $speexResponse->dto();
-                        $item['cmi_time'] = $speexReponseData['time'];
-                        $item['niveau'] = $speexReponseData['niveau'];
-                    }else{
-                        $item['cmi_time'] = 0;
-                        $item['niveau'] = null;
-
-                    }
-
-                    $item['language'] = $module->language;
-                    $item['group_id'] = $learner->group->id;
-                    $item['project_id'] = $learner->project->id;
-                    return $item;
-
-                }, $resultMds);
-                DB::transaction(function () use ($result) {
-                    Langenroll::upsert(
-                        $result,
-                        [
-                            'learner_docebo_id',
-                            'module_docebo_id',
-                        ],
-                        [
-                            'status',
-                            'enrollment_created_at',
-                            'enrollment_updated_at',
-                            'enrollment_completed_at',
-                            'niveau',
-                            'language',
-                            'session_time',
-                            'cmi_time',
-                            'group_id',
-                            'project_id',
-                            ]
-                    );
-                });
-            }
-        }
-    tenancy()->end();
-    return view('welcome');
-});
-Route::get('/zendesk', function () {
-    $tenant = Tenant::find('a69773f7-43b4-46ab-8081-618b072a50d3');
-    tenancy()->initialize($tenant);
-    $zendeskConnector = new ZendeskConnector();
-    $request = new ZendeskOrganizationsTickets('5744460951186');
-    $orgResponse = $zendeskConnector->paginate($request);
-
+    $moocsDoceboIds = Mooc::pluck('docebo_id')->toArray();
+    $moocsDoceboIds = array_chunk($moocsDoceboIds , 100);
     $result = [];
-    foreach($orgResponse as $md){
-        $data  = $md->dto();
-        $result = array_merge($result, $data);
-    }
+    foreach($moocsDoceboIds as $moocsDoceboId){
+        $request = new DoceboMoocsEnrollements($moocsDoceboId);
+        $mdenrollsResponses = $doceboConnector->paginate($request);
+        foreach($mdenrollsResponses as $md){
+            $data = $md->dto();
+            $result = array_merge($result, $data);
+        }
 
-    $result = array_map(function ($item) use($zendeskConnector){
-        $zendeskConnector->delay()->set(500);
-        $requesterResponse = $zendeskConnector->send(new ZendeskRequesterUsername($item['requester_id']));
-        $learner = Learner::where('username', $requesterResponse->dto())->first();
+    }
+    $result = array_map(function ($item){
+        $learner = Learner::where('docebo_id' , $item['learner_docebo_id'])->first();
+        $mooc = Mooc::where('docebo_id' , $item['mooc_docebo_id'])->first();
         if($learner){
+            if($item['status'] != 'enrolled' || $item['status'] != 'waiting' )
+            {
+                if($item['status'] == 'completed'){
+                    $calculated_time = $mooc->recommended_time;
+                }elseif($item['status'] == 'in_progress' && $item['session_time'] > $mooc->recommended_time){
+                    $calculated_time = $mooc->recommended_time;
+                }else{
+                    $calculated_time = $item['session_time'];
+                }
+                $item['calculated_time'] = $calculated_time;
+                $item['recommended_time'] = $mooc->recommended_time;
+
+            }else{
+                $item['calculated_time'] = 0;
+                $item['recommended_time'] = 0;
+            }
+
             $item['group_id'] = $learner->group->id;
             $item['project_id'] = $learner->project->id;
-            $item['learner_docebo_id'] = $learner->docebo_id;
-            unset($item['requester_id']);
+            return $item;
         }
-        return $item;
     }, $result);
 
-    $result = array_chunk(array_filter($result), 500);
+    $result = array_chunk(array_filter($result), 1000);
     $upsertFunction = function ($chunk) {
         DB::transaction(function () use ($chunk) {
-            Ticket::upsert(
+            Enrollmooc::upsert(
                 $chunk,
                 [
                     'learner_docebo_id',
-                    'subject',
-                    'ticket_created_at'
+                    'mooc_docebo_id',
                 ],
                 [
                     'status',
-                    'ticket_updated_at',
+                    'enrollment_created_at',
+                    'enrollment_updated_at',
+                    'enrollment_completed_at',
+                    'session_time',
+                    'calculated_time',
+                    'recommended_time',
                     'group_id',
                     'project_id',
                 ]
             );
         });
     };
-
     // Use array_map to apply the upsert function to each chunk
     array_map($upsertFunction, $result);
     tenancy()->end();
     return view('welcome');
 });
+
+
 
 
 Route::name('admin.')->group(function () {
@@ -336,6 +147,8 @@ Route::name('admin.')->group(function () {
         Route::get('tenants/{tenant}/maj/lps',[ TenantController::class, 'majLps'])->name('tenants.lps.maj');
         Route::get('tenants/{tenant}/maj/modules',[ TenantController::class, 'majModules'])->name('tenants.modules.maj');
         Route::get('tenants/{tenant}/maj/moocs',[ TenantController::class, 'majMoocs'])->name('tenants.moocs.maj');
+        Route::get('tenants/{tenant}/maj/tickets',[ TenantController::class, 'majTickets'])->name('tenants.tickets.maj');
+        Route::get('tenants/{tenant}/maj/calls',[ TenantController::class, 'majCalls'])->name('tenants.calls.maj');
 
         Route::get('tenants/{tenant}/enrollements/modules/maj',[ TenantController::class, 'majEnrollsModules'])->name('tenants.modules.enroll.maj');
         Route::get('tenants/{tenant}/enrollements/langue/maj',[ TenantController::class, 'majEnrollsLangues'])->name('tenants.langues.enroll.maj');

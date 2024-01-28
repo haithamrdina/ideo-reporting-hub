@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Jobs\UpdateCallJob;
 use App\Jobs\UpdateEnrollementLangueJob;
 use App\Jobs\UpdateEnrollementModuleJob;
 use App\Jobs\UpdateEnrollementMoocJob;
@@ -11,6 +12,7 @@ use App\Jobs\UpdateLearnerJob;
 use App\Jobs\UpdateLpJob;
 use App\Jobs\UpdateModuleJob;
 use App\Jobs\UpdateMoocJob;
+use App\Jobs\UpdateTicketJob;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -56,6 +58,16 @@ class EventServiceProvider extends ServiceProvider
 
         $this->app->bind(
             UpdateMoocJob::class .'@handle',
+            fn($job) => $job->handle()
+        );
+
+        $this->app->bind(
+            UpdateTicketJob::class .'@handle',
+            fn($job) => $job->handle()
+        );
+
+        $this->app->bind(
+            UpdateCallJob::class .'@handle',
             fn($job) => $job->handle()
         );
 

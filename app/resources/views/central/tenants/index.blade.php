@@ -90,6 +90,7 @@
                                             <thead>
                                                 <tr>
                                                     <th><button class="table-sort" data-sort="sort-doceboidorg">Docebo ORG_ID</button></th>
+                                                    <th><button class="table-sort" data-sort="sort-zendeskidorg">ZENDESK ORG_ID</button></th>
                                                     <th><button class="table-sort" data-sort="sort-code">Code</button></th>
                                                     <th><button class="table-sort" data-sort="sort-name">Nom</button></th>
                                                     <th><button class="table-sort" data-sort="sort-domain">Domain</button></th>
@@ -104,6 +105,9 @@
                                                     <tr>
                                                         <td class="sort-doceboidorg">
                                                             {{$tenant->docebo_org_id}}
+                                                        </td>
+                                                        <td class="sort-zendeskidorg">
+                                                            {{$tenant->zendesk_org_id}}
                                                         </td>
                                                         <td class="sort-logo">
                                                             {{$tenant->company_code}}
@@ -211,6 +215,7 @@
             listClass: 'table-tbody',
             valueNames: [
                 'sort-doceboidorg',
+                'sort-zendeskidorg',
                 'sort-name',
                 'sort-subdomain',
                 {

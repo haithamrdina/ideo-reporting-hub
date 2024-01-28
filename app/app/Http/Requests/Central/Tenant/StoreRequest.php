@@ -27,11 +27,8 @@ class StoreRequest extends FormRequest
             'company_code' => 'required|string|max:255|unique:tenants,company_code',
             'company_name' => 'required|string|max:255',
             'docebo_org_id' => 'required|string|max:255|unique:tenants,docebo_org_id',
-            'subdomain' => 'required|string|max:255|unique:domains,domain',
-            'firstname' => 'required|string|max:255',
-            'lastname' => 'required|string|max:255',
-            'email' => 'required|email|max:255|unique:tenants,email',
-            'password' => ['required', 'confirmed', Rules\Password::defaults()]
+            'zendesk_org_id'  => 'required|string|max:255',
+            'subdomain' => 'required|string|max:255|unique:domains,domain'
         ];
     }
 }
