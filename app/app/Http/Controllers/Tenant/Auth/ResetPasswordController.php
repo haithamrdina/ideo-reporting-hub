@@ -28,7 +28,19 @@ class ResetPasswordController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/dashboard';
+    protected $redirectTo = '/plateforme/home';
+    protected function redirectTo()
+    {
+        $user = Auth::guard('user')->user();
+
+        if ($user->isPlateforme()) {
+            return '/plateforme/home';
+        } elseif ($user->isProject()) {
+            return '/project/home';
+        } elseif ($user->isGroup()) {
+            return '/group/home';
+        }
+    }
 
     /**
      * Create a new controller instance.

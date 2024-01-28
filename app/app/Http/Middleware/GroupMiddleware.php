@@ -15,7 +15,7 @@ class GroupMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (auth()->check() && auth()->user()->isGroup()) {
+        if (auth('user')->check() && auth('user')->user()->isGroup()) {
             return $next($request);
         }
 

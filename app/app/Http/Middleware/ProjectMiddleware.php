@@ -15,7 +15,7 @@ class ProjectMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (auth()->check() && auth()->user()->isProject()) {
+        if (auth('user')->check() && auth('user')->user()->isProject()) {
             return $next($request);
         }
 

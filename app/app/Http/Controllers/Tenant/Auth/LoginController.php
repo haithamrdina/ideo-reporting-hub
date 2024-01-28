@@ -27,7 +27,19 @@ class LoginController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/dashboard';
+    protected $redirectTo = '/plateforme/home';
+    protected function redirectTo()
+    {
+        $user = Auth::guard('user')->user();
+
+        if ($user->isPlateforme()) {
+            return '/plateforme/home';
+        } elseif ($user->isProject()) {
+            return '/project/home';
+        } elseif ($user->isGroup()) {
+            return '/group/home';
+        }
+    }
 
     /**
      * Create a new controller instance.
@@ -68,10 +80,27 @@ class LoginController extends Controller
     public function logout(Request $request)
     {
 
-        $this->guard()->logout();
+        $homeRoute = $this->getHomeRoute();  // Get the appropriate home route based on user's role
+        $this->guard('user')->logout();
 
         $request->session()->invalidate();
+        $request->session()->regenerate();  // Regenerate the session ID
 
-        return $this->loggedOut($request) ?: redirect()->route('tenant.home');
+
+        return $this->loggedOut($request) ?: redirect()->route($homeRoute);
+    }
+
+
+    protected function getHomeRoute()
+    {
+        $user = Auth::guard('user')->user();
+
+        if ($user->isPlateforme()) {
+            return 'tenant.plateforme.home';
+        } elseif ($user->isProject()) {
+            return 'tenant.project.home';
+        } elseif ($user->isGroup()) {
+            return 'tenant.group.home';
+        }
     }
 }

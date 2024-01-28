@@ -15,10 +15,12 @@ class PlateformeMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (auth()->check() && auth()->user()->isPlateforme()) {
+         // Use the `user` guard explicitly instead of the global `auth()` helper
+        if (auth('user')->check() && auth('user')->user()->isPlateforme()) {
             return $next($request);
         }
 
+        // If not authenticated or not a plateforme user, abort with a 403 error
         abort(403, 'Unauthorized');
     }
 }

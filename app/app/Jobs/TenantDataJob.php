@@ -40,7 +40,7 @@ class TenantDataJob implements ShouldQueue
 
             User::create([
                 'firstname' => $this->tenant->company_code,
-                'lastname' => 'Branche',
+                'lastname' => 'Project',
                 'email' => 'rproject@ideo-reporting.com',
                 'password' => Hash::make('password'),
                 'role' => UserRoleEnum::PROJECT,
@@ -49,7 +49,7 @@ class TenantDataJob implements ShouldQueue
 
             User::create([
                 'firstname' => $this->tenant->company_code,
-                'lastname' => 'Plateforme',
+                'lastname' => 'Group',
                 'email' => 'rgroup@ideo-reporting.com',
                 'password' => Hash::make('password'),
                 'role' => UserRoleEnum::GROUP,

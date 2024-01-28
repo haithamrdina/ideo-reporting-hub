@@ -8,6 +8,7 @@ use Illuminate\Routing\Controller;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Foundation\Auth\VerifiesEmails;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Support\Facades\Auth;
 
 class VerificationController extends Controller
 {
@@ -29,7 +30,19 @@ class VerificationController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/dashboard';
+    protected $redirectTo = '/plateforme/home';
+    protected function redirectTo()
+    {
+        $user = Auth::guard('user')->user();
+
+        if ($user->isPlateforme()) {
+            return '/plateforme/home';
+        } elseif ($user->isProject()) {
+            return '/project/home';
+        } elseif ($user->isGroup()) {
+            return '/group/home';
+        }
+    }
 
     /**
      * Create a new controller instance.

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Tenant\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\ConfirmsPasswords;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ConfirmPasswordController extends Controller
 {
@@ -26,7 +27,19 @@ class ConfirmPasswordController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/home';
+    protected $redirectTo = '/plateforme/home';
+    protected function redirectTo()
+    {
+        $user = Auth::guard('user')->user();
+
+        if ($user->isPlateforme()) {
+            return '/plateforme/home';
+        } elseif ($user->isProject()) {
+            return '/project/home';
+        } elseif ($user->isGroup()) {
+            return '/group/home';
+        }
+    }
 
     /**
      * Create a new controller instance.
