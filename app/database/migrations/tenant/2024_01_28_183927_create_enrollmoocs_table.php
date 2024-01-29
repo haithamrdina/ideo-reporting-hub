@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('mooc_docebo_id');
             $table->string('status')->nullable();
             $table->string('session_time')->nullable();
+            $table->string('cmi_time')->nullable();
             $table->string('calculated_time')->nullable();
             $table->string('recommended_time')->nullable();
             $table->timestamp('enrollment_created_at')->nullable();

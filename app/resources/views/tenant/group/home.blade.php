@@ -16,7 +16,7 @@
             IDEO Reporting
           </div>
           <h2 class="page-title">
-            Tableau de bord group
+            Vos données de progression sur la e-académie.
           </h2>
         </div>
       </div>
@@ -24,6 +24,7 @@
   </div>
 @stop
 @section('page-content')
+
 @stop
 @section('footer')
     @include('tenant.partials.footer.bottom')

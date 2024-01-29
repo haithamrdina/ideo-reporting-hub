@@ -49,7 +49,13 @@ class DoceboGroupeUsersList extends Request implements Paginatable
                 'creation_date' => $item['creation_date'],
                 'last_access_date' => $item['last_access_date'],
                 'statut' => $item['last_access_date'] != null ? 'active' : 'inactive',
-                'categorie' => $item['field_159']
+                'categorie' => $item['field_159'],
+                'cin' => $item['field_271'],
+                'matricule' => $item['field_1'],
+                'fonction' => $item['field_32'],
+                'pv' =>  $item['field_262'],
+                'sexe' => $item['field_240'],
+                'direction' =>$item['field_63'],
             ];
         }, $items);
 

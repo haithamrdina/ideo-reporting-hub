@@ -107,6 +107,13 @@ class TenancyServiceProvider extends ServiceProvider
 
         $this->makeTenancyMiddlewareHighestPriority();
         TenantAssetsController::$tenancyMiddleware = InitializeTenancyByDomainOrSubdomain::class;
+        \Stancl\Tenancy\Features\TenantConfig::$storageToConfigMap = [
+            'cmi_time' => 'features.cmi_time',
+            'calculated_time' => 'features.calculated_time',
+            'recommended_time' => 'features.recommended_time',
+            'inscription_stats_between_date_status' => 'features.inscription_stats_between_date.status',
+            'inscription_stats_between_date_start_date' => 'features.inscription_stats_between_date.status.start_date',
+        ];
     }
 
     protected function bootEvents()

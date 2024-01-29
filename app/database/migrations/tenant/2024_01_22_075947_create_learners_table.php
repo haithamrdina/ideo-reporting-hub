@@ -23,6 +23,12 @@ return new class extends Migration
             $table->string('creation_date')->nullable();
             $table->string('statut')->nullable();
             $table->string('categorie')->nullable();
+            $table->string('cin')->nullable();
+            $table->string('matricule')->nullable();
+            $table->string('fonction')->nullable();
+            $table->string('pv')->nullable();
+            $table->string('sexe')->nullable();
+            $table->string('direction')->nullable();
             $table->unsignedBigInteger('group_id');
             $table->foreign('group_id')->references('id')->on('groups')->onDelete('cascade');
             $table->unsignedBigInteger('project_id');

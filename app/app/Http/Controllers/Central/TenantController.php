@@ -29,6 +29,7 @@ use App\Models\Group;
 use App\Models\Langenroll;
 use App\Models\Learner;
 use App\Models\Lp;
+use App\Models\Lpenroll;
 use App\Models\Module;
 use App\Models\Mooc;
 use App\Models\Project;
@@ -77,14 +78,25 @@ class TenantController extends Controller
      */
     public function store(StoreRequest $request)
     {
+        $cmi = $request->has('cmi') ? true : false;
+        $calculated = $request->has('calculated') ? true : false;
+        $recommended = $request->has('recommended') ? true : false;
+        $datecontract = $request->has('date_contract') && $request->input('date_contract') !== null ? $request->input('date_contract') : null;
+        $inscriptionblock = $request->has('date_contract') && $request->input('date_contract') !== null ? true : false;
         $validated = $request->validated();
         $tenant = Tenant::create([
             'company_code' => $validated['company_code'],
             'company_name' => $validated['company_name'],
             'docebo_org_id' => $validated['docebo_org_id'],
-            'zendesk_org_id' => $validated['zendesk_org_id']
+            'zendesk_org_id' => $validated['zendesk_org_id'],
+            'cmi_time' => $cmi,
+            'calculated_time'=> $calculated ,
+            'recommended_time'=>   $recommended,
+            'inscription_stats_between_date_status'=>  $inscriptionblock ,
+            'inscription_stats_between_date_start_date'=>  $datecontract ,
         ]);
         $tenant->domains()->create(['domain' => $validated['subdomain']]);
+
         return redirect()->route('admin.tenants.index')->with('success', 'Tenant ajouté avec succès');
     }
 
@@ -410,5 +422,17 @@ class TenantController extends Controller
             ->get();
         tenancy()->end();
         return view('central.modules.digital', compact('tenant','enrollDigitals'));
+    }
+
+     /**
+     * get   Enrollements Moocs for the specified resource.
+     */
+    public function getEnrollsLps(string $id)
+    {
+        $tenant = Tenant::findOrFail($id);
+        tenancy()->initialize($tenant);
+            $enrollLps = Lpenroll::with('project', 'group', 'learner', 'lp')->get();
+        tenancy()->end();
+        return view('central.lps.enrollment', compact('tenant','enrollLps'));
     }
 }

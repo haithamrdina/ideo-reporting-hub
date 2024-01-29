@@ -62,12 +62,15 @@ class UpdateEnrollementMoocJob implements ShouldQueue
                         }else{
                             $calculated_time = $item['session_time'];
                         }
+                        $item['cmi_time'] = $item['session_time'];
                         $item['calculated_time'] = $calculated_time;
                         $item['recommended_time'] = $mooc->recommended_time;
 
                     }else{
+                        $item['session_time'] = 0;
+                        $item['cmi_time'] = 0;
                         $item['calculated_time'] = 0;
-                        $item['recommended_time'] = 0;
+                        $item['recommended_time'] = $mooc->recommended_time;
                     }
 
                     $item['group_id'] = $learner->group->id;
@@ -91,6 +94,7 @@ class UpdateEnrollementMoocJob implements ShouldQueue
                             'enrollment_updated_at',
                             'enrollment_completed_at',
                             'session_time',
+                            'cmi_time',
                             'calculated_time',
                             'recommended_time',
                             'group_id',

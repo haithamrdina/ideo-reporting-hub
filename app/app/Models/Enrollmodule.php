@@ -11,7 +11,8 @@ class Enrollmodule extends Model
 
     protected $fillable = [
         'project_id', 'group_id', 'learner_docebo_id', 'module_docebo_id',
-        'status', 'session_time',  'cmi_time', 'calculated_time', 'recommended_time',
+        'status',
+        'session_time',  'cmi_time', 'calculated_time', 'recommended_time',
         'enrollment_created_at', 'enrollment_updated_at', 'enrollment_completed_at',
     ];
 

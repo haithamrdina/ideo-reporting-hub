@@ -65,11 +65,26 @@ class UpdateEnrollementLangueJob implements ShouldQueue
 
                             $speexResponse = $speexConnector->send(new SpeexUserArticleResult($speexId, $articleId));
                             $speexReponseData = $speexResponse->dto();
+
                             $item['cmi_time'] = $speexReponseData['time'];
                             $item['niveau'] = $speexReponseData['niveau'];
+
+                            if($item['status'] == 'completed'){
+                                $calculated_time = $this->getRecommendedTimeByNiveauSpeex($speexReponseData['niveau']);
+                            }elseif($item['status'] == 'in_progress' && $speexReponseData['time'] > $this->getRecommendedTimeByNiveauSpeex($speexReponseData['niveau'])){
+                                $calculated_time = $this->getRecommendedTimeByNiveauSpeex($speexReponseData['niveau']);
+                            }else{
+                                $calculated_time = $speexReponseData['time'];
+                            }
+
+                            $item['calculated_time'] = $calculated_time;
+                            $item['recommended_time'] = $this->getRecommendedTimeByNiveauSpeex($speexReponseData['niveau']);
                         }else{
-                            $item['cmi_time'] = 0;
                             $item['niveau'] = null;
+                            $item['session_time'] = 0;
+                            $item['cmi_time'] = 0;
+                            $item['calculated_time'] = 0;
+                            $item['recommended_time'] = $this->getRecommendedTimeByNiveauSpeex(NULL);
 
                         }
 
@@ -95,6 +110,8 @@ class UpdateEnrollementLangueJob implements ShouldQueue
                                 'language',
                                 'session_time',
                                 'cmi_time',
+                                'calculated_time',
+                                'recommended_time',
                                 'group_id',
                                 'project_id',
                                 ]
@@ -103,5 +120,26 @@ class UpdateEnrollementLangueJob implements ShouldQueue
                 }
             }
         tenancy()->end();
+    }
+
+    protected function getRecommendedTimeByNiveauSpeex($niveau)
+    {
+        $multipliers = [
+            'A1' => 1,
+            'A2' => 2,
+            'B1.1' => 3,
+            'B1.2' => 4,
+            'B2.1' => 5,
+            'B2.2' => 6,
+            'C1.1' => 7,
+            'C1.2' => 8
+        ];
+
+        if (isset($multipliers[$niveau])) {
+            $recommendedTime = 32400 * $multipliers[$niveau];
+            return $recommendedTime;
+        }
+
+        return 32400;
     }
 }
