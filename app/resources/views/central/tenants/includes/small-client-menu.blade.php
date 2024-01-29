@@ -1,5 +1,5 @@
 <div class="nav-item dropdown">
-    <a href="#" class="nav-link d-flex lh-1 btn btn-yellow text-dark d-sm-none btn-icon text-reset p-0 show"
+    <a href="javascript:void(0)" class="nav-link d-flex lh-1 btn btn-yellow text-dark d-sm-none btn-icon text-reset p-0 show"
         data-bs-toggle="dropdown" aria-label="Open user menu" aria-expanded="true">
         <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-adjustments-alt" width="24"
             height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
@@ -18,13 +18,13 @@
     </a>
     <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow bg-yellow" data-bs-popper="static">
         <h6 class="dropdown-header text-blue">OVERVIEW</h6>
-        <a href="#" class="dropdown-item">Tableau de bord</a>
+        <a href="{{ route('admin.tenants.show',['tenant' => $tenant->id]) }}" class="dropdown-item">Tableau de bord</a>
         <h6 class="dropdown-header text-blue">UTILISATEURS</h6>
-        <a href="#" class="dropdown-item">Projets</a>
-        <a href="#" class="dropdown-item">Groupes</a>
-        <a href="#" class="dropdown-item">Apprenants</a>
+        <a href="{{ route('admin.tenants.projects',['tenant' => $tenant->id]) }}" class="dropdown-item">Projets</a>
+        <a href="{{ route('admin.tenants.groups',['tenant' => $tenant->id]) }}" class="dropdown-item">Groupes</a>
+        <a href="{{ route('admin.tenants.learners',['tenant' => $tenant->id]) }}" class="dropdown-item">Apprenants</a>
         <h6 class="dropdown-header text-blue">E-LEARNING</h6>
-        <a href="#" class="dropdown-item">Plans de formation</a>
+        <a href="{{ route('admin.tenants.lps',['tenant' => $tenant->id]) }}" class="dropdown-item">Plans de formation</a>
         <a href="#" class="dropdown-item">Modules</a>
         <a href="#" class="dropdown-item">Mooc</a>
         <h6 class="dropdown-header text-blue">INSCRIPTIONS</h6>

@@ -15,7 +15,7 @@
         <div class="collapse navbar-collapse" id="navbar-menu">
             <div class="d-flex flex-column flex-md-row flex-fill align-items-stretch align-items-md-center">
                 <ul class="navbar-nav">
-                    {{-- @include('tenant.partials.navbar.menu') --}}
+                    @include('tenant.partials.navbar.menu')
                 </ul>
             </div>
         </div>

@@ -16,7 +16,7 @@
             IDEO Reporting
           </div>
           <h2 class="page-title">
-            Tableau de bord branche
+            Tableau de bord projects
           </h2>
         </div>
       </div>

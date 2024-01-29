@@ -16,7 +16,7 @@
             IDEO Reporting
           </div>
           <h2 class="page-title">
-            Tableau de bord group
+            Tableau de bord plateforme - projects
           </h2>
         </div>
       </div>
