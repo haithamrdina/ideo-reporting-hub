@@ -23,7 +23,10 @@ use App\Jobs\UpdateModuleJob;
 use App\Jobs\UpdateMoocJob;
 use App\Jobs\UpdateTicketJob;
 use App\Models\Call;
+use App\Models\Enrollmodule;
+use App\Models\Enrollmooc;
 use App\Models\Group;
+use App\Models\Langenroll;
 use App\Models\Learner;
 use App\Models\Lp;
 use App\Models\Module;
@@ -162,8 +165,8 @@ class TenantController extends Controller
         return redirect()->route('admin.tenants.show' , ['tenant' => $tenant]);
     }
 
-     /**
-     * Update Groups for the specified resource.
+    /**
+     * GET Groups for the specified resource.
      */
     public function getGroups(string $id)
     {
@@ -172,6 +175,78 @@ class TenantController extends Controller
             $groupes = Group::all();
         tenancy()->end();
         return view('central.groups.index', compact('tenant', 'groupes'));
+    }
+
+    /**
+     * GET learners for the specified resource.
+     */
+    public function getLearners(string $id)
+    {
+        $tenant = Tenant::findOrFail($id);
+        tenancy()->initialize($tenant);
+            $learners = Learner::with('project', 'group')->get();
+        tenancy()->end();
+        return view('central.learners.index', compact('tenant', 'learners'));
+    }
+
+    /**
+     * GET Lps for the specified resource.
+     */
+    public function getLps(string $id)
+    {
+        $tenant = Tenant::findOrFail($id);
+        tenancy()->initialize($tenant);
+            $lps = Lp::all();
+        tenancy()->end();
+        return view('central.lps.index', compact('tenant', 'lps'));
+    }
+
+    /**
+     * GET Modules for the specified resource.
+     */
+    public function getModules(string $id)
+    {
+        $tenant = Tenant::findOrFail($id);
+        tenancy()->initialize($tenant);
+            $modules = Module::where('status', CourseStatusEnum::ACTIVE)->get();
+        tenancy()->end();
+        return view('central.modules.index', compact('tenant', 'modules'));
+    }
+
+    /**
+     * GET Moocs for the specified resource.
+     */
+    public function getMoocs(string $id)
+    {
+        $tenant = Tenant::findOrFail($id);
+        tenancy()->initialize($tenant);
+            $moocs = Mooc::all();
+        tenancy()->end();
+        return view('central.moocs.index', compact('tenant', 'moocs'));
+    }
+
+    /**
+     * GET Tickets for the specified resource.
+     */
+    public function getTickets(string $id)
+    {
+        $tenant = Tenant::findOrFail($id);
+        tenancy()->initialize($tenant);
+            $tickets = Ticket::with('project', 'group', 'learner')->get();
+        tenancy()->end();
+        return view('central.tickets.index', compact('tenant', 'tickets'));
+    }
+
+    /**
+     * GET Calls for the specified resource.
+     */
+    public function getCalls(string $id)
+    {
+        $tenant = Tenant::findOrFail($id);
+        tenancy()->initialize($tenant);
+            $calls = Call::with('project', 'group', 'learner')->get();
+        tenancy()->end();
+        return view('central.calls.index', compact('tenant', 'calls'));
     }
 
     /**
@@ -256,7 +331,7 @@ class TenantController extends Controller
     }
 
 
-     /**
+    /**
      * Update  Enrollements langues for the specified resource.
      */
     public function majEnrollsMoocs(string $id)
@@ -274,5 +349,66 @@ class TenantController extends Controller
         $tenant = Tenant::findOrFail($id);
         UpdateEnrollementsLpsJob::dispatch($id);
         return redirect()->route('admin.tenants.show' , ['tenant' => $tenant]);
+    }
+
+    /**
+     * get   Enrollements Moocs for the specified resource.
+     */
+    public function getEnrollsMoocs(string $id)
+    {
+        $tenant = Tenant::findOrFail($id);
+        tenancy()->initialize($tenant);
+            $enrollMoocs = Enrollmooc::with('project', 'group', 'learner', 'mooc')->get();
+        tenancy()->end();
+        return view('central.moocs.enrollment', compact('tenant','enrollMoocs'));
+    }
+
+    /**
+     * get   Enrollements Langues for the specified resource.
+     */
+    public function getEnrollsLangues(string $id)
+    {
+        $tenant = Tenant::findOrFail($id);
+        tenancy()->initialize($tenant);
+            $enrollLangues = Langenroll::with('project', 'group', 'learner', 'module')
+            ->whereHas('module', function ($query) {
+                $query->where(['category' => 'SPEEX' , 'status' => 1 ]);
+            })
+            ->get();
+        tenancy()->end();
+        return view('central.modules.langue', compact('tenant','enrollLangues'));
+    }
+
+    /**
+     * get Enrollements Softskills for the specified resource.
+     */
+    public function getEnrollsSoftskills(string $id)
+    {
+        $tenant = Tenant::findOrFail($id);
+        tenancy()->initialize($tenant);
+            $enrollSoftskills = Enrollmodule::with('project', 'group', 'learner', 'module')
+            ->whereHas('module', function ($query) {
+                $query->where(['category' => 'CEGOS' , 'status' => 1 ]);
+            })
+            ->get();
+        tenancy()->end();
+        return view('central.modules.softskills', compact('tenant','enrollSoftskills'));
+    }
+
+
+    /**
+     * get Enrollements Digitals for the specified resource.
+     */
+    public function getEnrollsDigitals(string $id)
+    {
+        $tenant = Tenant::findOrFail($id);
+        tenancy()->initialize($tenant);
+            $enrollDigitals = Enrollmodule::with('project', 'group', 'learner', 'module')
+            ->whereHas('module', function ($query) {
+                $query->where(['category' => 'ENI' , 'status' => 1 ]);
+            })
+            ->get();
+        tenancy()->end();
+        return view('central.modules.digital', compact('tenant','enrollDigitals'));
     }
 }

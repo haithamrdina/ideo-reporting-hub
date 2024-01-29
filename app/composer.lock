@@ -2105,16 +2105,16 @@
         },
         {
             "name": "league/mime-type-detection",
-            "version": "1.14.0",
+            "version": "1.15.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/mime-type-detection.git",
-                "reference": "b6a5854368533df0295c5761a0253656a2e52d9e"
+                "reference": "ce0f4d1e8a6f4eb0ddff33f57c69c50fd09f4301"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/mime-type-detection/zipball/b6a5854368533df0295c5761a0253656a2e52d9e",
-                "reference": "b6a5854368533df0295c5761a0253656a2e52d9e",
+                "url": "https://api.github.com/repos/thephpleague/mime-type-detection/zipball/ce0f4d1e8a6f4eb0ddff33f57c69c50fd09f4301",
+                "reference": "ce0f4d1e8a6f4eb0ddff33f57c69c50fd09f4301",
                 "shasum": ""
             },
             "require": {
@@ -2145,7 +2145,7 @@
             "description": "Mime-type detection for Flysystem",
             "support": {
                 "issues": "https://github.com/thephpleague/mime-type-detection/issues",
-                "source": "https://github.com/thephpleague/mime-type-detection/tree/1.14.0"
+                "source": "https://github.com/thephpleague/mime-type-detection/tree/1.15.0"
             },
             "funding": [
                 {
@@ -2157,7 +2157,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-10-17T14:13:20+00:00"
+            "time": "2024-01-28T23:22:08+00:00"
         },
         {
             "name": "monolog/monolog",
@@ -4071,25 +4071,25 @@
         },
         {
             "name": "stancl/jobpipeline",
-            "version": "v1.6.2",
+            "version": "v1.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/archtechx/jobpipeline.git",
-                "reference": "bfc53f6dd6c7de79e881b306fa1081e58e5c3c54"
+                "reference": "36474ffd2180170856fd05f6003c946064959629"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/archtechx/jobpipeline/zipball/bfc53f6dd6c7de79e881b306fa1081e58e5c3c54",
-                "reference": "bfc53f6dd6c7de79e881b306fa1081e58e5c3c54",
+                "url": "https://api.github.com/repos/archtechx/jobpipeline/zipball/36474ffd2180170856fd05f6003c946064959629",
+                "reference": "36474ffd2180170856fd05f6003c946064959629",
                 "shasum": ""
             },
             "require": {
-                "illuminate/support": "^9.0|^10.0",
+                "illuminate/support": "^9.0|^10.0|^11.0",
                 "php": "^8.0"
             },
             "require-dev": {
                 "ext-redis": "*",
-                "orchestra/testbench": "^7.0|^8.0",
+                "orchestra/testbench": "^7.0|^8.0|^9.0",
                 "spatie/valuestore": "^1.2"
             },
             "type": "library",
@@ -4111,9 +4111,9 @@
             "description": "Turn any series of jobs into Laravel listeners.",
             "support": {
                 "issues": "https://github.com/archtechx/jobpipeline/issues",
-                "source": "https://github.com/archtechx/jobpipeline/tree/v1.6.2"
+                "source": "https://github.com/archtechx/jobpipeline/tree/v1.7.0"
             },
-            "time": "2023-02-16T10:43:17+00:00"
+            "time": "2024-01-27T22:01:45+00:00"
         },
         {
             "name": "stancl/tenancy",
@@ -4200,24 +4200,24 @@
         },
         {
             "name": "stancl/virtualcolumn",
-            "version": "v1.3.1",
+            "version": "v1.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/archtechx/virtualcolumn.git",
-                "reference": "0b108903b51711ff9f0357458dc3eb03398eb894"
+                "reference": "7371aac2abf22b8b95718b4e904aed900d97f1e3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/archtechx/virtualcolumn/zipball/0b108903b51711ff9f0357458dc3eb03398eb894",
-                "reference": "0b108903b51711ff9f0357458dc3eb03398eb894",
+                "url": "https://api.github.com/repos/archtechx/virtualcolumn/zipball/7371aac2abf22b8b95718b4e904aed900d97f1e3",
+                "reference": "7371aac2abf22b8b95718b4e904aed900d97f1e3",
                 "shasum": ""
             },
             "require": {
-                "illuminate/database": "^9.0|^10.0",
-                "illuminate/support": "^9.0|^10.0"
+                "illuminate/database": "^9.0|^10.0|^11.0",
+                "illuminate/support": "^9.0|^10.0|^11.0"
             },
             "require-dev": {
-                "orchestra/testbench": "^7.0|^8.0"
+                "orchestra/testbench": "^7.0|^8.0|^9.0"
             },
             "type": "library",
             "autoload": {
@@ -4238,9 +4238,9 @@
             "description": "Eloquent virtual column.",
             "support": {
                 "issues": "https://github.com/archtechx/virtualcolumn/issues",
-                "source": "https://github.com/archtechx/virtualcolumn/tree/v1.3.1"
+                "source": "https://github.com/archtechx/virtualcolumn/tree/v1.4.0"
             },
-            "time": "2023-02-16T10:34:42+00:00"
+            "time": "2024-01-27T21:49:31+00:00"
         },
         {
             "name": "symfony/console",

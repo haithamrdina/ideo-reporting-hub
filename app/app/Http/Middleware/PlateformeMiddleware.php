@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
 class PlateformeMiddleware
@@ -15,12 +16,22 @@ class PlateformeMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-         // Use the `user` guard explicitly instead of the global `auth()` helper
-        if (auth('user')->check() && auth('user')->user()->isPlateforme()) {
+        if (!Auth::guard('user')->check()) {
+            return redirect()->route('tenant.login');
+        }
+
+        if (Auth::guard('user')->user()->isPlateforme()) {
             return $next($request);
         }
 
-        // If not authenticated or not a plateforme user, abort with a 403 error
+        if (Auth::guard('user')->user()->isProject()) {
+            return redirect()->route('tenant.project.home');
+        }
+
+        if (Auth::guard('user')->user()->isGroup()) {
+            return redirect()->route('tenant.group.home');
+        }
+
         abort(403, 'Unauthorized');
     }
 }

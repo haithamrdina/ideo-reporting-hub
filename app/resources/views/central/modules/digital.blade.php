@@ -16,7 +16,7 @@
                        Gestion des tenants
                     </div>
                     <h2 class="page-title">
-                        Groupes
+                        Modules
                     </h2>
                 </div>
                 <div class="col-auto ms-auto d-print-none">
@@ -43,11 +43,11 @@
                         <div>
                             <div class="row align-items-center p-2 m-2">
                                 <div class="col-auto">
-                                    <h2>Liste des groupes</h2>
+                                    <h2>Liste des inscriptions aux modules digitals</h2>
                                 </div>
                             </div>
                             <div>
-                                <div id="table-groupes" class="table-responsive">
+                                <div id="table-enrolldigitals" class="table-responsive">
                                     <div class="card-body border-bottom py-3">
                                         <div class="d-flex">
                                             <div class="text-muted">
@@ -55,7 +55,7 @@
                                                 <div class="mx-2 d-inline-block">
                                                     <div class="mx-2 d-inline-block">
                                                         <select class="form-select h-5" id="listjs-items-per-page">
-                                                            <option value="13" selected>13</option>
+                                                            <option value="17" selected>17</option>
                                                             <option value="25">25</option>
                                                             <option value="50">50</option>
                                                             <option value="100">100</option>
@@ -76,60 +76,61 @@
                                         <table class="table card-table table-vcenter text-nowrap datatable">
                                             <thead>
                                                 <tr>
-                                                    <th><button class="table-sort" data-sort="sort-doceboid">ID docebo</button></th>
-                                                    <th><button class="table-sort" data-sort="sort-code">Code du groupe</button></th>
-                                                    <th><button class="table-sort" data-sort="sort-name">Nom du groupe</button></th>
+                                                    <th><button class="table-sort" data-sort="sort-project">Projet</button></th>
+                                                    <th><button class="table-sort" data-sort="sort-group">Groupe</button></th>
+                                                    <th><button class="table-sort" data-sort="sort-username">Username</button></th>
+                                                    <th><button class="table-sort" data-sort="sort-module">Module</button></th>
                                                     <th><button class="table-sort" data-sort="sort-status">Statut</button></th>
-                                                    <th class="text-end">Actions</th>
+                                                    <th><button class="table-sort" data-sort="sort-session">Temps de session</button></th>
+                                                    <th><button class="table-sort" data-sort="sort-cmi">Temps d'engagement</button></th>
+                                                    <th><button class="table-sort" data-sort="sort-calculated">Temps calculé</button></th>
+                                                    <th><button class="table-sort" data-sort="sort-recommended">Temps pédagogique recommandé</button></th>
+                                                    <th><button class="table-sort" data-sort="sort-created">date de création</button></th>
+                                                    <th><button class="table-sort" data-sort="sort-updated">date du dernière modification</button></th>
+                                                    <th><button class="table-sort" data-sort="sort-completed">date du completion</button></th>
                                                 </tr>
                                             </thead>
                                             <tbody class="table-tbody">
                                                 @php
                                                     use Carbon\Carbon;
                                                 @endphp
-                                                @if (count($groupes) > 0)
-                                                    @foreach ($groupes as $groupe)
-                                                            <td class="sort-doceboid">
-                                                                {{ $groupe->docebo_id}}
+                                                @if (count($enrollDigitals) > 0)
+                                                    @foreach ($enrollDigitals as $enroll)
+                                                            <td class="sort-project">
+                                                                {{ $enroll->project->name}}
                                                             </td>
-                                                            <td class="sort-code">
-                                                                {{ $groupe->code}}
+                                                            <td class="sort-group">
+                                                                {{ $enroll->group->name}}
                                                             </td>
-                                                            <td class="sort-name">
-                                                                {{ $groupe->name}}
+                                                            <td class="sort-username">
+                                                                {{ $enroll->learner->username}}
+                                                            </td>
+                                                            <td class="sort-module">
+                                                                {{ $enroll->module->name}}
                                                             </td>
                                                             <td class="sort-status">
-                                                                @if($groupe->status->value == 1)
-                                                                    <span class="badge badge-outline text-green">active</span>
-                                                                @else
-                                                                    <span class="badge badge-outline text-red">inactive</span>
-                                                                @endif
+                                                                {{ $enroll->status}}
                                                             </td>
-                                                            <td class="text-end">
-                                                                <a href="{{ route('admin.tenants.groups.edit', ['tenant' => $tenant->id, 'group' => $groupe->id]) }}" class="btn btn-primary btn-icon"
-                                                                    data-bs-toggle="tooltip" data-bs-placement="top"
-                                                                    title="{{ $groupe->status->value == 1 ? 'désactiver ce groupe' : 'activer ce groupe' }}">
-                                                                    @if($groupe->status->value == 1)
-                                                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-binary" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                                                                            <path d="M11 10v-5h-1m8 14v-5h-1" />
-                                                                            <path d="M15 5m0 .5a.5 .5 0 0 1 .5 -.5h2a.5 .5 0 0 1 .5 .5v4a.5 .5 0 0 1 -.5 .5h-2a.5 .5 0 0 1 -.5 -.5z" />
-                                                                            <path d="M10 14m0 .5a.5 .5 0 0 1 .5 -.5h2a.5 .5 0 0 1 .5 .5v4a.5 .5 0 0 1 -.5 .5h-2a.5 .5 0 0 1 -.5 -.5z" />
-                                                                            <path d="M6 10h.01m-.01 9h.01" />
-                                                                        </svg>
-                                                                    @else
-                                                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-binary-off" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                                                                            <path d="M11 7v-2h-1" />
-                                                                            <path d="M18 19v-1" />
-                                                                            <path d="M15.5 5h2a.5 .5 0 0 1 .5 .5v4a.5 .5 0 0 1 -.5 .5h-2a.5 .5 0 0 1 -.5 -.5v-4a.5 .5 0 0 1 .5 -.5z" />
-                                                                            <path d="M10.5 14h2a.5 .5 0 0 1 .5 .5v4a.5 .5 0 0 1 -.5 .5h-2a.5 .5 0 0 1 -.5 -.5v-4a.5 .5 0 0 1 .5 -.5z" />
-                                                                            <path d="M6 10v.01" />
-                                                                            <path d="M6 19v.01" />
-                                                                            <path d="M3 3l18 18" />
-                                                                        </svg>
-                                                                    @endif
-                                                                </a>
+                                                            <td class="sort-session">
+                                                                {{ $enroll->session_time}}
+                                                            </td>
+                                                            <td class="sort-cmi">
+                                                                {{ $enroll->cmi_time}}
+                                                            </td>
+                                                            <td class="sort-calculated">
+                                                                {{ $enroll->calculated_time}}
+                                                            </td>
+                                                            <td class="sort-recommended">
+                                                                {{ $enroll->recommended_time}}
+                                                            </td>
+                                                            <td class="sort-created" data-created="{{ date('U', strtotime($enroll->enrollment_created_at)) }}">
+                                                                {{ date('d-m-Y H:i:s', strtotime($enroll->enrollment_created_at)) }}
+                                                            </td>
+                                                            <td class="sort-updated" data-updated="{{ date('U', strtotime($enroll->enrollment_updated_at)) }}">
+                                                                {{ $enroll->enrollment_updated_at != null ?  date('d-m-Y H:i:s', strtotime($enroll->enrollment_updated_at)) : '******' }}
+                                                            </td>
+                                                            <td class="sort-completed" data-completed="{{ date('U', strtotime($enroll->enrollment_completed_at)) }}">
+                                                                {{ $enroll->enrollment_completed_at != null ?  date('d-m-Y H:i:s', strtotime($enroll->enrollment_completed_at)) : '******' }}
                                                             </td>
                                                         </tr>
                                                     @endforeach
@@ -172,12 +173,30 @@
             sortClass: 'table-sort',
             listClass: 'table-tbody',
             valueNames: [
-                'sort-doceboid',
-                'sort-code',
-                'sort-name',
+                'sort-project',
+                'sort-group',
+                'sort-username',
+                'sort-module',
                 'sort-status',
+                'sort-session',
+                'sort-cmi',
+                'sort-caclulated',
+                'sort-recommended',
+                {
+                    attr: 'data-created',
+                    name: 'sort-created'
+                },
+                {
+                    attr: 'data-updated',
+                    name: 'sort-updated'
+                }
+                ,
+                {
+                    attr: 'data-completed',
+                    name: 'sort-completed'
+                }
             ],
-            page: 13,
+            page: 17,
             pagination: [{
                 name: "pagination",
                 paginationClass: "pagination",
@@ -186,7 +205,7 @@
                 item: '<li class="page-item"><a class="btn btn-icon btn-red mx-1 page" href="#"></a></li>'
             }]
         };
-        var listjs = new List('table-groupes', options);
+        var listjs = new List('table-enrolldigitals', options);
         var listjsItemsPerPage = document.getElementById('listjs-items-per-page');
         if(listjsItemsPerPage != null){
             listjsItemsPerPage.addEventListener('change', function(e) {

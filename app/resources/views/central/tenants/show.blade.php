@@ -16,7 +16,7 @@
                        Gestion des tenants
                     </div>
                     <h2 class="page-title">
-                        Gérer votre Tenant
+                        Tableau de bord
                     </h2>
                 </div>
                 <div class="col-auto ms-auto d-print-none">

@@ -15,13 +15,6 @@ class Enrollmodule extends Model
         'enrollment_created_at', 'enrollment_updated_at', 'enrollment_completed_at',
     ];
 
-    // Cast timestamp columns to datetime
-    protected $casts = [
-        'enrollment_created_at' => 'datetime',
-        'enrollment_updated_at' => 'datetime',
-        'enrollment_completed_at' => 'datetime',
-    ];
-
     public function project()
     {
         return $this->belongsTo(Project::class);
