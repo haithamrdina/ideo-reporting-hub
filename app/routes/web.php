@@ -39,43 +39,6 @@ use Illuminate\Support\Facades\Route;
 */
 
 
-
-
-Route::get('/lp', function () {
-    $tenant = Tenant::find('523badfa-3d62-475c-bbe8-4fdf2bcaed1b');
-    tenancy()->initialize($tenant);
-        $doceboConnector = new DoceboConnector();
-        $LpEnrollmentsService = new LpEnrollmentsService();
-
-        $fields = config('tenantconfigfields.enrollmentfields');
-        $enrollFields = $LpEnrollmentsService->getEnrollmentsFields($fields);
-
-        $lpsDoceboIds = Lp::pluck('docebo_id')->toArray();
-
-        $request = new DoceboLpsEnrollements($lpsDoceboIds);
-        $lpenrollsResponses = $doceboConnector->paginate($request);
-        $results = [];
-        foreach($lpenrollsResponses as $md){
-            $data = $md->dto();
-            $results = array_merge($results, $data);
-        }
-        if(!empty($results)){
-            $result = $LpEnrollmentsService->getEnrollmentsList($results, $fields);
-            dd($result);
-            /*if(count($result) > 1000)
-            {
-                $batchData = array_chunk(array_filter($result), 1000);
-                foreach($batchData as $data){
-                    $LpEnrollmentsService->batchInsert($data, $enrollFields);
-                }
-            }else{
-                $LpEnrollmentsService->batchInsert($result, $enrollFields);
-            }*/
-        }
-    tenancy()->end();
-    return view('welcome');
-});
-
 Route::name('admin.')->group(function () {
     require __DIR__.'/central-auth.php';
 
