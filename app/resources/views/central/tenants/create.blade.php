@@ -313,4 +313,32 @@
             }));
         });
     </script>
+    <script>
+
+        var cbCmi = document.getElementById('cmi_time');
+        var cbCalculated = document.getElementById('calculated_time');
+        var cbRecommended = document.getElementById('recommended_time');
+        cbCalculated.addEventListener('change', function() {
+            if (cbCalculated.checked) {
+                cbCmi.checked = true;
+                cbCalculated.checked = true;
+                cbRecommended.checked = true;
+            } else {
+                cbCalculated.checked = false;;
+            }
+        });
+
+        cbCmi.addEventListener('change', function () {
+            if (!cbCmi.checked) {
+                cbCalculated.checked = false;
+            }
+        });
+
+        cbRecommended.addEventListener('change', function () {
+            if (!cbRecommended.checked) {
+                cbCalculated.checked = false;
+            }
+        });
+
+    </script>
 @stop
