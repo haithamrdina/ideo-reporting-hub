@@ -35,19 +35,23 @@ use App\Models\Mooc;
 use App\Models\Project;
 use App\Models\Tenant;
 use App\Models\Ticket;
+use App\Services\UserFieldsService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rules;
 
 class TenantController extends Controller
 {
+
+    protected $userFieldsService;
     /**
      * Create a new controller instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(UserFieldsService $userFieldsService)
     {
         $this->middleware('admin.auth:admin');
+        $this->userFieldsService = $userFieldsService;
     }
 
     /**
@@ -78,22 +82,48 @@ class TenantController extends Controller
      */
     public function store(StoreRequest $request)
     {
-        $cmi = $request->has('cmi') ? true : false;
-        $calculated = $request->has('calculated') ? true : false;
-        $recommended = $request->has('recommended') ? true : false;
-        $datecontract = $request->has('date_contract') && $request->input('date_contract') !== null ? $request->input('date_contract') : null;
-        $inscriptionblock = $request->has('date_contract') && $request->input('date_contract') !== null ? true : false;
+
+        $contract_start_date = $request->has('contract_start_date') && $request->input('contract_start_date') !== null ? $request->input('contract_start_date') : null;
+
+        $matricule = $request->has('matricule') ? true : false;
+        $fonction = $request->has('fonction') ? true : false;
+        $direction = $request->has('direction') ? true : false;
+        $categorie = $request->has('categorie') ? true : false;
+        $sexe = $request->has('sexe') ? true : false;
+        $cin = $request->has('cin') ? true : false;
+
+        $cmi_time = $request->has('cmi_time') ? true : false;
+        $recommended_time = $request->has('recommended_time') ? true : false;
+
+        if($request->has('calculated_time')){
+            $cmi_time = true;
+            $calculated_time = true;
+            $recommended_time = true;
+        }else{
+            $calculated_time = false;
+        }
+
+
+
         $validated = $request->validated();
         $tenant = Tenant::create([
             'company_code' => $validated['company_code'],
             'company_name' => $validated['company_name'],
             'docebo_org_id' => $validated['docebo_org_id'],
             'zendesk_org_id' => $validated['zendesk_org_id'],
-            'cmi_time' => $cmi,
-            'calculated_time'=> $calculated ,
-            'recommended_time'=>   $recommended,
-            'inscription_stats_between_date_status'=>  $inscriptionblock ,
-            'inscription_stats_between_date_start_date'=>  $datecontract ,
+
+            'contract_start_date'=> $contract_start_date,
+
+            'matricule' => $matricule,
+            'fonction'=> $fonction ,
+            'direction'=> $direction,
+            'categorie' => $categorie,
+            'sexe'=> $sexe ,
+            'cin'=> $cin,
+
+            'cmi_time' => $cmi_time,
+            'calculated_time'=> $calculated_time ,
+            'recommended_time'=> $recommended_time,
         ]);
         $tenant->domains()->create(['domain' => $validated['subdomain']]);
 
@@ -267,7 +297,10 @@ class TenantController extends Controller
     public function majLearners(string $id)
     {
         $tenant = Tenant::findOrFail($id);
-        UpdateLearnerJob::dispatch($id);
+        tenancy()->initialize($tenant);
+            $userfields = config('tenantconfigfields.userfields');
+        tenancy()->end();
+        UpdateLearnerJob::dispatch($this->userFieldsService, $id,$userfields);
         return redirect()->route('admin.tenants.show' , ['tenant' => $tenant]);
     }
 

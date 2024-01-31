@@ -8,6 +8,7 @@ use App\Models\Enrollmooc;
 use App\Models\Learner;
 use App\Models\Mooc;
 use App\Models\Tenant;
+use App\Services\MoocEnrollmentsService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -36,74 +37,42 @@ class UpdateEnrollementMoocJob implements ShouldQueue
     {
         $tenant = Tenant::find($this->tenantId);
         tenancy()->initialize($tenant);
+
+            // Initialize all neccessary Service
             $doceboConnector = new DoceboConnector();
+            $moocEnrollmentsService = new MoocEnrollmentsService();
+
+            //Define Enrollments Fields
+            $fields = config('tenantconfigfields.enrollmentfields');
+            $enrollFields = $moocEnrollmentsService->getEnrollmentsFields($fields);
+
+            // GET Enrollements List DATA
             $moocsDoceboIds = Mooc::pluck('docebo_id')->toArray();
             $moocsDoceboIds = array_chunk($moocsDoceboIds , 100);
-            $result = [];
+            $results = [];
             foreach($moocsDoceboIds as $moocsDoceboId){
                 $request = new DoceboMoocsEnrollements($moocsDoceboId);
                 $mdenrollsResponses = $doceboConnector->paginate($request);
                 foreach($mdenrollsResponses as $md){
                     $data = $md->dto();
-                    $result = array_merge($result, $data);
+                    $results = array_merge($results, $data);
                 }
-
             }
-            $result = array_map(function ($item){
-                $learner = Learner::where('docebo_id' , $item['learner_docebo_id'])->first();
-                $mooc = Mooc::where('docebo_id' , $item['mooc_docebo_id'])->first();
-                if($learner){
-                    if($item['status'] != 'enrolled' || $item['status'] != 'waiting' )
-                    {
-                        if($item['status'] == 'completed'){
-                            $calculated_time = $mooc->recommended_time;
-                        }elseif($item['status'] == 'in_progress' && $item['session_time'] > $mooc->recommended_time){
-                            $calculated_time = $mooc->recommended_time;
-                        }else{
-                            $calculated_time = $item['session_time'];
-                        }
-                        $item['cmi_time'] = $item['session_time'];
-                        $item['calculated_time'] = $calculated_time;
-                        $item['recommended_time'] = $mooc->recommended_time;
 
-                    }else{
-                        $item['session_time'] = 0;
-                        $item['cmi_time'] = 0;
-                        $item['calculated_time'] = 0;
-                        $item['recommended_time'] = $mooc->recommended_time;
+            // BATCH insert DATA
+            if(!empty($results)){
+                $result = $moocEnrollmentsService->getEnrollmentsList($results, $fields);
+                if(count($result) > 1000)
+                {
+                    $batchData = array_chunk(array_filter($result), 1000);
+                    foreach($batchData as $data){
+                        $moocEnrollmentsService->batchInsert($data, $enrollFields);
                     }
-
-                    $item['group_id'] = $learner->group->id;
-                    $item['project_id'] = $learner->project->id;
-                    return $item;
+                }else{
+                    $moocEnrollmentsService->batchInsert($result, $enrollFields);
                 }
-            }, $result);
+            }
 
-            $result = array_chunk(array_filter($result), 1000);
-            $upsertFunction = function ($chunk) {
-                DB::transaction(function () use ($chunk) {
-                    Enrollmooc::upsert(
-                        $chunk,
-                        [
-                            'learner_docebo_id',
-                            'mooc_docebo_id',
-                        ],
-                        [
-                            'status',
-                            'enrollment_created_at',
-                            'enrollment_updated_at',
-                            'enrollment_completed_at',
-                            'session_time',
-                            'cmi_time',
-                            'calculated_time',
-                            'recommended_time',
-                            'group_id',
-                            'project_id',
-                        ]
-                    );
-                });
-            };
-            array_map($upsertFunction, $result);
         tenancy()->end();
     }
 }

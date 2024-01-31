@@ -10,6 +10,7 @@ use App\Http\Integrations\Speex\SpeexConnector;
 use App\Models\Group;
 use App\Models\Learner;
 use App\Models\Tenant;
+use App\Services\UserFieldsService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -26,9 +27,14 @@ class UpdateLearnerJob implements ShouldQueue
      * Create a new job instance.
      */
     protected $tenantId;
-    public function __construct(string $tenantId)
+    protected $userfields;
+    protected $userFieldsService;
+
+    public function __construct(UserFieldsService $userFieldsService, string $tenantId, Array $userfields)
     {
         $this->tenantId = $tenantId;
+        $this->userfields = $userfields;
+        $this->userFieldsService = $userFieldsService;
     }
 
     /**
@@ -39,11 +45,11 @@ class UpdateLearnerJob implements ShouldQueue
         $tenant = Tenant::find($this->tenantId);
         tenancy()->initialize($tenant);
             $groups = Group::where('status' , GroupStatusEnum::ACTIVE)->get();
-
             $doceboConnector = new DoceboConnector();
             $speexConnector = new SpeexConnector();
+            $datafields = $this->userFieldsService->getTenantUserFields($this->userfields);
             foreach($groups as $group){
-                $paginator = $doceboConnector->paginate(new DoceboGroupeUsersList($group->docebo_id));
+                $paginator = $doceboConnector->paginate(new DoceboGroupeUsersList($this->userFieldsService, $group->docebo_id, $this->userfields));
                 $result = [];
                 foreach($paginator as $pg){
                     $data = $pg->dto();
@@ -58,23 +64,11 @@ class UpdateLearnerJob implements ShouldQueue
                     return  $item;
                 }, $result);
 
-                DB::transaction(function () use ($filteredItems) {
+                DB::transaction(function () use ($filteredItems,$datafields) {
                     Learner::upsert(
                         $filteredItems,
                         ['docebo_id'],
-                        [
-                            'firstname',
-                            'lastname',
-                            'email',
-                            'username',
-                            'creation_date',
-                            'last_access_date',
-                            'statut',
-                            'categorie',
-                            'speex_id',
-                            'group_id',
-                            'project_id',
-                        ]
+                        $datafields
                     );
                 });
             }

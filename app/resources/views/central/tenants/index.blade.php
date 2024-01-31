@@ -118,13 +118,13 @@
                                                         @production
                                                             <td class="sort-domain">
                                                                 <a href="{{ 'https://' . $tenant->domains->first()->domain }}" target="_blank">
-                                                                    <span class="badge bg-red text-dark">{{ 'https://' . $tenant->domains->first()->domain }}</span>
+                                                                    <span class="badge badge-outline text-red">{{ 'https://' . $tenant->domains->first()->domain }}</span>
                                                                 </a>
                                                             </td>
                                                         @else
                                                             <td class="sort-domain">
                                                                 <a href="{{ 'http://' . $tenant->domains->first()->domain . '.' .config('app.domain') }}" target="_blank">
-                                                                    <span class="badge bg-red text-dark">{{ 'http://' . $tenant->domains->first()->domain . '.' . config('app.domain') }}</span>
+                                                                    <span class="badge badge-outline text-red">{{ 'http://' . $tenant->domains->first()->domain . '.' . config('app.domain') }}</span>
                                                                 </a>
                                                             </td>
                                                         @endproduction

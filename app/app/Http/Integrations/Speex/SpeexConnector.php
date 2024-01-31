@@ -36,7 +36,7 @@ class SpeexConnector extends Connector
     protected function defaultConfig(): array
     {
         return [
-
+            'timeout' => 60,
         ];
     }
 

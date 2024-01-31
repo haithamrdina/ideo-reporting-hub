@@ -61,6 +61,7 @@ class SpeexUserArticleResult extends Request implements HasBody
             $time = isset($items['LIVE_ARTICLE_ELAPSED']) ? $items['LIVE_ARTICLE_ELAPSED'] :  0 ;
             $niveau = NULL;
         }
+
         return [
             'time' => $time,
             'niveau' => $niveau

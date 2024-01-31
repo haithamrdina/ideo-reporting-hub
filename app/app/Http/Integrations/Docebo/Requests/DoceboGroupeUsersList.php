@@ -2,6 +2,8 @@
 
 namespace App\Http\Integrations\Docebo\Requests;
 
+use App\Services\UserFieldsService;
+use Illuminate\Database\Eloquent\Model;
 use Saloon\Enums\Method;
 use Saloon\Http\Request;
 use Saloon\Http\Response;
@@ -13,10 +15,15 @@ class DoceboGroupeUsersList extends Request implements Paginatable
      * The HTTP method of the request
      */
     protected $branche;
+    protected $userfields;
+    protected $userFieldsService;
+
     protected Method $method = Method::GET;
 
-    public function __construct(string $branche) {
+    public function __construct(UserFieldsService $userFieldsService, string $branche, Array $userfields) {
         $this->branche = $branche;
+        $this->userfields = $userfields;
+        $this->userFieldsService = $userFieldsService;
     }
 
     /**
@@ -37,29 +44,8 @@ class DoceboGroupeUsersList extends Request implements Paginatable
 
     public function createDtoFromResponse(Response $response): mixed
     {
-        $items = $response->json('data.items');
-
-        $filteredItems = array_map(function ($item) {
-            return [
-                'docebo_id' => $item['user_id'],
-                'firstname' => $item['first_name'],
-                'lastname' => $item['last_name'],
-                'email' => $item['email'],
-                'username' => $item['username'],
-                'creation_date' => $item['creation_date'],
-                'last_access_date' => $item['last_access_date'],
-                'statut' => $item['last_access_date'] != null ? 'active' : 'inactive',
-                'categorie' => $item['field_159'],
-                'cin' => $item['field_271'],
-                'matricule' => $item['field_1'],
-                'fonction' => $item['field_32'],
-                'pv' =>  $item['field_262'],
-                'sexe' => $item['field_240'],
-                'direction' =>$item['field_63'],
-            ];
-        }, $items);
-
+        $filteredItems = $this->userFieldsService->getLearnersFilteredItems($response->json('data.items'),$this->userfields);
         return $filteredItems;
-
     }
 }
+

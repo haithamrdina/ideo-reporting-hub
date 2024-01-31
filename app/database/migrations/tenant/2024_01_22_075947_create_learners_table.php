@@ -26,7 +26,6 @@ return new class extends Migration
             $table->string('cin')->nullable();
             $table->string('matricule')->nullable();
             $table->string('fonction')->nullable();
-            $table->string('pv')->nullable();
             $table->string('sexe')->nullable();
             $table->string('direction')->nullable();
             $table->unsignedBigInteger('group_id');

@@ -1,39 +1,31 @@
 <?php
 
 use App\Enums\CourseStatusEnum;
+use App\Enums\GroupStatusEnum;
 use App\Http\Controllers\Central\GroupController;
 use App\Http\Controllers\Central\HomeController;
 use App\Http\Controllers\Central\ProjectController;
 use App\Http\Controllers\Central\TenantController;
 use App\Http\Integrations\Docebo\DoceboConnector;
 use App\Http\Integrations\Docebo\Requests\DoceboCoursesEnrollements;
-use App\Http\Integrations\Docebo\Requests\DoceboCoursesEnrolls;
-use App\Http\Integrations\Docebo\Requests\DoceboGetLoCmiData;
 use App\Http\Integrations\Docebo\Requests\DoceboLpsEnrollements;
 use App\Http\Integrations\Docebo\Requests\DoceboMoocsEnrollements;
-use App\Http\Integrations\Docebo\Requests\DoceboMoocsList;
-use App\Http\Integrations\IdeoDash\IdeoDashConnector;
-use App\Http\Integrations\IdeoDash\Requests\IdeoDashCallsList;
-use App\Http\Integrations\IdeoDash\Requests\IdeoDashClientList;
-use App\Http\Integrations\Speex\Requests\SpeexUserArticleResult;
-use App\Http\Integrations\Speex\SpeexConnector;
-use App\Http\Integrations\Zendesk\Requests\ZendeskOrganizations;
-use App\Http\Integrations\Zendesk\Requests\ZendeskOrganizationsTickets;
-use App\Http\Integrations\Zendesk\Requests\ZendeskRequesterUsername;
-use App\Http\Integrations\Zendesk\ZendeskConnector;
-use App\Models\Call;
 use App\Models\Enrollmodule;
 use App\Models\Enrollmooc;
-use App\Models\Langenroll;
 use App\Models\Learner;
 use App\Models\Lp;
 use App\Models\Lpenroll;
 use App\Models\Module;
 use App\Models\Mooc;
 use App\Models\Tenant;
-use App\Models\Ticket;
+use App\Services\LpEnrollmentsService;
+use App\Services\ModuleEnrollmentsService;
+use App\Services\ModuleTimingFieldsService;
+use App\Services\MoocEnrollmentsService;
+use App\Services\SpeexEnrollmentsService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -46,80 +38,43 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    $tenant = Tenant::find('e13bef2d-5e06-4f25-acdc-7d1f3f67b90d');
+
+
+
+Route::get('/lp', function () {
+    $tenant = Tenant::find('523badfa-3d62-475c-bbe8-4fdf2bcaed1b');
     tenancy()->initialize($tenant);
-    $doceboConnector = new DoceboConnector();
-    $moocsDoceboIds = Mooc::pluck('docebo_id')->toArray();
-    $moocsDoceboIds = array_chunk($moocsDoceboIds , 100);
-    $result = [];
-    foreach($moocsDoceboIds as $moocsDoceboId){
-        $request = new DoceboMoocsEnrollements($moocsDoceboId);
-        $mdenrollsResponses = $doceboConnector->paginate($request);
-        foreach($mdenrollsResponses as $md){
+        $doceboConnector = new DoceboConnector();
+        $LpEnrollmentsService = new LpEnrollmentsService();
+
+        $fields = config('tenantconfigfields.enrollmentfields');
+        $enrollFields = $LpEnrollmentsService->getEnrollmentsFields($fields);
+
+        $lpsDoceboIds = Lp::pluck('docebo_id')->toArray();
+
+        $request = new DoceboLpsEnrollements($lpsDoceboIds);
+        $lpenrollsResponses = $doceboConnector->paginate($request);
+        $results = [];
+        foreach($lpenrollsResponses as $md){
             $data = $md->dto();
-            $result = array_merge($result, $data);
+            $results = array_merge($results, $data);
         }
-
-    }
-    $result = array_map(function ($item){
-        $learner = Learner::where('docebo_id' , $item['learner_docebo_id'])->first();
-        $mooc = Mooc::where('docebo_id' , $item['mooc_docebo_id'])->first();
-        if($learner){
-            if($item['status'] != 'enrolled' || $item['status'] != 'waiting' )
+        if(!empty($results)){
+            $result = $LpEnrollmentsService->getEnrollmentsList($results, $fields);
+            dd($result);
+            /*if(count($result) > 1000)
             {
-                if($item['status'] == 'completed'){
-                    $calculated_time = $mooc->recommended_time;
-                }elseif($item['status'] == 'in_progress' && $item['session_time'] > $mooc->recommended_time){
-                    $calculated_time = $mooc->recommended_time;
-                }else{
-                    $calculated_time = $item['session_time'];
+                $batchData = array_chunk(array_filter($result), 1000);
+                foreach($batchData as $data){
+                    $LpEnrollmentsService->batchInsert($data, $enrollFields);
                 }
-                $item['calculated_time'] = $calculated_time;
-                $item['recommended_time'] = $mooc->recommended_time;
-
             }else{
-                $item['calculated_time'] = 0;
-                $item['recommended_time'] = 0;
-            }
-
-            $item['group_id'] = $learner->group->id;
-            $item['project_id'] = $learner->project->id;
-            return $item;
+                $LpEnrollmentsService->batchInsert($result, $enrollFields);
+            }*/
         }
-    }, $result);
-
-    $result = array_chunk(array_filter($result), 1000);
-    $upsertFunction = function ($chunk) {
-        DB::transaction(function () use ($chunk) {
-            Enrollmooc::upsert(
-                $chunk,
-                [
-                    'learner_docebo_id',
-                    'mooc_docebo_id',
-                ],
-                [
-                    'status',
-                    'enrollment_created_at',
-                    'enrollment_updated_at',
-                    'enrollment_completed_at',
-                    'session_time',
-                    'calculated_time',
-                    'recommended_time',
-                    'group_id',
-                    'project_id',
-                ]
-            );
-        });
-    };
-    // Use array_map to apply the upsert function to each chunk
-    array_map($upsertFunction, $result);
     tenancy()->end();
     return view('welcome');
 });
-
-
-
 
 Route::name('admin.')->group(function () {
     require __DIR__.'/central-auth.php';
