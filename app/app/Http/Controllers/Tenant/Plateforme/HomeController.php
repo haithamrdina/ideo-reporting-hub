@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers\Tenant\Plateforme;
 
+use App\Charts\InscritPerCategory;
+use App\Charts\InscritPerCategoryAndStatus;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Models\Learner;
+use App\Services\PlateformeReportService;
 
 class HomeController extends Controller
 {
@@ -12,14 +15,33 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function index() {
-        $config = [
-            'cmi' => config('features.cmi_time'),
-            'calculated' =>  config('features.calculated_time'),
-            'recommended' => config('features.recommended_time'),
-            'start_date' => config('features.inscription_stats_between_date.status.start_date'),
-        ];
-        dd($config);
-        return view('tenant.plateforme.home');
+    public function index(InscritPerCategory $chartInscritPerCategorie, InscritPerCategoryAndStatus $chartInscritPerCategoryAndStatus) {
+
+        $plateformeReportService = new PlateformeReportService();
+
+        $contract_start_date_conf = config('tenantconfigfields.contract_start_date');
+        $categorie = config('tenantconfigfields.userfields.categorie');
+        $enrollfields = config('tenantconfigfields.enrollmentfields');
+
+        $inscritsReportFromStatDate = $plateformeReportService->getInscritsReportForStatDate($contract_start_date_conf, $enrollfields);
+
+        $totalInscrits = Learner::count();
+        $totalActives = Learner::where('statut', 'active')->count();
+        $totalInactives = Learner::where('statut', 'inactive')->count();
+        $totalArchives = Learner::where('statut', 'archive')->count();
+
+
+        $chartsInscrits = $plateformeReportService->getChartsInscrits($chartInscritPerCategorie,$chartInscritPerCategoryAndStatus,$categorie);
+
+        return view('tenant.plateforme.home' ,compact(
+            'inscritsReportFromStatDate',
+            'totalInscrits',
+            'totalActives',
+            'totalInactives',
+            'totalArchives',
+            'chartsInscrits',
+        ));
     }
 }
+
+

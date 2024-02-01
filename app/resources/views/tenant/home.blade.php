@@ -24,6 +24,7 @@
   </div>
 @stop
 @section('page-content')
+
 @stop
 @section('footer')
     @include('central.partials.footer.bottom')

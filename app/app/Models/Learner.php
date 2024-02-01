@@ -41,4 +41,7 @@ class Learner extends Model
     {
         return $this->hasMany(Lpenroll::class, 'learner_docebo_id', 'docebo_id');
     }
+
+
+
 }

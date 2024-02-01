@@ -6,6 +6,6 @@
         @include('central.partials.common.logo')
     </h1>
     <div class="navbar-nav flex-row order-md-last">
-        {{-- @include('central.partials.header.top-right') --}}
+        @include('tenant.partials.header.top-right')
     </div>
 </div>
