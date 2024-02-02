@@ -14,7 +14,7 @@ class InscritPerCategoryAndStatus
         $this->chart = $chart;
     }
 
-    public function build(): \ArielMejiaDev\LarapexCharts\BarChart
+    public function build(): \ArielMejiaDev\LarapexCharts\HorizontalBar
     {
         $categories = Learner::distinct()->pluck('categorie')->filter();
 
@@ -30,7 +30,7 @@ class InscritPerCategoryAndStatus
             $counts['Archive'][] = Learner::where('categorie', $category)->where('statut', 'archive')->count();
         }
 
-        return $this->chart->barChart()
+        return $this->chart->horizontalBarChart()
             ->addData('Active', $counts['Active'])
             ->addData('Inactive', $counts['Inactive'])
             ->addData('Archive', $counts['Archive'])

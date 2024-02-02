@@ -9,6 +9,7 @@
         "arielmejiadev/larapex-charts": "^8.0",
         "guzzlehttp/guzzle": "^7.2",
         "iamfarhad/laravel-rabbitmq": "^0.0.14",
+        "icehouse-ventures/laravel-chartjs": "^1.0",
         "laravel/framework": "^10.10",
         "laravel/horizon": "^5.22",
         "laravel/sanctum": "^3.3",

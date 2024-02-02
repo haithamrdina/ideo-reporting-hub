@@ -13,7 +13,7 @@
             <div class="subheader">Temps de session</div>
         </div>
         <div class="d-flex align-items-baseline">
-            <div class="h2 mb-0 me-2" id="session">**h **min **s.</div>
+            <div class="h2 mb-0 me-2" id="session">{{ $total_session_time }}</div>
         </div>
         <div class="d-flex align-items-baseline">
             <div class="h5 mb-0 me-2 text-black fw-bolder ">
@@ -22,7 +22,7 @@
                     <path d="M3 21l18 -18"></path>
                     <path d="M12 12m-8 0a8 8 0 1 0 16 0a8 8 0 1 0 -16 0"></path>
                 </svg>
-                <span id="avgsession">**h **min **s.</span>
+                <span id="avgsession">{{ $avg_session_time }}</span>
 
             </div>
         </div>

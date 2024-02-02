@@ -3,9 +3,9 @@
         <div class="d-flex">
             <h3 class="card-title">Répartition des inscrits par catégorie :</h3>
         </div>
-        <div class="col-auto row">
+        <div class="col-auto">
             <div id="chart-demo-pie">
-                {{ $chartsInscrits['chartInscritPerCategorie'] != null ? $chartsInscrits['chartInscritPerCategorie']->container() : '' }}
+                {!! $learnersCharts['chartInscritPerCategorie'] != null ? $learnersCharts['chartInscritPerCategorie']->render() : '' !!}
             </div>
         </div>
     </div>

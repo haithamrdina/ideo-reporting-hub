@@ -173,6 +173,7 @@ return [
         App\Providers\HorizonServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         App\Providers\TenancyServiceProvider::class,
+        IcehouseVentures\LaravelChartjs\Providers\ChartjsServiceProvider::class
     ])->toArray(),
 
     /*

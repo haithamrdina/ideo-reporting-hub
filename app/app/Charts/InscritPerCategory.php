@@ -14,7 +14,7 @@ class InscritPerCategory
         $this->chart = $chart;
     }
 
-    public function build(): \ArielMejiaDev\LarapexCharts\DonutChart
+    public function build(): \ArielMejiaDev\LarapexCharts\PieChart
     {
         $learnerCounts = DB::table('learners')
                             ->select('categorie', DB::raw('count(*) as total'))
@@ -32,7 +32,7 @@ class InscritPerCategory
             $labels [] = $count->categorie !== null ?  ucfirst($count->categorie) .' '.  $count->total .  ' - (' . $percentage .'%)' : ' Indéterminé'.' '.  $count->total .  ' - (' . $percentage .'%)' ;
         }
 
-        return $this->chart->donutChart()
+        return $this->chart->pieChart()
             ->addData($data)
             ->setLabels($labels)
             ->setFontFamily('-apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif');

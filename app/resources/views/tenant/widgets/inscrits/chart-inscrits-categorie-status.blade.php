@@ -5,7 +5,7 @@
         </div>
         <div class="col-auto">
             <div id="chart-completion-tasks-9">
-                {{ $chartsInscrits['chartInscritPerCategorieAndStatus'] !=null  ? $chartsInscrits['chartInscritPerCategorieAndStatus']->container() : ''}}
+                {{ $learnersCharts['chartInscritPerCategoryAndStatus'] !=null  ? $learnersCharts['chartInscritPerCategoryAndStatus']->render() : ''}}
             </div>
         </div>
     </div>

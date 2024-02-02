@@ -23,23 +23,19 @@ class HomeController extends Controller
         $categorie = config('tenantconfigfields.userfields.categorie');
         $enrollfields = config('tenantconfigfields.enrollmentfields');
 
-        $inscritsReportFromStatDate = $plateformeReportService->getInscritsReportForStatDate($contract_start_date_conf, $enrollfields);
+        $learnersInscriptionsPerStatDate = $plateformeReportService->getLearnersInscriptionsPerStatDate($contract_start_date_conf);
+        $timingDetailsPerStatDate = $plateformeReportService->getTimingDetailsPerStatDate($contract_start_date_conf,$enrollfields);
 
-        $totalInscrits = Learner::count();
-        $totalActives = Learner::where('statut', 'active')->count();
-        $totalInactives = Learner::where('statut', 'inactive')->count();
-        $totalArchives = Learner::where('statut', 'archive')->count();
-
-
-        $chartsInscrits = $plateformeReportService->getChartsInscrits($chartInscritPerCategorie,$chartInscritPerCategoryAndStatus,$categorie);
+        $learnersInscriptions = $plateformeReportService->getLearnersInscriptions();
+        $timingDetails = $plateformeReportService->getTimingDetails($enrollfields);
+        $learnersCharts = $plateformeReportService->getLearnersCharts2($categorie);
 
         return view('tenant.plateforme.home' ,compact(
-            'inscritsReportFromStatDate',
-            'totalInscrits',
-            'totalActives',
-            'totalInactives',
-            'totalArchives',
-            'chartsInscrits',
+            'learnersInscriptionsPerStatDate',
+            'timingDetailsPerStatDate',
+            'learnersInscriptions',
+            'timingDetails',
+            'learnersCharts',
         ));
     }
 }
