@@ -40,6 +40,7 @@ Route::middleware([
         Route::middleware(['user.auth:user', 'plateforme'])->prefix('plateforme')->name('plateforme.')->group(function () {
             Route::get('/home', [PlateformeHomeController::class , 'index'])->name('home');
             Route::get('/projects', [ProjectController::class , 'index'])->name('projects');
+            Route::get('/projects/updateData/{projectId}',[ProjectController::class , 'updateData']);
             Route::get('/groups', [GroupController::class , 'index'])->name('groups');
         });
 

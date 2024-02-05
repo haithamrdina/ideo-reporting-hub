@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Tenant\Plateforme;
 use App\Charts\InscritPerCategory;
 use App\Charts\InscritPerCategoryAndStatus;
 use App\Http\Controllers\Controller;
-use App\Models\Learner;
 use App\Services\PlateformeReportService;
 
 class HomeController extends Controller
@@ -15,7 +14,7 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function index(InscritPerCategory $chartInscritPerCategorie, InscritPerCategoryAndStatus $chartInscritPerCategoryAndStatus) {
+    public function index() {
 
         $plateformeReportService = new PlateformeReportService();
 
@@ -28,7 +27,15 @@ class HomeController extends Controller
 
         $learnersInscriptions = $plateformeReportService->getLearnersInscriptions();
         $timingDetails = $plateformeReportService->getTimingDetails($enrollfields);
-        $learnersCharts = $plateformeReportService->getLearnersCharts2($categorie);
+        $learnersCharts = $plateformeReportService->getLearnersCharts($categorie);
+
+        $softStats = $plateformeReportService->getStatSoftskills($enrollfields);
+        $digitalStats = $plateformeReportService->getStatDigital($enrollfields);
+        $speexStats = $plateformeReportService->getStatSpeex($enrollfields);
+        $moocStats = $plateformeReportService->getStatMooc($enrollfields);
+        $timingChart = $plateformeReportService->getTimingStats($enrollfields);
+        $lpStats = $plateformeReportService->getLpStats($enrollfields);
+        $lscStats = $plateformeReportService->getLscStats();
 
         return view('tenant.plateforme.home' ,compact(
             'learnersInscriptionsPerStatDate',
@@ -36,6 +43,13 @@ class HomeController extends Controller
             'learnersInscriptions',
             'timingDetails',
             'learnersCharts',
+            'softStats',
+            'digitalStats',
+            'speexStats',
+            'moocStats',
+            'timingChart',
+            'lpStats',
+            'lscStats'
         ));
     }
 }

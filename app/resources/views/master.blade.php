@@ -38,12 +38,14 @@
 
     <div class="page">
         <!-- Top Navbar -->
-        @yield('header')
-        <div class="page-wrapper">
-            <!-- Page Content -->
-            @yield('page-header')
-            @yield('page-content')
-            @yield('footer')
+        <div id="page-content">
+            @yield('header')
+            <div class="page-wrapper">
+                <!-- Page Content -->
+                @yield('page-header')
+                @yield('page-content')
+                @yield('footer')
+            </div>
         </div>
     </div>
 
@@ -52,7 +54,10 @@
     <script src="{{ global_asset('dist/js/tabler.min.js') }}" defer></script>
     <script src="{{ global_asset('dist/js/demo.min.js') }}" defer></script>
 
+    <script defer src="https://cdn.jsdelivr.net/npm/chart.js@^4"></script>
+
     @yield('ideoreport_js')
+
 </body>
 
 </html>

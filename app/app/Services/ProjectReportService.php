@@ -17,9 +17,9 @@ use App\Models\Module;
 use App\Models\Ticket;
 use Illuminate\Support\Facades\DB;
 
-class PlateformeReportService{
+class ProjectReportService{
 
-    public function getLearnersInscriptionsPerStatDate($contract_start_date_conf){
+    public function getLearnersInscriptionsPerStatDate($contract_start_date_conf , $project){
 
         if($contract_start_date_conf != null){
             $date = \Carbon\Carbon::createFromFormat('Y-m-d', $contract_start_date_conf);
@@ -32,9 +32,9 @@ class PlateformeReportService{
                 $statDate =  (now()->year - 1) . $date->format('-m-d');
             }
 
-            $total_learners = Learner::where('creation_date', '>=', $statDate)->count();
-            $active_learners = Learner::where('last_access_date', '>=', $statDate)->where('statut', 'active')->count();
-            $inactive_learners =  Learner::where('last_access_date' , '<' , $statDate)->where('statut', 'active')->count();
+            $total_learners = Learner::where('creation_date', '>=', $statDate)->where('project_id', $project->id)->count();
+            $active_learners = Learner::where('last_access_date', '>=', $statDate)->where('statut', 'active')->where('project_id', $project->id)->count();
+            $inactive_learners =  Learner::where('last_access_date' , '<' , $statDate)->where('statut', 'active')->where('project_id', $project->id)->count();
             $statsLearners = [
                 'total' => $total_learners,
                 'active' => $active_learners,
@@ -48,7 +48,7 @@ class PlateformeReportService{
 
     }
 
-    public function getTimingDetailsPerStatDate($contract_start_date_conf,$enrollfields){
+    public function getTimingDetailsPerStatDate($contract_start_date_conf,$enrollfields,$project){
 
         if($contract_start_date_conf != null){
             $date = \Carbon\Carbon::createFromFormat('Y-m-d', $contract_start_date_conf);
@@ -61,10 +61,10 @@ class PlateformeReportService{
                 $statDate =  (now()->year - 1) . $date->format('-m-d');
             }
 
-            $active_learners = Learner::where('last_access_date', '>=', $statDate)->where('statut', 'active')->count();
-            $moduleDataTimes = Enrollmodule::calculateModuleDataTimes($statDate);
-            $moocDataTimes = Enrollmooc::calculateMoocDataTimes($statDate);
-            $speexDataTimes = Langenroll::calculateSpeexDataTimes($statDate);
+            $active_learners = Learner::where('last_access_date', '>=', $statDate)->where('statut', 'active')->where('project_id', $project->id)->count();
+            $moduleDataTimes = Enrollmodule::calculateModuleDataTimesPerProject($statDate, $project->id);
+            $moocDataTimes = Enrollmooc::calculateMoocDataTimesPerProject($statDate, $project->id);
+            $speexDataTimes = Langenroll::calculateSpeexDataTimesPerProject($statDate, $project->id);
 
 
             $timeConversionService = new TimeConversionService();
@@ -127,11 +127,11 @@ class PlateformeReportService{
         return $statsTimes;
     }
 
-    public function getLearnersInscriptions(){
-        $total_learners = Learner::count();
-        $active_learners = Learner::whereNotNull('last_access_date')->count();
-        $inactive_learners =  Learner::whereNull('last_access_date')->count();
-        $archive_learners =  Learner::whereNotNull('deleted_at')->count();
+    public function getLearnersInscriptions($project){
+        $total_learners = Learner::where('project_id', $project->id)->count();
+        $active_learners = Learner::whereNotNull('last_access_date')->where('project_id', $project->id)->count();
+        $inactive_learners =  Learner::whereNull('last_access_date')->where('project_id', $project->id)->count();
+        $archive_learners =  Learner::whereNotNull('deleted_at')->where('project_id', $project->id)->count();
 
         return  [
             'total' => $total_learners,
@@ -141,11 +141,11 @@ class PlateformeReportService{
         ];
     }
 
-    public function getTimingDetails($enrollfields){
-        $active_learners = Learner::whereNotNull('last_access_date')->count();
-        $enrollModules = EnrollModule::all();
-        $enrollMoocs = Enrollmooc::all();
-        $enrollSpeex = Langenroll::all();
+    public function getTimingDetails($enrollfields,$project){
+        $active_learners = Learner::whereNotNull('last_access_date')->where('project_id', $project->id)->count();
+        $enrollModules = EnrollModule::where('project_id', $project->id)->get();
+        $enrollMoocs = Enrollmooc::where('project_id', $project->id)->get();
+        $enrollSpeex = Langenroll::where('project_id', $project->id)->get();
 
         $timeConversionService = new TimeConversionService();
         $total_session_time =  intval($enrollModules->sum('session_time')) + intval($enrollMoocs->sum('session_time')) + intval($enrollSpeex->sum('session_time'));
@@ -202,15 +202,16 @@ class PlateformeReportService{
 
     }
 
-    public function getLearnersCharts($categorie)
+    public function getLearnersCharts($categorie,$project)
     {
         if($categorie){
             $learnerCounts = DB::table('learners')
             ->select('categorie', DB::raw('count(*) as total'))
+            ->where('project_id', $project->id)
             ->groupBy('categorie')
             ->get();
 
-            $totalLearners = DB::table('learners')->count();
+            $totalLearners = DB::table('learners')->where('project_id', $project->id)->count();
 
             $data = [];
             $labels = [];
@@ -236,7 +237,7 @@ class PlateformeReportService{
                 ->options([]);
 
 
-            $categories = Learner::distinct()->pluck('categorie')->filter();
+            $categories = Learner::where('project_id', $project->id)->distinct()->pluck('categorie')->filter();
 
             $counts = [
                 'Active' => [],
@@ -245,13 +246,13 @@ class PlateformeReportService{
             ];
 
             foreach ($categories as $category) {
-                $counts['Active'][] = Learner::where('categorie', $category)->where('statut', 'active')->count();
-                $counts['Inactive'][] = Learner::where('categorie', $category)->where('statut', 'inactive')->count();
-                $counts['Archive'][] = Learner::where('categorie', $category)->where('statut', 'archive')->count();
+                $counts['Active'][] = Learner::where('categorie', $category)->where('statut', 'active')->where('project_id', $project->id)->count();
+                $counts['Inactive'][] = Learner::where('categorie', $category)->where('statut', 'inactive')->where('project_id', $project->id)->count();
+                $counts['Archive'][] = Learner::where('categorie', $category)->where('statut', 'archive')->where('project_id', $project->id)->count();
             }
 
             $chartInscritPerCategoryAndStatus = app()->chartjs
-            ->name('barChartTest')
+            ->name('chartInscritPerCategoryAndStatus')
             ->type('bar')
             ->size(['width' => 400, 'height' => 200])
             ->labels($categories->toArray())
@@ -284,14 +285,17 @@ class PlateformeReportService{
         ];
     }
 
-    public function getStatSoftskills($enrollfields){
-        $softModules = Module::where(['category' => 'CEGOS', 'status' => CourseStatusEnum::ACTIVE])->pluck('docebo_id')->toArray();
+    public function getStatSoftskills($enrollfields,$project){
 
-        $softEnrolls = Enrollmodule::whereIn('module_docebo_id', $softModules)->get();
+        $softModules = $project->modules->filter(function ($module) {
+            return $module->category === 'CEGOS' && $module->status === CourseStatusEnum::ACTIVE;
+        })->pluck('docebo_id')->toArray();
 
-        $softEnrollsInEnrolled = Enrollmodule::whereIn('module_docebo_id', $softModules)->where('status', 'enrolled')->count();
-        $softEnrollsInProgress = Enrollmodule::whereIn('module_docebo_id', $softModules)->where('status', 'in_progress')->count();
-        $softEnrollsInCompleted = Enrollmodule::whereIn('module_docebo_id', $softModules)->where('status', 'completed')->count();
+        $softEnrolls = Enrollmodule::whereIn('module_docebo_id', $softModules)->where('project_id', $project->id)->get();
+
+        $softEnrollsInEnrolled = Enrollmodule::whereIn('module_docebo_id', $softModules)->where('status', 'enrolled')->where('project_id', $project->id)->count();
+        $softEnrollsInProgress = Enrollmodule::whereIn('module_docebo_id', $softModules)->where('status', 'in_progress')->where('project_id', $project->id)->count();
+        $softEnrollsInCompleted = Enrollmodule::whereIn('module_docebo_id', $softModules)->where('status', 'completed')->where('project_id', $project->id)->count();
 
         $statSoftskills = [
             'enrolled' =>  $softEnrollsInEnrolled,
@@ -354,15 +358,20 @@ class PlateformeReportService{
 
     }
 
-    public function getStatDigital($enrollfields){
-        $digitalModules = Module::where(['category' => 'ENI', 'status' => CourseStatusEnum::ACTIVE])->pluck('docebo_id')->toArray();
-        $moduleDigitals = Module::where(['category' => 'ENI', 'status' => CourseStatusEnum::ACTIVE])->get();
+    public function getStatDigital($enrollfields,$project){
+        $digitalModules = $project->modules->filter(function ($module) {
+            return $module->category === 'ENI' && $module->status === CourseStatusEnum::ACTIVE;
+        })->pluck('docebo_id')->toArray();
 
-        $digitalEnrolls = Enrollmodule::whereIn('module_docebo_id', $digitalModules)->get();
+        $moduleDigitals = $project->modules->filter(function ($module) {
+            return $module->category === 'ENI' && $module->status === CourseStatusEnum::ACTIVE;
+        });
 
-        $digitalEnrollsInEnrolled = Enrollmodule::whereIn('module_docebo_id', $digitalModules)->where('status', 'enrolled')->count();
-        $digitalEnrollsInProgress = Enrollmodule::whereIn('module_docebo_id', $digitalModules)->where('status', 'in_progress')->count();
-        $digitalEnrollsInCompleted = Enrollmodule::whereIn('module_docebo_id', $digitalModules)->where('status', 'completed')->count();
+        $digitalEnrolls = Enrollmodule::whereIn('module_docebo_id', $digitalModules)->where('project_id', $project->id)->get();
+
+        $digitalEnrollsInEnrolled = Enrollmodule::whereIn('module_docebo_id', $digitalModules)->where('status', 'enrolled')->where('project_id', $project->id)->count();
+        $digitalEnrollsInProgress = Enrollmodule::whereIn('module_docebo_id', $digitalModules)->where('status', 'in_progress')->where('project_id', $project->id)->count();
+        $digitalEnrollsInCompleted = Enrollmodule::whereIn('module_docebo_id', $digitalModules)->where('status', 'completed')->where('project_id', $project->id)->count();
 
         $statDigital = [
             'enrolled' =>  $digitalEnrollsInEnrolled,
@@ -425,10 +434,10 @@ class PlateformeReportService{
         ];
     }
 
-    public function getStatSpeex($enrollfields){
-        $langEnrollsInEnrolled = Langenroll::whereIn('status', ['enrolled', 'waiting'])->count();
-        $langEnrollsInProgress = Langenroll::where('status', 'in_progress')->count();
-        $langEnrollsInCompleted = Langenroll::where('status', 'completed')->count();
+    public function getStatSpeex($enrollfields,$project){
+        $langEnrollsInEnrolled = Langenroll::whereIn('status', ['enrolled', 'waiting'])->where('project_id', $project->id)->count();
+        $langEnrollsInProgress = Langenroll::where('status', 'in_progress')->where('project_id', $project->id)->count();
+        $langEnrollsInCompleted = Langenroll::where('status', 'completed')->where('project_id', $project->id)->count();
 
         $statSpeex = [
             'enrolled' =>  $langEnrollsInEnrolled,
@@ -436,7 +445,7 @@ class PlateformeReportService{
             'completed' => $langEnrollsInCompleted,
         ];
 
-        $langEnrolls = Langenroll::all();
+        $langEnrolls = Langenroll::where('project_id', $project->id)->get();
 
         $timeConversionService = new TimeConversionService();
         $total_session_time =  $timeConversionService->convertSecondsToTime($langEnrolls->sum('session_time'));
@@ -479,11 +488,11 @@ class PlateformeReportService{
 
     }
 
-    public function getStatMooc($enrollfields){
-        $moocEnrollsInWaiting = Enrollmooc::where('status', 'enrolled')->count();
-        $moocEnrollsInEnrolled = Enrollmooc::where('status', 'enrolled')->count();
-        $moocEnrollsInProgress = Enrollmooc::where('status', 'in_progress')->count();
-        $moocEnrollsInCompleted = Enrollmooc::where('status', 'completed')->count();
+    public function getStatMooc($enrollfields,$project){
+        $moocEnrollsInWaiting = Enrollmooc::where('status', 'enrolled')->where('project_id', $project->id)->count();
+        $moocEnrollsInEnrolled = Enrollmooc::where('status', 'enrolled')->where('project_id', $project->id)->count();
+        $moocEnrollsInProgress = Enrollmooc::where('status', 'in_progress')->where('project_id', $project->id)->count();
+        $moocEnrollsInCompleted = Enrollmooc::where('status', 'completed')->where('project_id', $project->id)->count();
 
         $statMooc = [
             'waiting' =>  $moocEnrollsInWaiting,
@@ -492,7 +501,7 @@ class PlateformeReportService{
             'completed' => $moocEnrollsInCompleted,
         ];
 
-        $moocEnrolls = Enrollmooc::all();
+        $moocEnrolls = Enrollmooc::where('project_id', $project->id)->get();
 
         $timeConversionService = new TimeConversionService();
         $total_session_time =  $timeConversionService->convertSecondsToTime($moocEnrolls->sum('session_time'));
@@ -548,14 +557,18 @@ class PlateformeReportService{
         ];
     }
 
-    public function getTimingStats($enrollfields){
+    public function getTimingStats($enrollfields,$project){
 
-        $digitalModules = Module::where(['category' => 'ENI', 'status' => CourseStatusEnum::ACTIVE])->pluck('docebo_id')->toArray();
-        $softModules = Module::where(['category' => 'CEGOS', 'status' => CourseStatusEnum::ACTIVE])->pluck('docebo_id')->toArray();
-        $softEnrolls = Enrollmodule::whereIn('module_docebo_id', $softModules)->get();
-        $digitalEnrolls = Enrollmodule::whereIn('module_docebo_id', $digitalModules)->get();
-        $langEnrolls = Langenroll::all();
-        $moocEnrolls = Enrollmooc::all();
+        $digitalModules = $project->modules->filter(function ($module) {
+            return $module->category === 'ENI' && $module->status === CourseStatusEnum::ACTIVE;
+        })->pluck('docebo_id')->toArray();
+        $softModules = $project->modules->filter(function ($module) {
+            return $module->category === 'CEGOS' && $module->status === CourseStatusEnum::ACTIVE;
+        })->pluck('docebo_id')->toArray();
+        $softEnrolls = Enrollmodule::whereIn('module_docebo_id', $softModules)->where('project_id', $project->id)->get();
+        $digitalEnrolls = Enrollmodule::whereIn('module_docebo_id', $digitalModules)->where('project_id', $project->id)->get();
+        $langEnrolls = Langenroll::where('project_id', $project->id)->get();
+        $moocEnrolls = Enrollmooc::where('project_id', $project->id)->get();
 
         $timeConversionService = new TimeConversionService();
 
@@ -635,15 +648,15 @@ class PlateformeReportService{
         return $timingChart;
     }
 
-    public function getLpStats($enrollfields){
-        $lps = Lp::all();
-        $lpEnrolls = Lpenroll::all();
+    public function getLpStats($enrollfields , $project){
+        $lps = $project->lps;
+        $lpEnrolls = Lpenroll::where('project_id', $project->id)->get();
 
-        $lpEnrollsInEnrolled = Lpenroll::where('status', 'enrolled')->count();
-        $lpEnrollsInProgress = Lpenroll::where('status', 'in_progress')->count();
-        $lpEnrollsInProgressMax = Lpenroll::where('status', 'in_progress')->where('enrollment_completion_percentage','>=','50')->count();
-        $lpEnrollsInProgressMin = Lpenroll::where('status', 'in_progress')->where('enrollment_completion_percentage','<','50')->count();
-        $lpEnrollsInCompleted = Lpenroll::where('status', 'completed')->count();
+        $lpEnrollsInEnrolled = Lpenroll::where('status', 'enrolled')->where('project_id', $project->id)->count();
+        $lpEnrollsInProgress = Lpenroll::where('status', 'in_progress')->where('project_id', $project->id)->count();
+        $lpEnrollsInProgressMax = Lpenroll::where('status', 'in_progress')->where('enrollment_completion_percentage','>=','50')->where('project_id', $project->id)->count();
+        $lpEnrollsInProgressMin = Lpenroll::where('status', 'in_progress')->where('enrollment_completion_percentage','<','50')->where('project_id', $project->id)->count();
+        $lpEnrollsInCompleted = Lpenroll::where('status', 'completed')->where('project_id', $project->id)->count();
 
         $statLps = [
             'enrolled' =>  $lpEnrollsInEnrolled,
@@ -709,10 +722,11 @@ class PlateformeReportService{
 
     }
 
-    public function getLscStats(){
-        $totalTickets = Ticket::count();
-        $totalCalls = Call::count();
+    public function getLscStats($project){
+        $totalTickets = Ticket::where('project_id', $project->id)->count();
+        $totalCalls = Call::where('project_id', $project->id)->count();
         $ticketDistribution = Ticket::select('status', DB::raw('count(*) as count'))
+                                    ->where('project_id', $project->id)
                                     ->groupBy('status')
                                     ->get();
         $ticketsLabels =[];
@@ -736,6 +750,7 @@ class PlateformeReportService{
                 ->options([]);
 
         $callStatisticsSubject = Call::select('subject', 'type', DB::raw('COUNT(*) as call_count'))
+                        ->where('project_id', $project->id)
                         ->groupBy('subject', 'type')
                         ->get();
         $groupedStatisticsSubject = [];
@@ -748,10 +763,11 @@ class PlateformeReportService{
         foreach ($groupedStatisticsSubject as $key => $value) {
             $labelsCallsSubject [] = $key;
             $dataCallsSubjectEntrantes [] = isset($groupedStatisticsSubject[$key]['entrante']) ? $groupedStatisticsSubject[$key]['entrante'] :  0;
-            $dataCallsSubjectSortantes [] = isset($groupedStatisticsSubject[$key]['entrante']) ? $groupedStatisticsSubject[$key]['entrante'] :  0;
+            $dataCallsSubjectSortantes [] = isset($groupedStatisticsSubject[$key]['sortante']) ? $groupedStatisticsSubject[$key]['sortante'] :  0;
         }
 
         $callStatisticsStatus = Call::select('status', 'type', DB::raw('COUNT(*) as call_count'))
+            ->where('project_id', $project->id)
             ->groupBy('status', 'type')
             ->get();
         $groupedStatisticsStatus = [];
