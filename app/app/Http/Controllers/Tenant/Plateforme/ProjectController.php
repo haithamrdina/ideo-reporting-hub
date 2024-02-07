@@ -100,22 +100,6 @@ class ProjectController extends Controller
         ));
     }
 }
-/*  return response()->json([
-            'projects'=> $projects,
-            'learnersInscriptionsPerStatDate'=> $learnersInscriptionsPerStatDate,
-            'timingDetailsPerStatDate' => $timingDetailsPerStatDate,
-            'learnersInscriptions' => $learnersInscriptions,
-            'timingDetails' => $timingDetails,
-            'learnersCharts' => $learnersCharts,
-            'softStats' => $softStats,
-            'digitalStats' => $digitalStats,
-            'speexStats' => $speexStats,
-            'moocStats' => $moocStats,
-            'timingChart' => $timingChart,
-            'lpStats' => $lpStats,
-            'lscStats' => $lscStats,
-        ]);
 
- */
 
 

@@ -43,7 +43,7 @@
                                 <span class="input-group-text">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-binary-tree"
                                         width="24" height="24" viewbox="0 0 24 24" stroke-width="2"
-                                        stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                        stroke="#C2181A" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                         <path stroke="none" d="M0 0h24v24H0z" fill="none" />
                                         <path d="M6 20a2 2 0 1 0 -4 0a2 2 0 0 0 4 0z" />
                                         <path d="M16 4a2 2 0 1 0 -4 0a2 2 0 0 0 4 0z" />
@@ -56,9 +56,10 @@
                                         <path d="M15.063 5.7l2.881 4.61" />
                                     </svg>
                                 </span>
-                                <select type="text" class="form-select" id="select-branches" value="" onchange="changeProject()">
+                                <select type="text" class="form-select" id="select-branches" value=""
+                                    onchange="changeProject()">
                                     @foreach ($projects as $projectData)
-                                        <option value="{{ $projectData->id }}" {{ $project->id == $projectData->id  ? 'selected'  : ''}}>{{ $projectData->name }}</option>
+                                        <option value="{{ $projectData->id }}" {{ $project->id == $projectData->id ? 'selected' : '' }}> {{ $projectData->name }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -641,60 +642,10 @@
         // @formatter:on
     </script>
     <script>
-       /* function changeProject() {
+        function changeProject() {
             var projectId = document.getElementById("select-branches").value;
-            var xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function() {
-
-                if (xhr.readyState === 4) {
-                    if (xhr.status === 200) {
-                        var pageContent = document.getElementById("page-content");
-                        /*while (pageContent.firstChild) {
-                            pageContent.removeChild(pageContent.firstChild);
-                        }
-                        var chartCompletionTasks9 = document.getElementById("chart-completion-tasks-9");
-                        while (chartCompletionTasks9.firstChild) {
-                            chartCompletionTasks9.removeChild(chartCompletionTasks9.firstChild);
-                        }
-                        // Update the view with the new data
-                        pageContent.innerHTML = xhr.responseText;
-                    } else {
-                        console.error('Error updating data. Status:', xhr.status);
-                    }
-                }
-            };
-
-            // Replace '/updateData/' with your actual route for updating data
-            xhr.open('GET', '/plateforme/projects/updateData/' + projectId, true);
-            xhr.send();
-        }*/
+            // Replace '/plateforme/projects/updateData/' with the specific URL you want to redirect to
+            window.location = '/plateforme/projects/' + projectId;
+        }
     </script>
-        <script>
-            function changeProject() {
-                var projectId = document.getElementById("select-branches").value;
-                var xhr = new XMLHttpRequest();
-                xhr.onreadystatechange = function() {
-                    if (xhr.readyState === 4) {
-                        if (xhr.status === 200) {
-                            var pageContent = document.getElementById("page-content");
-                            while (pageContent.firstChild) {
-                                pageContent.removeChild(pageContent.firstChild);
-                            }
-                            // Update the view with the new data
-                            pageContent.innerHTML = xhr.responseText;
-                        } else {
-                            console.error('Error updating data. Status:', xhr.status);
-                        }
-                    }
-                };
-
-                // Replace '/updateData/' with your actual route for updating data
-                xhr.open('GET', '/plateforme/projects/updateData/' + projectId, true);
-                xhr.send();
-            }
-        </script>
-
-
-
-
 @stop

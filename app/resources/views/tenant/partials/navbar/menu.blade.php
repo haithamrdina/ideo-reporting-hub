@@ -3,7 +3,7 @@
 @endphp
 
 @foreach($menus as $menu)
-<li class="nav-item  {{ request()->routeIs($menu['route']) ? 'active' : '' }}">
+<li class="nav-item  {{ request()->routeIs($menu['route'].'.*') ||  request()->routeIs($menu['route']) ? 'active' : '' }}">
     <a class="nav-link" href="{{ $menu['route'] ? route($menu['route']) : '.' }}">
         <span class="nav-link-icon d-md-none d-lg-inline-block">
             {!! $menu['icon'] !!}

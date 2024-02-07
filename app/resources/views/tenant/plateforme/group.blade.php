@@ -5,15 +5,14 @@
     $calculated_time_conf = config('tenantconfigfields.enrollmentfields.calculated_time');
     $recommended_time_conf = config('tenantconfigfields.enrollmentfields.recommended_time');
     $categorie = config('tenantconfigfields.userfields.categorie');
-    if($contract_start_date_conf != null)
-    {
+    if ($contract_start_date_conf != null) {
         $date = \Carbon\Carbon::createFromFormat('Y-m-d', $contract_start_date_conf);
         $yearOfDate = $date->year;
         $currentYear = now()->year;
         if ($yearOfDate > $currentYear) {
             $statDate = $date->format('d-m-') . now()->year;
         } else {
-            $statDate =  $date->format('d-m-') . (now()->year - 1) ;
+            $statDate = $date->format('d-m-') . (now()->year - 1);
         }
     }
 @endphp
@@ -37,6 +36,33 @@
                         Vos données de progression sur la e-académie.
                     </h2>
                 </div>
+                <div class="col-auto ms-auto d-print-none">
+                    <div class="btn-list">
+                        <div class="mb-3 text-black">
+                            <div class="input-group mb-2">
+                                <span class="input-group-text">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-affiliate"
+                                        width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="#C2181A"
+                                        fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                        <path d="M5.931 6.936l1.275 4.249m5.607 5.609l4.251 1.275"></path>
+                                        <path d="M11.683 12.317l5.759 -5.759"></path>
+                                        <path d="M5.5 5.5m-1.5 0a1.5 1.5 0 1 0 3 0a1.5 1.5 0 1 0 -3 0"></path>
+                                        <path d="M18.5 5.5m-1.5 0a1.5 1.5 0 1 0 3 0a1.5 1.5 0 1 0 -3 0"></path>
+                                        <path d="M18.5 18.5m-1.5 0a1.5 1.5 0 1 0 3 0a1.5 1.5 0 1 0 -3 0"></path>
+                                        <path d="M8.5 15.5m-4.5 0a4.5 4.5 0 1 0 9 0a4.5 4.5 0 1 0 -9 0"></path>
+                                    </svg>
+                                </span>
+                                <select type="text" class="form-select" id="select-groupes" value=""  onchange="changeGroupe()">
+                                    @foreach ($groupes as $groupeData)
+                                        <option value="{{ $groupeData->id }}" {{ $groupe->id == $groupeData->id ? 'selected' : '' }}> {{ $groupeData->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -45,8 +71,7 @@
     <div class="page-body">
         <div class="container-xl">
             <div class="row row-deck row-cards">
-
-                @if($contract_start_date_conf !== null)
+                @if ($contract_start_date_conf !== null)
                     <div class="col-12 ">
                         <div class="row row-cards">
                             <div class="col-md-12 col-lg-12">
@@ -57,25 +82,53 @@
                                     <div class="card-body mt-6">
                                         <div class="row row-cards">
                                             <div class="col-md-4">
-                                                @include('tenant.widgets.inscrits.card-inscrits-detail' , ['card_title' => 'Nombre des nouveaux inscrits' , 'card_data' => $learnersInscriptionsPerStatDate['total'] ])
+                                                @include('tenant.widgets.inscrits.card-inscrits-detail', [
+                                                    'card_title' => 'Nombre des nouveaux inscrits',
+                                                    'card_data' => $learnersInscriptionsPerStatDate['total'],
+                                                ])
                                             </div>
                                             <div class="col-md-4">
-                                                @include('tenant.widgets.inscrits.card-inscrits-detail' , ['card_title' => 'Nombre d\'inscrits actifs', 'card_data' => $learnersInscriptionsPerStatDate['active']])
+                                                @include('tenant.widgets.inscrits.card-inscrits-detail', [
+                                                    'card_title' => 'Nombre d\'inscrits actifs',
+                                                    'card_data' => $learnersInscriptionsPerStatDate['active'],
+                                                ])
                                             </div>
                                             <div class="col-md-4">
-                                                @include('tenant.widgets.inscrits.card-inscrits-detail' , ['card_title' => 'Nombre d\'inscrits inactives' , 'card_data' => $learnersInscriptionsPerStatDate['inactive']])
+                                                @include('tenant.widgets.inscrits.card-inscrits-detail', [
+                                                    'card_title' => 'Nombre d\'inscrits inactives',
+                                                    'card_data' => $learnersInscriptionsPerStatDate['inactive'],
+                                                ])
                                             </div>
                                             <div class="col-md-3">
-                                                @include('tenant.widgets.times.session-time' , ['total_session_time' => $timingDetailsPerStatDate['total_session_time'], 'avg_session_time' => $timingDetailsPerStatDate['avg_session_time']])
+                                                @include('tenant.widgets.times.session-time', [
+                                                    'total_session_time' =>
+                                                        $timingDetailsPerStatDate['total_session_time'],
+                                                    'avg_session_time' =>
+                                                        $timingDetailsPerStatDate['avg_session_time'],
+                                                ])
                                             </div>
-                                            <div class="col-md-3 {{ $cmi_time_conf == false ? 'opacity-10' : ''  }}">
-                                                @include('tenant.widgets.times.cmi-time' , ['total_cmi_time' => $timingDetailsPerStatDate['total_cmi_time'], 'avg_cmi_time' => $timingDetailsPerStatDate['avg_cmi_time']])
+                                            <div class="col-md-3 {{ $cmi_time_conf == false ? 'opacity-10' : '' }}">
+                                                @include('tenant.widgets.times.cmi-time', [
+                                                    'total_cmi_time' =>
+                                                        $timingDetailsPerStatDate['total_cmi_time'],
+                                                    'avg_cmi_time' => $timingDetailsPerStatDate['avg_cmi_time'],
+                                                ])
                                             </div>
                                             <div class="col-md-3 {{ $calculated_time_conf == false ? 'opacity-10' : '' }}">
-                                                @include('tenant.widgets.times.calculated-time' , ['total_calculated_time' => $timingDetailsPerStatDate['total_calculated_time'], 'avg_calculated_time' => $timingDetailsPerStatDate['avg_calculated_time']])
+                                                @include('tenant.widgets.times.calculated-time', [
+                                                    'total_calculated_time' =>
+                                                        $timingDetailsPerStatDate['total_calculated_time'],
+                                                    'avg_calculated_time' =>
+                                                        $timingDetailsPerStatDate['avg_calculated_time'],
+                                                ])
                                             </div>
                                             <div class="col-md-3 {{ $recommended_time_conf == false ? 'opacity-10' : '' }}">
-                                                @include('tenant.widgets.times.recommended-time' , ['total_recommended_time' => $timingDetailsPerStatDate['total_recommended_time'], 'avg_recommended_time' => $timingDetailsPerStatDate['avg_recommended_time']])
+                                                @include('tenant.widgets.times.recommended-time', [
+                                                    'total_recommended_time' =>
+                                                        $timingDetailsPerStatDate['total_recommended_time'],
+                                                    'avg_recommended_time' =>
+                                                        $timingDetailsPerStatDate['avg_recommended_time'],
+                                                ])
                                             </div>
                                         </div>
                                     </div>
@@ -103,17 +156,29 @@
                                         </div>
                                     </div>
                                     <div class="col-auto">
-                                        <a href="javascript:void(0)" class="btn btn-icon" aria-label="Button" id="btnInsFilter" data-bs-toggle="tooltip" data-bs-placement="top" title="Appliquer le filtre">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-filter-check" width="24" height="24" viewbox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                        <a href="javascript:void(0)" class="btn btn-icon" aria-label="Button"
+                                            id="btnInsFilter" data-bs-toggle="tooltip" data-bs-placement="top"
+                                            title="Appliquer le filtre">
+                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                class="icon icon-tabler icon-tabler-filter-check" width="24"
+                                                height="24" viewbox="0 0 24 24" stroke-width="2" stroke="currentColor"
+                                                fill="none" stroke-linecap="round" stroke-linejoin="round">
                                                 <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                                <path d="M11.18 20.274l-2.18 .726v-8.5l-4.48 -4.928a2 2 0 0 1 -.52 -1.345v-2.227h16v2.172a2 2 0 0 1 -.586 1.414l-4.414 4.414v3"></path>
+                                                <path
+                                                    d="M11.18 20.274l-2.18 .726v-8.5l-4.48 -4.928a2 2 0 0 1 -.52 -1.345v-2.227h16v2.172a2 2 0 0 1 -.586 1.414l-4.414 4.414v3">
+                                                </path>
                                                 <path d="M15 19l2 2l4 -4"></path>
                                             </svg>
                                         </a>
                                     </div>
                                     <div class="col-auto">
-                                        <a href="javascript:void(0)" class="btn btn-icon" aria-label="Button" id="btnInsReload" data-bs-toggle="tooltip" data-bs-placement="top" title="Supprimer le filtre">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-refresh" width="24" height="24" viewbox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                        <a href="javascript:void(0)" class="btn btn-icon" aria-label="Button"
+                                            id="btnInsReload" data-bs-toggle="tooltip" data-bs-placement="top"
+                                            title="Supprimer le filtre">
+                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                class="icon icon-tabler icon-tabler-refresh" width="24" height="24"
+                                                viewbox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                                stroke-linecap="round" stroke-linejoin="round">
                                                 <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
                                                 <path d="M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4"></path>
                                                 <path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4"></path>
@@ -121,14 +186,22 @@
                                         </a>
                                     </div>
                                     <div class="col-auto dropdown">
-                                        <a href="javascript:void(0)" class="btn dropdown-toggle text-black" data-bs-boundary="viewport" data-bs-toggle="dropdown" aria-expanded="true" title="Générer votre rapport">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-file-spreadsheet" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                                    <path d="M14 3v4a1 1 0 0 0 1 1h4"></path>
-                                                    <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z"></path>
-                                                    <path d="M8 11h8v7h-8z"></path>
-                                                    <path d="M8 15h8"></path>
-                                                    <path d="M11 11v7"></path>
+                                        <a href="javascript:void(0)" class="btn dropdown-toggle text-black"
+                                            data-bs-boundary="viewport" data-bs-toggle="dropdown" aria-expanded="true"
+                                            title="Générer votre rapport">
+                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                class="icon icon-tabler icon-tabler-file-spreadsheet" width="24"
+                                                height="24" viewBox="0 0 24 24" stroke-width="2"
+                                                stroke="currentColor" fill="none" stroke-linecap="round"
+                                                stroke-linejoin="round">
+                                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                                <path d="M14 3v4a1 1 0 0 0 1 1h4"></path>
+                                                <path
+                                                    d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z">
+                                                </path>
+                                                <path d="M8 11h8v7h-8z"></path>
+                                                <path d="M8 15h8"></path>
+                                                <path d="M11 11v7"></path>
                                             </svg>
                                             Générer vos rapports
                                         </a>
@@ -147,30 +220,54 @@
                         <div class="card-body p-2">
                             <div class="row row-cards">
                                 <div class="col-md-3">
-                                    @include('tenant.widgets.inscrits.card-inscrits-detail' , ['card_title' => "Nombre d'inscrits"  , 'card_data' =>  $learnersInscriptions['total']])
+                                    @include('tenant.widgets.inscrits.card-inscrits-detail', [
+                                        'card_title' => "Nombre d'inscrits",
+                                        'card_data' => $learnersInscriptions['total'],
+                                    ])
                                 </div>
                                 <div class="col-md-3">
-                                    @include('tenant.widgets.inscrits.card-inscrits-detail' , ['card_title' => "Inscrits actifs"  , 'card_data' =>  $learnersInscriptions['active']])
+                                    @include('tenant.widgets.inscrits.card-inscrits-detail', [
+                                        'card_title' => 'Inscrits actifs',
+                                        'card_data' => $learnersInscriptions['active'],
+                                    ])
                                 </div>
                                 <div class="col-md-3">
-                                    @include('tenant.widgets.inscrits.card-inscrits-detail' , ['card_title' => "Inscrits inactifs"  , 'card_data' =>  $learnersInscriptions['inactive']])
+                                    @include('tenant.widgets.inscrits.card-inscrits-detail', [
+                                        'card_title' => 'Inscrits inactifs',
+                                        'card_data' => $learnersInscriptions['inactive'],
+                                    ])
                                 </div>
                                 <div class="col-md-3">
-                                    @include('tenant.widgets.inscrits.card-inscrits-detail' , ['card_title' => "Inscrits archivés"  , 'card_data' =>  $learnersInscriptions['archive']])
+                                    @include('tenant.widgets.inscrits.card-inscrits-detail', [
+                                        'card_title' => 'Inscrits archivés',
+                                        'card_data' => $learnersInscriptions['archive'],
+                                    ])
                                 </div>
                                 <div class="col-md-3">
-                                    @include('tenant.widgets.times.session-time' , ['total_session_time' => $timingDetails['total_session_time'], 'avg_session_time' => $timingDetails['avg_session_time']])
+                                    @include('tenant.widgets.times.session-time', [
+                                        'total_session_time' => $timingDetails['total_session_time'],
+                                        'avg_session_time' => $timingDetails['avg_session_time'],
+                                    ])
                                 </div>
-                                <div class="col-md-3 {{ $cmi_time_conf == false ? 'opacity-10' : ''  }}">
-                                    @include('tenant.widgets.times.cmi-time' , ['total_cmi_time' => $timingDetails['total_cmi_time'], 'avg_cmi_time' => $timingDetails['avg_cmi_time']])
+                                <div class="col-md-3 {{ $cmi_time_conf == false ? 'opacity-10' : '' }}">
+                                    @include('tenant.widgets.times.cmi-time', [
+                                        'total_cmi_time' => $timingDetails['total_cmi_time'],
+                                        'avg_cmi_time' => $timingDetails['avg_cmi_time'],
+                                    ])
                                 </div>
                                 <div class="col-md-3 {{ $calculated_time_conf == false ? 'opacity-10' : '' }}">
-                                    @include('tenant.widgets.times.calculated-time' , ['total_calculated_time' => $timingDetails['total_calculated_time'], 'avg_calculated_time' => $timingDetails['avg_calculated_time']])
+                                    @include('tenant.widgets.times.calculated-time', [
+                                        'total_calculated_time' => $timingDetails['total_calculated_time'],
+                                        'avg_calculated_time' => $timingDetails['avg_calculated_time'],
+                                    ])
                                 </div>
                                 <div class="col-md-3 {{ $recommended_time_conf == false ? 'opacity-10' : '' }}">
-                                    @include('tenant.widgets.times.recommended-time' , ['total_recommended_time' => $timingDetails['total_recommended_time'], 'avg_recommended_time' => $timingDetails['avg_recommended_time']])
+                                    @include('tenant.widgets.times.recommended-time', [
+                                        'total_recommended_time' => $timingDetails['total_recommended_time'],
+                                        'avg_recommended_time' => $timingDetails['avg_recommended_time'],
+                                    ])
                                 </div>
-                                @if($categorie)
+                                @if ($categorie)
                                     <div class="col-md-4">
                                         @include('tenant.widgets.inscrits.chart-inscrits-categorie')
                                     </div>
@@ -191,14 +288,22 @@
                             <div class="card-actions btn-actions d-md-block d-sm-block d-lg-block">
                                 <div class="row g-2">
                                     <div class="col-auto dropdown">
-                                        <a href="javascript:void(0)" class="btn dropdown-toggle text-black" data-bs-boundary="viewport" data-bs-toggle="dropdown" aria-expanded="true" title="Générer votre rapport">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-file-spreadsheet" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                                    <path d="M14 3v4a1 1 0 0 0 1 1h4"></path>
-                                                    <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z"></path>
-                                                    <path d="M8 11h8v7h-8z"></path>
-                                                    <path d="M8 15h8"></path>
-                                                    <path d="M11 11v7"></path>
+                                        <a href="javascript:void(0)" class="btn dropdown-toggle text-black"
+                                            data-bs-boundary="viewport" data-bs-toggle="dropdown" aria-expanded="true"
+                                            title="Générer votre rapport">
+                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                class="icon icon-tabler icon-tabler-file-spreadsheet" width="24"
+                                                height="24" viewBox="0 0 24 24" stroke-width="2"
+                                                stroke="currentColor" fill="none" stroke-linecap="round"
+                                                stroke-linejoin="round">
+                                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                                <path d="M14 3v4a1 1 0 0 0 1 1h4"></path>
+                                                <path
+                                                    d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z">
+                                                </path>
+                                                <path d="M8 11h8v7h-8z"></path>
+                                                <path d="M8 15h8"></path>
+                                                <path d="M11 11v7"></path>
                                             </svg>
                                             Générer vos rapports
                                         </a>
@@ -229,17 +334,19 @@
                                     @include('tenant.widgets.modules.digital')
                                 </div>
                                 <div class="col-lg-4">
-                                  @include('tenant.widgets.modules.speex-global')
+                                    @include('tenant.widgets.modules.speex-global')
                                 </div>
                                 <div class="col-lg-8">
                                     <div class="card h-100">
                                         <div class="card-header">
-                                            <h3 class="card-title">Statistique du formation langue par niveau et temps de formation</h3>
+                                            <h3 class="card-title">Statistique du formation langue par niveau et temps de
+                                                formation</h3>
                                             <div class="card-actions btn-actions d-md-block d-sm-block d-lg-block d-none">
                                                 <div class="row g-2">
                                                     <div class="col">
                                                         <div class="form-group">
-                                                            <select type="text" class="form-select" id="select-lgs" value=""></select>
+                                                            <select type="text" class="form-select" id="select-lgs"
+                                                                value=""></select>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -261,10 +368,11 @@
                                     <div class="card h-100">
                                         <div class="card-body">
                                             <div class="d-flex">
-                                                <h3 class="card-title">Répartition de temps de session,temps d'engagement, temps calculé et le temps pédagogique recommandé par catégorie :</h3>
+                                                <h3 class="card-title">Répartition de temps de session,temps d'engagement,
+                                                    temps calculé et le temps pédagogique recommandé par catégorie :</h3>
                                             </div>
                                             <div id="chart-combination">
-                                                {{ $timingChart  !=null  ? $timingChart->render() : ''}}
+                                                {{ $timingChart != null ? $timingChart->render() : '' }}
                                             </div>
                                         </div>
                                     </div>
@@ -295,17 +403,31 @@
                                         </div>
                                     </div>
                                     <div class="col-auto">
-                                        <a href="javascript:void(0)" class="btn btn-icon" aria-label="Button" id="btnLscFilter" data-bs-toggle="tooltip" data-bs-placement="top" title="Appliquer le filtre">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-filter-check" width="24" height="24" viewbox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                        <a href="javascript:void(0)" class="btn btn-icon" aria-label="Button"
+                                            id="btnLscFilter" data-bs-toggle="tooltip" data-bs-placement="top"
+                                            title="Appliquer le filtre">
+                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                class="icon icon-tabler icon-tabler-filter-check" width="24"
+                                                height="24" viewbox="0 0 24 24" stroke-width="2"
+                                                stroke="currentColor" fill="none" stroke-linecap="round"
+                                                stroke-linejoin="round">
                                                 <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                                <path d="M11.18 20.274l-2.18 .726v-8.5l-4.48 -4.928a2 2 0 0 1 -.52 -1.345v-2.227h16v2.172a2 2 0 0 1 -.586 1.414l-4.414 4.414v3"></path>
+                                                <path
+                                                    d="M11.18 20.274l-2.18 .726v-8.5l-4.48 -4.928a2 2 0 0 1 -.52 -1.345v-2.227h16v2.172a2 2 0 0 1 -.586 1.414l-4.414 4.414v3">
+                                                </path>
                                                 <path d="M15 19l2 2l4 -4"></path>
                                             </svg>
                                         </a>
                                     </div>
                                     <div class="col-auto">
-                                        <a href="javascript:void(0)" class="btn btn-icon" aria-label="Button" id="btnLscReload" data-bs-toggle="tooltip" data-bs-placement="top" title="Supprimer le filtre">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-refresh" width="24" height="24" viewbox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                        <a href="javascript:void(0)" class="btn btn-icon" aria-label="Button"
+                                            id="btnLscReload" data-bs-toggle="tooltip" data-bs-placement="top"
+                                            title="Supprimer le filtre">
+                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                class="icon icon-tabler icon-tabler-refresh" width="24"
+                                                height="24" viewbox="0 0 24 24" stroke-width="2"
+                                                stroke="currentColor" fill="none" stroke-linecap="round"
+                                                stroke-linejoin="round">
                                                 <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
                                                 <path d="M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4"></path>
                                                 <path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4"></path>
@@ -313,14 +435,22 @@
                                         </a>
                                     </div>
                                     <div class="col-auto dropdown">
-                                        <a href="javascript:void(0)" class="btn dropdown-toggle text-black" data-bs-boundary="viewport" data-bs-toggle="dropdown" aria-expanded="true" title="Générer votre rapport">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-file-spreadsheet" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                                    <path d="M14 3v4a1 1 0 0 0 1 1h4"></path>
-                                                    <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z"></path>
-                                                    <path d="M8 11h8v7h-8z"></path>
-                                                    <path d="M8 15h8"></path>
-                                                    <path d="M11 11v7"></path>
+                                        <a href="javascript:void(0)" class="btn dropdown-toggle text-black"
+                                            data-bs-boundary="viewport" data-bs-toggle="dropdown" aria-expanded="true"
+                                            title="Générer votre rapport">
+                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                class="icon icon-tabler icon-tabler-file-spreadsheet" width="24"
+                                                height="24" viewBox="0 0 24 24" stroke-width="2"
+                                                stroke="currentColor" fill="none" stroke-linecap="round"
+                                                stroke-linejoin="round">
+                                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                                <path d="M14 3v4a1 1 0 0 0 1 1h4"></path>
+                                                <path
+                                                    d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z">
+                                                </path>
+                                                <path d="M8 11h8v7h-8z"></path>
+                                                <path d="M8 15h8"></path>
+                                                <path d="M11 11v7"></path>
                                             </svg>
                                             Générer vos rapports
                                         </a>
@@ -340,7 +470,9 @@
                             <div class="container container-slim py-4 d-none" id="loaderLsc">
                                 <div class="text-center">
                                     <div class="mb-3">
-                                        <a href="." class="navbar-brand navbar-brand-autodark"><img src="{{ asset('static/logo/logo.svg') }}" height="36" alt=""></a>
+                                        <a href="." class="navbar-brand navbar-brand-autodark"><img
+                                                src="{{ asset('static/logo/logo.svg') }}" height="36"
+                                                alt=""></a>
                                     </div>
                                     <div class="text-muted mb-3">la préparation de vos données</div>
                                     <div class="progress progress-sm mb-3">
@@ -354,7 +486,8 @@
                                         <div class="card-body">
                                             <div class="d-flex justify-content-center">
                                                 <div class="h2 mb-0 me-2">Total des tickets
-                                                    <span class="h1 mb-0 me-2" id="tickets">&nbsp;{{ $lscStats['totalTickets'] }}</span>
+                                                    <span class="h1 mb-0 me-2"
+                                                        id="tickets">&nbsp;{{ $lscStats['totalTickets'] }}</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -365,7 +498,8 @@
                                         <div class="card-body">
                                             <div class="d-flex justify-content-center">
                                                 <div class="h2 mb-0 me-2">Total des appels
-                                                    <span class="h1 mb-0 me-2" id="calls">&nbsp;{{ $lscStats['totalCalls'] }}</span>
+                                                    <span class="h1 mb-0 me-2"
+                                                        id="calls">&nbsp;{{ $lscStats['totalCalls'] }}</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -379,7 +513,7 @@
                                             </div>
                                             <div class="col-auto">
                                                 <div id="chart-ticket-pie">
-                                                    {{  $lscStats['ticketsCharts']  !=null  ?  $lscStats['ticketsCharts']->render() : ''}}
+                                                    {{ $lscStats['ticketsCharts'] != null ? $lscStats['ticketsCharts']->render() : '' }}
                                                 </div>
                                             </div>
                                         </div>
@@ -393,7 +527,7 @@
                                             </div>
                                             <div class="col-auto">
                                                 <div id="chart-calls-sujet-type">
-                                                    {{  $lscStats['callsPerSubjectAndTypeChart']  !=null  ?  $lscStats['callsPerSubjectAndTypeChart']->render() : ''}}
+                                                    {{ $lscStats['callsPerSubjectAndTypeChart'] != null ? $lscStats['callsPerSubjectAndTypeChart']->render() : '' }}
 
                                                 </div>
                                             </div>
@@ -408,7 +542,7 @@
                                             </div>
                                             <div class="col-auto">
                                                 <div id="chart-calls-statut-type">
-                                                    {{  $lscStats['callsPerStatutAndTypeChart']  !=null  ?  $lscStats['callsPerStatutAndTypeChart']->render() : ''}}
+                                                    {{ $lscStats['callsPerStatutAndTypeChart'] != null ? $lscStats['callsPerStatutAndTypeChart']->render() : '' }}
 
                                                 </div>
                                             </div>
@@ -427,60 +561,99 @@
     @include('tenant.partials.footer.bottom')
 @stop
 @section('ideoreport_libs')
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-<script src="{{ global_asset('dist/libs/tom-select/dist/js/tom-select.base.min.js') }}" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="{{ global_asset('dist/libs/tom-select/dist/js/tom-select.base.min.js') }}" defer></script>
 @stop
 @section('ideoreport_js')
-<script>
-    // @formatter:off
-    document.addEventListener("DOMContentLoaded", function () {
-    	var el;
-    	window.TomSelect && (new TomSelect(el = document.getElementById('select-enis'), {
-    		copyClassesToDropdown: false,
-    		dropdownParent: 'body',
-    		controlInput: '<input>',
-    		render:{
-    			item: function(data,escape) {
-    				if( data.customProperties ){
-    					return '<div><span class="dropdown-item-indicator">' + data.customProperties + '</span>' + escape(data.text) + '</div>';
-    				}
-    				return '<div>' + escape(data.text) + '</div>';
-    			},
-    			option: function(data,escape){
-    				if( data.customProperties ){
-    					return '<div><span class="dropdown-item-indicator">' + data.customProperties + '</span>' + escape(data.text) + '</div>';
-    				}
-    				return '<div>' + escape(data.text) + '</div>';
-    			},
-    		},
-    	}));
-    });
-    // @formatter:on
-  </script>
-  <script>
-    // @formatter:off
-    document.addEventListener("DOMContentLoaded", function () {
-    	var el;
-    	window.TomSelect && (new TomSelect(el = document.getElementById('select-lps'), {
-    		copyClassesToDropdown: false,
-    		dropdownParent: 'body',
-    		controlInput: '<input>',
-    		render:{
-    			item: function(data,escape) {
-    				if( data.customProperties ){
-    					return '<div><span class="dropdown-item-indicator">' + data.customProperties + '</span>' + escape(data.text) + '</div>';
-    				}
-    				return '<div>' + escape(data.text) + '</div>';
-    			},
-    			option: function(data,escape){
-    				if( data.customProperties ){
-    					return '<div><span class="dropdown-item-indicator">' + data.customProperties + '</span>' + escape(data.text) + '</div>';
-    				}
-    				return '<div>' + escape(data.text) + '</div>';
-    			},
-    		},
-    	}));
-    });
-    // @formatter:on
-  </script>
+    <script>
+        // @formatter:off
+        document.addEventListener("DOMContentLoaded", function() {
+            var el;
+            window.TomSelect && (new TomSelect(el = document.getElementById('select-groupes'), {
+                copyClassesToDropdown: false,
+                dropdownParent: 'body',
+                controlInput: '<input>',
+                render: {
+                    item: function(data, escape) {
+                        if (data.customProperties) {
+                            return '<div><span class="dropdown-item-indicator">' + data
+                                .customProperties + '</span>' + escape(data.text) + '</div>';
+                        }
+                        return '<div>' + escape(data.text) + '</div>';
+                    },
+                    option: function(data, escape) {
+                        if (data.customProperties) {
+                            return '<div><span class="dropdown-item-indicator">' + data
+                                .customProperties + '</span>' + escape(data.text) + '</div>';
+                        }
+                        return '<div>' + escape(data.text) + '</div>';
+                    },
+                },
+            }));
+        });
+        // @formatter:on
+    </script>
+    <script>
+        // @formatter:off
+        document.addEventListener("DOMContentLoaded", function() {
+            var el;
+            window.TomSelect && (new TomSelect(el = document.getElementById('select-enis'), {
+                copyClassesToDropdown: false,
+                dropdownParent: 'body',
+                controlInput: '<input>',
+                render: {
+                    item: function(data, escape) {
+                        if (data.customProperties) {
+                            return '<div><span class="dropdown-item-indicator">' + data
+                                .customProperties + '</span>' + escape(data.text) + '</div>';
+                        }
+                        return '<div>' + escape(data.text) + '</div>';
+                    },
+                    option: function(data, escape) {
+                        if (data.customProperties) {
+                            return '<div><span class="dropdown-item-indicator">' + data
+                                .customProperties + '</span>' + escape(data.text) + '</div>';
+                        }
+                        return '<div>' + escape(data.text) + '</div>';
+                    },
+                },
+            }));
+        });
+        // @formatter:on
+    </script>
+    <script>
+        // @formatter:off
+        document.addEventListener("DOMContentLoaded", function() {
+            var el;
+            window.TomSelect && (new TomSelect(el = document.getElementById('select-lps'), {
+                copyClassesToDropdown: false,
+                dropdownParent: 'body',
+                controlInput: '<input>',
+                render: {
+                    item: function(data, escape) {
+                        if (data.customProperties) {
+                            return '<div><span class="dropdown-item-indicator">' + data
+                                .customProperties + '</span>' + escape(data.text) + '</div>';
+                        }
+                        return '<div>' + escape(data.text) + '</div>';
+                    },
+                    option: function(data, escape) {
+                        if (data.customProperties) {
+                            return '<div><span class="dropdown-item-indicator">' + data
+                                .customProperties + '</span>' + escape(data.text) + '</div>';
+                        }
+                        return '<div>' + escape(data.text) + '</div>';
+                    },
+                },
+            }));
+        });
+        // @formatter:on
+    </script>
+    <script>
+        function changeGroupe() {
+            var groupeId = document.getElementById("select-groupes").value;
+            console.log(groupeId);
+            window.location = '/plateforme/groups/' + groupeId;
+        }
+    </script>
 @stop

@@ -28,6 +28,16 @@ class DoceboGetLoCmiData extends Request
         return '/lms/index.php';
     }
 
+     /**
+     * Default HTTP client options
+     */
+    protected function defaultConfig(): array
+    {
+        return [
+            'timeout' => 60,
+        ];
+    }
+
     protected function defaultQuery(): array
     {
 

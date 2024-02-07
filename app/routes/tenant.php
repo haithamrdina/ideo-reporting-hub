@@ -40,8 +40,9 @@ Route::middleware([
         Route::middleware(['user.auth:user', 'plateforme'])->prefix('plateforme')->name('plateforme.')->group(function () {
             Route::get('/home', [PlateformeHomeController::class , 'index'])->name('home');
             Route::get('/projects', [ProjectController::class , 'index'])->name('projects');
-            Route::get('/projects/updateData/{projectId}',[ProjectController::class , 'updateData']);
+            Route::get('/projects/{projectId}',[ProjectController::class , 'updateData'])->name('projects.updateData');
             Route::get('/groups', [GroupController::class , 'index'])->name('groups');
+            Route::get('/groups/{groupeId}',[GroupController::class , 'updateData'])->name('groups.updateData');
         });
 
         Route::middleware(['user.auth:user', 'project'])->prefix('project')->name('project.')->group(function () {
@@ -54,3 +55,4 @@ Route::middleware([
         });
     });
 });
+
