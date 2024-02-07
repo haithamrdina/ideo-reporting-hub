@@ -30,9 +30,9 @@ class GroupeReportService{
                 $statDate =  (now()->year - 1) . $date->format('-m-d');
             }
 
-            $total_learners = Learner::where('creation_date', '>=', $statDate)->where('project_id', $groupe->id)->count();
-            $active_learners = Learner::where('last_access_date', '>=', $statDate)->where('statut', 'active')->where('project_id', $groupe->id)->count();
-            $inactive_learners =  Learner::where('last_access_date' , '<' , $statDate)->where('statut', 'active')->where('project_id', $groupe->id)->count();
+            $total_learners = Learner::where('creation_date', '>=', $statDate)->where('group_id', $groupe->id)->count();
+            $active_learners = Learner::where('last_access_date', '>=', $statDate)->where('statut', 'active')->where('group_id', $groupe->id)->count();
+            $inactive_learners =  Learner::where('last_access_date' , '<' , $statDate)->where('statut', 'active')->where('group_id', $groupe->id)->count();
             $statsLearners = [
                 'total' => $total_learners,
                 'active' => $active_learners,
@@ -59,7 +59,7 @@ class GroupeReportService{
                 $statDate =  (now()->year - 1) . $date->format('-m-d');
             }
 
-            $active_learners = Learner::where('last_access_date', '>=', $statDate)->where('statut', 'active')->where('project_id', $groupe->id)->count();
+            $active_learners = Learner::where('last_access_date', '>=', $statDate)->where('statut', 'active')->where('group_id', $groupe->id)->count();
             $moduleDataTimes = Enrollmodule::calculateModuleDataTimesPerGroup($statDate, $groupe->id);
             $moocDataTimes = Enrollmooc::calculateMoocDataTimesPerGroup($statDate, $groupe->id);
             $speexDataTimes = Langenroll::calculateSpeexDataTimesPerGroup($statDate, $groupe->id);

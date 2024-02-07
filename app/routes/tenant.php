@@ -8,6 +8,9 @@ use App\Http\Controllers\Tenant\Plateforme\GroupController;
 use App\Http\Controllers\Tenant\Plateforme\HomeController as PlateformeHomeController;
 use App\Http\Controllers\Tenant\Plateforme\ProjectController;
 use App\Http\Controllers\Tenant\Project\GroupController as ProjectGroupController;
+use App\Livewire\Tenant\Plateforme\Groupe;
+use App\Livewire\Tenant\Plateforme\Home;
+use App\Livewire\Tenant\Plateforme\Project;
 use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Middleware\InitializeTenancyByDomainOrSubdomain;
 use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
@@ -38,10 +41,13 @@ Route::middleware([
         });*/
 
         Route::middleware(['user.auth:user', 'plateforme'])->prefix('plateforme')->name('plateforme.')->group(function () {
+            Route::get('/livewire/home', Home::class)->name('livewire.home');
             Route::get('/home', [PlateformeHomeController::class , 'index'])->name('home');
             Route::get('/projects', [ProjectController::class , 'index'])->name('projects');
+            Route::get('/livewire/projects', Project::class)->name('livewire.projects');
             Route::get('/projects/{projectId}',[ProjectController::class , 'updateData'])->name('projects.updateData');
             Route::get('/groups', [GroupController::class , 'index'])->name('groups');
+            Route::get('/livewire/groups', Groupe::class)->name('livewire.groups');
             Route::get('/groups/{groupeId}',[GroupController::class , 'updateData'])->name('groups.updateData');
         });
 
