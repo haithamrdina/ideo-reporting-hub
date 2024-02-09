@@ -32,7 +32,7 @@
                                         <path d="M15.063 5.7l2.881 4.61" />
                                     </svg>
                                 </span>
-                                <select type="text" class="form-select" id="select-branches">
+                                <select type="text" class="form-select" id="select-branches" wire:model.live="selectedProject">
                                     @foreach ($projects as $projectData)
                                         <option value="{{ $projectData->id }}"> {{ $projectData->name }}</option>
                                     @endforeach

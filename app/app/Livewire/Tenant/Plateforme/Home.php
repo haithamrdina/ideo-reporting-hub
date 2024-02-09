@@ -7,30 +7,33 @@ use Livewire\Component;
 
 class Home extends Component
 {
-    public function render()
-    {
+    public $contract_start_date_conf;
+    public $enrollfields;
+    public $statDate;
+    public $statsInscriptionsPerDate;
+    public $statsTimingPerDate;
+
+    public function mount(){
         $plateformeReportService = new PlateformeReportService();
-        $contract_start_date_conf = config('tenantconfigfields.contract_start_date');
-        $enrollfields = config('tenantconfigfields.enrollmentfields');
-        if($contract_start_date_conf != null)
+        $this->contract_start_date_conf = config('tenantconfigfields.contract_start_date');
+        $this->enrollfields = config('tenantconfigfields.enrollmentfields');
+        if($this->contract_start_date_conf != null)
         {
-            $date = \Carbon\Carbon::createFromFormat('Y-m-d',   $contract_start_date_conf);
+            $date = \Carbon\Carbon::createFromFormat('Y-m-d',   $this->contract_start_date_conf);
             $yearOfDate = $date->year;
             $currentYear = now()->year;
             if ($yearOfDate > $currentYear) {
-                $statDate = $date->format('d-m-') . now()->year;
+                $this->statDate = $date->format('d-m-') . now()->year;
             } else {
-                $statDate =  $date->format('d-m-') . (now()->year - 1) ;
+                $this->statDate =  $date->format('d-m-') . (now()->year - 1) ;
             }
         }
-        $statsInscriptionsPerDate = $plateformeReportService->getLearnersInscriptionsPerStatDate($contract_start_date_conf);
-        $statsTimingPerDate = $plateformeReportService->getTimingDetailsPerStatDate($contract_start_date_conf,  $enrollfields);
-        return view('livewire.tenant.plateforme.home' ,[
-            'contract_start_date_conf' => $contract_start_date_conf,
-            'enrollfields' => $enrollfields,
-            'statDate' => $statDate,
-            'statsInscriptionsPerDate' => $statsInscriptionsPerDate,
-            'statsTimingPerDate' => $statsTimingPerDate,
-        ])->layoutData(['title' => 'Plateforme']);
+        $this->statsInscriptionsPerDate = $plateformeReportService->getLearnersInscriptionsPerStatDate($this->contract_start_date_conf);
+        $this->statsTimingPerDate = $plateformeReportService->getTimingDetailsPerStatDate($this->contract_start_date_conf,  $this->enrollfields);
+    }
+
+    public function render()
+    {
+        return view('livewire.tenant.plateforme.home')->layoutData(['title' => 'Plateforme']);
     }
 }

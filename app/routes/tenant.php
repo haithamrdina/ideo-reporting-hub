@@ -41,13 +41,20 @@ Route::middleware([
         });*/
 
         Route::middleware(['user.auth:user', 'plateforme'])->prefix('plateforme')->name('plateforme.')->group(function () {
-            Route::get('/livewire/home', Home::class)->name('livewire.home');
             Route::get('/home', [PlateformeHomeController::class , 'index'])->name('home');
+            Route::get('/getdata',[PlateformeHomeController::class , 'getData']);
+            Route::get('/getlanguagedata/{selectedLanguage}',[PlateformeHomeController::class , 'getLanguageData']);
+            Route::get('/getdigitaldata/{selectedDigital}',[PlateformeHomeController::class , 'getDigitalData']);
+            Route::get('/getlpdata/{selectedLp}',[PlateformeHomeController::class , 'getLpData']);
+            Route::get('/getinscritsdata/filter',[PlateformeHomeController::class , 'getInscritsPerDate']);
+            Route::get('/getlscdata/filter',[PlateformeHomeController::class , 'getLscPerDate']);
+            Route::get('/inscrits/export',[PlateformeHomeController::class , 'exportInscrits'])->name('inscrits.export');
+            Route::get('/modules/export',[PlateformeHomeController::class , 'exportModules'])->name('modules.export');
+
+
             Route::get('/projects', [ProjectController::class , 'index'])->name('projects');
-            Route::get('/livewire/projects', Project::class)->name('livewire.projects');
             Route::get('/projects/{projectId}',[ProjectController::class , 'updateData'])->name('projects.updateData');
             Route::get('/groups', [GroupController::class , 'index'])->name('groups');
-            Route::get('/livewire/groups', Groupe::class)->name('livewire.groups');
             Route::get('/groups/{groupeId}',[GroupController::class , 'updateData'])->name('groups.updateData');
         });
 

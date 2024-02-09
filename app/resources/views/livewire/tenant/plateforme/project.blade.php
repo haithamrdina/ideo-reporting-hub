@@ -1,14 +1,15 @@
 <div>
-
     <div class="page">
         <!-- Top Navbar -->
         <livewire:tenant.partials.navbar.overlap-topbar />
         <div class="page-wrapper">
             <!-- Page Content -->
-            <livewire:tenant.partials.pages.page-header :projects="$projects" />
+
+            <livewire:tenant.partials.pages.page-header :projects="$projects"/>
             <div class="page-body">
                 <div class="container-xl">
                     <div class="row row-deck row-cards">
+
                         <livewire:tenant.partials.contents.stat-inscrit-per-date
                             :statDateConfig="$contract_start_date_conf"
                             :date="$statDate"
@@ -22,5 +23,4 @@
         </div>
         <livewire:tenant.partials.footer.bottom/>
     </div>
-
 </div>

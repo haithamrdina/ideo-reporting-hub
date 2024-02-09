@@ -8,34 +8,44 @@ use Livewire\Component;
 
 class Project extends Component
 {
+    public $projects;
+    public $contract_start_date_conf;
+    public $enrollfields;
+    public $statDate;
+    public $statsInscriptionsPerDate;
+    public $statsTimingPerDate;
+
+    public $selectedProject = null;
+
+    public function mount()
+    {
+        $this->projects = ModelsProject::all();
+        $this->fetchProjectData($this->selectedProject ?? 1);
+    }
+
+    protected function fetchProjectData($projectId)
+    {
+        $project = ModelsProject::find($projectId);
+        $this->contract_start_date_conf = config('tenantconfigfields.contract_start_date');
+        $this->enrollfields = config('tenantconfigfields.enrollmentfields');
+
+        // Fetch data using the project
+        $projectReportService = new ProjectReportService();
+        $this->statsInscriptionsPerDate = $projectReportService->getLearnersInscriptionsPerStatDate($this->contract_start_date_conf, $project);
+        $this->statsTimingPerDate = $projectReportService->getTimingDetailsPerStatDate($this->contract_start_date_conf, $this->enrollfields, $project);
+    }
+
+    // Listen for the selectedProjectChanged event emitted by child components
+    protected $listeners = ['selectedProjectChanged'];
+
+    public function selectedProjectChanged($projectId)
+    {
+        $this->selectedProject = $projectId;
+        $this->fetchProjectData($projectId);
+    }
 
     public function render()
     {
-        $project =  ModelsProject::find(1);
-        $projects = ModelsProject::all();
-        $projectReportService = new ProjectReportService();
-        $contract_start_date_conf = config('tenantconfigfields.contract_start_date');
-        $enrollfields = config('tenantconfigfields.enrollmentfields');
-        if($contract_start_date_conf != null)
-        {
-            $date = \Carbon\Carbon::createFromFormat('Y-m-d',   $contract_start_date_conf);
-            $yearOfDate = $date->year;
-            $currentYear = now()->year;
-            if ($yearOfDate > $currentYear) {
-                $statDate = $date->format('d-m-') . now()->year;
-            } else {
-                $statDate =  $date->format('d-m-') . (now()->year - 1) ;
-            }
-        }
-        $statsInscriptionsPerDate = $projectReportService->getLearnersInscriptionsPerStatDate($contract_start_date_conf,$project);
-        $statsTimingPerDate = $projectReportService->getTimingDetailsPerStatDate($contract_start_date_conf,  $enrollfields,$project);
-        return view('livewire.tenant.plateforme.project' ,[
-            'projects' => $projects,
-            'contract_start_date_conf' => $contract_start_date_conf,
-            'enrollfields' => $enrollfields,
-            'statDate' => $statDate,
-            'statsInscriptionsPerDate' => $statsInscriptionsPerDate,
-            'statsTimingPerDate' => $statsTimingPerDate,
-        ])->layoutData(['title' => 'Branches']);
+        return view('livewire.tenant.plateforme.project')->layoutData(['title' => 'Branches']);
     }
 }

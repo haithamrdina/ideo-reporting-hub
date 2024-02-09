@@ -81,6 +81,61 @@ class Langenroll extends Model
         return $speexDataTimes;
     }
 
+    public static function calculateSpeexDataTimesBetweenDate($startDate, $endDate)
+    {
+        $moduleDataTimes = DB::table('langenrolls')
+                        ->select(
+                            DB::raw('SUM(
+                                CASE
+                                            WHEN (status = "enrolled" OR status = "waiting") AND enrollment_created_at BETWEEN ? AND ? THEN session_time
+                                            WHEN  status = "in_progress" AND enrollment_updated_at BETWEEN ? AND ? THEN session_time
+                                            WHEN status = "completed" AND enrollment_completed_at BETWEEN ? AND ? THEN session_time
+                                            ELSE 0
+                                END
+                            ) as total_session_time'),
+                            DB::raw('SUM(
+                                CASE
+                                            WHEN (status = "enrolled" OR status = "waiting") AND enrollment_created_at BETWEEN ? AND ? THEN cmi_time
+                                            WHEN  status = "in_progress" AND enrollment_updated_at BETWEEN ? AND ? THEN cmi_time
+                                            WHEN status = "completed" AND enrollment_completed_at BETWEEN ? AND ? THEN cmi_time
+                                            ELSE 0
+                                END
+                            ) as total_cmi_time'),
+                            DB::raw('SUM(
+                                CASE
+                                            WHEN (status = "enrolled" OR status = "waiting") AND enrollment_created_at BETWEEN ? AND ? THEN calculated_time
+                                            WHEN  status = "in_progress" AND enrollment_updated_at BETWEEN ? AND ? THEN calculated_time
+                                            WHEN status = "completed" AND enrollment_completed_at BETWEEN ? AND ? THEN calculated_time
+                                            ELSE 0
+                                END
+                            ) as total_calculated_time'),
+                            DB::raw('SUM(
+                                CASE
+                                            WHEN (status = "enrolled" OR status = "waiting") AND enrollment_created_at BETWEEN ? AND ? THEN recommended_time
+                                            WHEN  status = "in_progress" AND enrollment_updated_at BETWEEN ? AND ? THEN recommended_time
+                                            WHEN status = "completed" AND enrollment_completed_at BETWEEN ? AND ? THEN recommended_time
+                                            ELSE 0
+                                END
+                            ) as total_recommended_time'),
+                        )
+                        ->setBindings([
+                            $startDate, $endDate,
+                            $startDate, $endDate,
+                            $startDate, $endDate,
+                            $startDate, $endDate,
+                            $startDate, $endDate,
+                            $startDate, $endDate,
+                            $startDate, $endDate,
+                            $startDate, $endDate,
+                            $startDate, $endDate,
+                            $startDate, $endDate,
+                            $startDate, $endDate,
+                            $startDate, $endDate
+                        ])
+                        ->first();
+        return $moduleDataTimes;
+    }
+
     public static function calculateSpeexDataTimesPerProject($statDate,$projectId)
     {
         $speexDataTimes = DB::table('langenrolls')

@@ -173,7 +173,8 @@ return [
         App\Providers\HorizonServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         App\Providers\TenancyServiceProvider::class,
-        IcehouseVentures\LaravelChartjs\Providers\ChartjsServiceProvider::class
+        IcehouseVentures\LaravelChartjs\Providers\ChartjsServiceProvider::class,
+        Maatwebsite\Excel\ExcelServiceProvider::class,
     ])->toArray(),
 
     /*
@@ -189,7 +190,8 @@ return [
 
     'aliases' => Facade::defaultAliases()->merge([
         // 'Example' => App\Facades\Example::class,
-        'Redis' => Illuminate\Support\Facades\Redis::class
+        'Redis' => Illuminate\Support\Facades\Redis::class,
+        'Excel' => Maatwebsite\Excel\Facades\Excel::class,
     ])->toArray(),
 
 ];
