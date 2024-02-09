@@ -50,6 +50,8 @@ Route::middleware([
             Route::get('/getlscdata/filter',[PlateformeHomeController::class , 'getLscPerDate']);
             Route::get('/inscrits/export',[PlateformeHomeController::class , 'exportInscrits'])->name('inscrits.export');
             Route::get('/modules/export',[PlateformeHomeController::class , 'exportModules'])->name('modules.export');
+            Route::get('/lps/export',[PlateformeHomeController::class , 'exportLps'])->name('lps.export');
+            Route::get('/lsc/export',[PlateformeHomeController::class , 'exportLsc'])->name('lsc.export');
 
 
             Route::get('/projects', [ProjectController::class , 'index'])->name('projects');

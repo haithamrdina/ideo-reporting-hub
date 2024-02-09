@@ -20,8 +20,8 @@
                             </svg>
                         </a>
                     </div>
-                    <div class="col-auto dropdown">
-                        <a href="javascript:void(0)" class="btn dropdown-toggle text-black" data-bs-boundary="viewport" data-bs-toggle="dropdown" aria-expanded="true" title="Générer votre rapport">
+                    <div class="col-auto">
+                        <a href="{{ route('tenant.plateforme.lps.export') }}" class="btn  text-black" title="Générer votre rapport">
                             <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-file-spreadsheet" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                     <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
                                     <path d="M14 3v4a1 1 0 0 0 1 1h4"></path>
@@ -30,13 +30,8 @@
                                     <path d="M8 15h8"></path>
                                     <path d="M11 11v7"></path>
                             </svg>
-                            Générer vos rapports
+                            Générer votre rapport
                         </a>
-                        <div class="dropdown-menu dropdown-menu-end" data-popper-placement="bottom-end">
-                            <a class="dropdown-item" href="">
-                                rapport de formation transverse
-                            </a>
-                        </div>
                     </div>
                 </div>
             </div>

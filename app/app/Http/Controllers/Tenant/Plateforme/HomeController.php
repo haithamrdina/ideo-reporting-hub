@@ -6,6 +6,8 @@ use App\Charts\InscritPerCategory;
 use App\Charts\InscritPerCategoryAndStatus;
 use App\Exports\ActiveLearnerExport;
 use App\Exports\LearnerExport;
+use App\Exports\LpExport;
+use App\Exports\LscExport;
 use App\Exports\ModuleExport;
 use App\Http\Controllers\Controller;
 use App\Services\PlateformeReportService;
@@ -132,6 +134,14 @@ class HomeController extends Controller
 
     public function exportModules(){
         return Excel::download(new ModuleExport, 'rapport_des_modules.xlsx');
+    }
+
+    public function exportLps(){
+        return Excel::download(new LpExport, 'rapport_de_formation_transverse.xlsx');
+    }
+
+    public function exportLsc(){
+        return Excel::download(new LscExport, 'rapport_learner_success_center.xlsx');
     }
 }
 
