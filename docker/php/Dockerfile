@@ -43,6 +43,15 @@ RUN set -uex; \
 RUN apt update && apt install tzdata -y
 ENV TZ="Africa/Casablanca"
 
+# rabbitmq
+RUN apt-get update && apt-get install -y librabbitmq-dev libssh-dev && docker-php-ext-install bcmath sockets && pecl install amqp && docker-php-ext-enable amqp
+
+# supervisor
+RUN apt-get update && apt-get install -y supervisor
+RUN mkdir -p /var/log/supervisor
+COPY supervisord.conf /etc/supervisor/conf.d/messenger-worker.conf
+RUN service supervisor start
+
 #setup dependencies in php.ini
 RUN cd /usr/local/etc/php/conf.d/ && echo 'memory_limit = -1' >> /usr/local/etc/php/conf.d/docker-php-ram-limit.ini
 RUN cd /usr/local/etc/php/conf.d/ && echo 'max_input_vars = 10000' >> /usr/local/etc/php/conf.d/docker-php-ram-limit.ini
