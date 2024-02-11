@@ -14,6 +14,7 @@ use App\Models\Learner;
 use App\Models\Lp;
 use App\Models\Lpenroll;
 use App\Models\Module;
+use App\Models\Project;
 use App\Models\Ticket;
 use Illuminate\Support\Facades\DB;
 
@@ -34,7 +35,7 @@ class ProjectReportService{
 
             $total_learners = Learner::where('creation_date', '>=', $statDate)->where('project_id', $project->id)->count();
             $active_learners = Learner::where('last_access_date', '>=', $statDate)->where('statut', 'active')->where('project_id', $project->id)->count();
-            $inactive_learners =  Learner::where('last_access_date' , '<' , $statDate)->where('statut', 'active')->where('project_id', $project->id)->count();
+            $inactive_learners =  Learner::where('creation_date' , '>=', $statDate)->where('statut', 'inactive')->where('project_id', $project->id)->count();
             $statsLearners = [
                 'total' => $total_learners,
                 'active' => $active_learners,
@@ -222,19 +223,11 @@ class ProjectReportService{
                 $labels [] = $count->categorie !== null ?  ucfirst($count->categorie) .' '.  $count->total .  ' - (' . $percentage .'%)' : ' Indéterminé'.' '.  $count->total .  ' - (' . $percentage .'%)' ;
             }
 
-            $chartInscritPerCategorie = app()->chartjs
-                ->name('chartInscritPerCategorie')
-                ->type('doughnut')
-                ->size(['width' => 400, 'height' => 200])
-                ->labels($labels)
-                ->datasets([
-                    [
-                        'backgroundColor' => ["#1676FB", "#798bff", "#6b5b95", "#b8acff", "#f9db7b", "#1EE0AC", "#ffa9ce"],
-                        'hoverBackgroundColor' => ["#1676FB", "#798bff", "#6b5b95", "#b8acff", "#f9db7b", "#1EE0AC", "#ffa9ce"],
-                        'data' => $data
-                    ]
-                ])
-                ->options([]);
+            $chartInscritPerCategorie = [
+                'labels' => $labels,
+                'data' => $data
+            ];
+
 
 
             $categories = Learner::where('project_id', $project->id)->distinct()->pluck('categorie')->filter();
@@ -251,29 +244,12 @@ class ProjectReportService{
                 $counts['Archive'][] = Learner::where('categorie', $category)->where('statut', 'archive')->where('project_id', $project->id)->count();
             }
 
-            $chartInscritPerCategoryAndStatus = app()->chartjs
-            ->name('chartInscritPerCategoryAndStatus')
-            ->type('bar')
-            ->size(['width' => 400, 'height' => 200])
-            ->labels($categories->toArray())
-            ->datasets([
-                [
-                    "label" => "Actives",
-                    'backgroundColor' => ['#206BC4'],
-                    'data' => $counts['Active']
-                ],
-                [
-                    "label" => "Inactives",
-                    'backgroundColor' => ['#D63939'],
-                    'data' => $counts['Inactive']
-                ],
-                [
-                    "label" => "Archives",
-                    'backgroundColor' => ['#F59F00'],
-                    'data' => $counts['Archive']
-                ]
-            ])
-            ->options([]);
+            $chartInscritPerCategoryAndStatus =[
+                'labels' => $categories->toArray(),
+                'actives' => $counts['Active'],
+                'inactives' => $counts['Inactive'],
+            ];
+
         }else{
             $chartInscritPerCategorie = null;
             $chartInscritPerCategoryAndStatus = null;
@@ -334,21 +310,11 @@ class ProjectReportService{
             'total_recommended_time' => $total_recommended_time,
         ];
 
-        $softCharts = app()->chartjs
-                            ->name('softchart')
-                            ->type('bar')
-                            ->size(['width' => 400, 'height' => 350])
-                            ->labels(['Non démarré', 'En cours', 'Terminé'])
-                            ->datasets([
-                                [
-                                    "label" => "Total des inscriptions",
-                                    'backgroundColor' => ['#D63939', '#F76707', '#2FB344' ],
-                                    'data' => [$softEnrollsInEnrolled, $softEnrollsInProgress, $softEnrollsInCompleted]
-                                ]
-                            ])
-                            ->options([
-                                'indexAxis'=> 'y',
-                            ]);
+        $softCharts = [
+            'labels' => ['Non démarré', 'En cours', 'Terminé'],
+            'data' => [$softEnrollsInEnrolled, $softEnrollsInProgress, $softEnrollsInCompleted]
+        ];
+
 
         return [
             'statSoftskills' => $statSoftskills,
@@ -365,7 +331,7 @@ class ProjectReportService{
 
         $moduleDigitals = $project->modules->filter(function ($module) {
             return $module->category === 'ENI' && $module->status === CourseStatusEnum::ACTIVE;
-        });
+        })->values();
 
         $digitalEnrolls = Enrollmodule::whereIn('module_docebo_id', $digitalModules)->where('project_id', $project->id)->get();
 
@@ -410,21 +376,74 @@ class ProjectReportService{
             'total_recommended_time' => $total_recommended_time,
         ];
 
-        $digitalCharts = app()->chartjs
-                            ->name('digitalchart')
-                            ->type('bar')
-                            ->size(['width' => 400, 'height' => 350])
-                            ->labels(['Non démarré', 'En cours', 'Terminé'])
-                            ->datasets([
-                                [
-                                    "label" => "Total des inscriptions",
-                                    'backgroundColor' => ['#D63939', '#F76707', '#2FB344' ],
-                                    'data' => [$digitalEnrollsInEnrolled, $digitalEnrollsInProgress, $digitalEnrollsInCompleted]
-                                ]
-                            ])
-                            ->options([
-                                'indexAxis'=> 'y',
-                            ]);
+        $digitalCharts = [
+            'labels' => ['Non démarré', 'En cours', 'Terminé'],
+            'data' =>  [$digitalEnrollsInEnrolled, $digitalEnrollsInProgress, $digitalEnrollsInCompleted]
+        ];
+
+
+        return [
+            'statDigital' => $statDigital,
+            'statDigitalTimes' => $statDigitalTimes,
+            'digitalCharts' => $digitalCharts,
+            'modulesDigital' => $moduleDigitals
+        ];
+    }
+
+    public function getStatDigitalPerModule($enrollfields, $selectedDigital, $projectId){
+        $project = Project::find($projectId);
+
+        $moduleDigitals = $project->modules->filter(function ($module) {
+            return $module->category === 'ENI' && $module->status === CourseStatusEnum::ACTIVE;
+        })->values();
+
+        $digitalEnrolls = Enrollmodule::where('module_docebo_id', $selectedDigital)->where('project_id', $project->id)->get();
+
+        $digitalEnrollsInEnrolled = Enrollmodule::where('module_docebo_id', $selectedDigital)->where('status', 'enrolled')->where('project_id', $projectId)->count();
+        $digitalEnrollsInProgress = Enrollmodule::where('module_docebo_id', $selectedDigital)->where('status', 'in_progress')->where('project_id', $projectId)->count();
+        $digitalEnrollsInCompleted = Enrollmodule::where('module_docebo_id', $selectedDigital)->where('status', 'completed')->where('project_id', $projectId)->count();
+
+        $statDigital = [
+            'enrolled' =>  $digitalEnrollsInEnrolled,
+            'in_progress' => $digitalEnrollsInProgress,
+            'completed' => $digitalEnrollsInCompleted,
+        ];
+
+        $timeConversionService = new TimeConversionService();
+        $total_session_time =  $timeConversionService->convertSecondsToTime($digitalEnrolls->sum('session_time'));
+
+        if($enrollfields['cmi_time'] == true)
+        {
+            $total_cmi_time =  $timeConversionService->convertSecondsToTime($digitalEnrolls->sum('cmi_time'));
+        }else{
+            $total_cmi_time = "**h **min **s";
+        }
+
+        if($enrollfields['calculated_time'] == true)
+        {
+            $total_calculated_time =  $timeConversionService->convertSecondsToTime($digitalEnrolls->sum('calculated_time'));
+        }else{
+            $total_calculated_time = "**h **min **s";
+        }
+
+        if($enrollfields['recommended_time'] == true)
+        {
+            $total_recommended_time =  $timeConversionService->convertSecondsToTime($digitalEnrolls->sum('recommended_time'));
+        }else{
+            $total_recommended_time = "**h **min **s";
+        }
+
+        $statDigitalTimes =[
+            'total_session_time' => $total_session_time,
+            'total_cmi_time' => $total_cmi_time,
+            'total_calculated_time' => $total_calculated_time,
+            'total_recommended_time' => $total_recommended_time,
+        ];
+
+        $digitalCharts = [
+            'labels' => ['Non démarré', 'En cours', 'Terminé'],
+            'data' =>  [$digitalEnrollsInEnrolled, $digitalEnrollsInProgress, $digitalEnrollsInCompleted]
+        ];
 
         return [
             'statDigital' => $statDigital,
@@ -478,14 +497,45 @@ class ProjectReportService{
             'total_recommended_time' => $total_recommended_time,
         ];
 
+        $speexLangues = Langenroll::distinct()->where('project_id', $project->id)->pluck('language');
         return [
             'statSpeex' => $statSpeex,
-            'statSpeexTimes' => $statSpeexTimes
+            'statSpeexTimes' => $statSpeexTimes,
+            'speexLangues' => $speexLangues,
         ];
     }
 
-    public function getStatSpeexChart($enrollfields){
+    public function getStatSpeexChart($projectId, $selectedLanguage){
+        $timeConversionService = new TimeConversionService();
+        $niveaux = ['A1', 'A2', 'B1.1', 'B1.2', 'B2.1', 'B2.2', 'C1.1', 'C1.2', 'Indéterminé'];
 
+        $statistiques = Langenroll::selectRaw('niveau, COUNT(*) AS nombre_total, SUM(cmi_time) AS temps_total_cmi')
+            ->where('language', $selectedLanguage)
+            ->where('project_id', $projectId)
+            ->groupBy('niveau')
+            ->get();
+
+        $nombreTotalArray = [];
+        $tempsTotalCmiArray = [];
+
+        // Initialiser toutes les valeurs à 0
+        foreach ($niveaux as $niveau) {
+            $nombreTotalArray[$niveau] = 0;
+            $tempsTotalCmiArray[$niveau] = 0;
+        }
+
+        // Remplacer les valeurs par celles obtenues dans la requête
+        foreach ($statistiques as $statistique) {
+            $niveau = $statistique->niveau == '' ? 'Indéterminé': $statistique->niveau;
+            $nombreTotalArray[$niveau] = $statistique->nombre_total;
+            $tempsTotalCmiArray[$niveau] = $timeConversionService->convertSecondsToHours($statistique->temps_total_cmi);
+        }
+
+        return [
+            'labels' => $niveaux,
+            'inscrits' => array_values($nombreTotalArray),
+            'heures' => array_values($tempsTotalCmiArray)
+        ];
     }
 
     public function getStatMooc($enrollfields,$project){
@@ -534,21 +584,10 @@ class ProjectReportService{
             'total_recommended_time' => $total_recommended_time,
         ];
 
-        $moocCharts = app()->chartjs
-                ->name('moocchart')
-                ->type('bar')
-                ->size(['width' => 400, 'height' => 230])
-                ->labels(['en attente', 'Non démarré', 'En cours', 'Terminé'])
-                ->datasets([
-                    [
-                        "label" => "Total des inscriptions",
-                        'backgroundColor' => ['#4299E1', '#D63939', '#F76707', '#2FB344' ],
-                        'data' => [$moocEnrollsInWaiting, $moocEnrollsInEnrolled, $moocEnrollsInProgress, $moocEnrollsInCompleted]
-                    ]
-                ])
-                ->options([
-                    'indexAxis'=> 'y',
-                ]);
+        $moocCharts = [
+            'labels' => ['en attente', 'Non démarré', 'En cours', 'Terminé'] ,
+            'data' => [$moocEnrollsInWaiting, $moocEnrollsInEnrolled, $moocEnrollsInProgress, $moocEnrollsInCompleted]
+        ];
 
         return [
             'statMooc' => $statMooc,
@@ -616,34 +655,13 @@ class ProjectReportService{
             $total_recommended_time_eni =null;
         }
 
-        $timingChart = app()->chartjs
-                ->name('timingchart')
-                ->type('bar')
-                ->size(['width' => 400, 'height' => 350])
-                ->labels(['Softskills', 'Digital', 'Langue', 'Mooc'])
-                ->datasets([
-                    [
-                        "label" => "Temps de session",
-                        'backgroundColor' => ['#D63939' ],
-                        'data' => [$total_session_time_cegos, $total_session_time_eni, $total_session_time_speex, $total_session_time_mooc]
-                    ],
-                    [
-                        "label" => "Temps d'engagement",
-                        'backgroundColor' => ['#4299E1'],
-                        'data' => $enrollfields['cmi_time'] == true ?  [$total_cmi_time_cegos, $total_cmi_time_eni, $total_cmi_time_speex, $total_cmi_time_mooc] : []
-                    ],
-                    [
-                        "label" => "Temps calculé ",
-                        'backgroundColor' => ['#F76707'],
-                        'data' => $enrollfields['calculated_time'] == true ?  [$total_calculated_time_cegos, $total_calculated_time_eni, $total_calculated_time_speex, $total_calculated_time_mooc] : []
-                    ],
-                    [
-                        "label" => "Temps pédagogique",
-                        'backgroundColor' => [ '#2FB344' ],
-                        'data' => $enrollfields['recommended_time'] == true ?  [$total_recommended_time_cegos, $total_recommended_time_eni, $total_recommended_time_speex, $total_recommended_time_mooc] : []
-                    ],
-                ])
-                ->options([]);
+        $timingChart = [
+            'labels' => ['Modules softskills', 'Modules digitals', 'Modules langue', 'Mooc'],
+            'session' => [$total_session_time_cegos, $total_session_time_eni, $total_session_time_speex, $total_session_time_mooc],
+            'cmi' => $enrollfields['cmi_time'] == true ?  [$total_cmi_time_cegos, $total_cmi_time_eni, $total_cmi_time_speex, $total_cmi_time_mooc] : [],
+            'calculated' => $enrollfields['calculated_time'] == true ?  [$total_calculated_time_cegos, $total_calculated_time_eni, $total_calculated_time_speex, $total_calculated_time_mooc] : [],
+            'recommended' => $enrollfields['recommended_time'] == true ?  [$total_recommended_time_cegos, $total_recommended_time_eni, $total_recommended_time_speex, $total_recommended_time_mooc] : []
+        ];
 
         return $timingChart;
     }
@@ -697,21 +715,73 @@ class ProjectReportService{
             'total_recommended_time' => $total_recommended_time,
         ];
 
-        $lpCharts = app()->chartjs
-                            ->name('lpchart')
-                            ->type('bar')
-                            ->size(['width' => 400, 'height' => 100])
-                            ->labels(['Non démarré', 'En cours', 'Terminé'])
-                            ->datasets([
-                                [
-                                    "label" => "Total des inscriptions",
-                                    'backgroundColor' => ['#D63939', '#F76707', '#FDE1CD', '#FEF0E6', '#2FB344' ],
-                                    'data' => [$lpEnrollsInEnrolled, $lpEnrollsInProgress, $lpEnrollsInProgressMax, $lpEnrollsInProgressMin, $lpEnrollsInCompleted]
-                                ]
-                            ])
-                            ->options([
-                                'indexAxis'=> 'y',
-                            ]);
+        $lpCharts = [
+            'labels' => ['Non démarré', 'En cours', 'Moins de 50% d\'avancement', 'Plus 50% d\'avancement', 'Terminé'],
+            'data' => [$lpEnrollsInEnrolled, $lpEnrollsInProgress, $lpEnrollsInProgressMin, $lpEnrollsInProgressMax, $lpEnrollsInCompleted]
+        ];
+
+        return [
+            'statLps' => $statLps,
+            'statLpsTimes' => $statLpsTimes,
+            'lpCharts' => $lpCharts,
+            'lps' => $lps
+        ];
+
+    }
+
+    public function geStatsPerLp($enrollfields, $selectedLp, $projectId){
+        $project = Project::find($projectId);
+        $lps = $project->lps;
+        $lpEnrolls = Lpenroll::where('project_id' , $projectId)->where('lp_docebo_id', $selectedLp)->get();
+
+        $lpEnrollsInEnrolled = Lpenroll::where('project_id' , $projectId)->where('status', 'enrolled')->where('lp_docebo_id', $selectedLp)->count();
+        $lpEnrollsInProgress = Lpenroll::where('project_id' , $projectId)->where('status', 'in_progress')->where('lp_docebo_id', $selectedLp)->count();
+        $lpEnrollsInProgressMax = Lpenroll::where('project_id' , $projectId)->where('status', 'in_progress')->where('enrollment_completion_percentage','>=','50')->where('lp_docebo_id', $selectedLp)->count();
+        $lpEnrollsInProgressMin = Lpenroll::where('project_id' , $projectId)->where('status', 'in_progress')->where('enrollment_completion_percentage','<','50')->where('lp_docebo_id', $selectedLp)->count();
+        $lpEnrollsInCompleted = Lpenroll::where('project_id' , $projectId)->where('status', 'completed')->where('lp_docebo_id', $selectedLp)->count();
+
+        $statLps = [
+            'enrolled' =>  $lpEnrollsInEnrolled,
+            'in_progress' => $lpEnrollsInProgress,
+            'in_progress_max' => $lpEnrollsInProgressMax,
+            'in_progress_min' => $lpEnrollsInProgressMin,
+            'completed' => $lpEnrollsInCompleted,
+        ];
+
+        $timeConversionService = new TimeConversionService();
+        $total_session_time =  $timeConversionService->convertSecondsToTime($lpEnrolls->sum('session_time'));
+
+        if($enrollfields['cmi_time'] == true)
+        {
+            $total_cmi_time =  $timeConversionService->convertSecondsToTime($lpEnrolls->sum('cmi_time'));
+        }else{
+            $total_cmi_time = "**h **min **s";
+        }
+
+        if($enrollfields['calculated_time'] == true)
+        {
+            $total_calculated_time =  $timeConversionService->convertSecondsToTime($lpEnrolls->sum('calculated_time'));
+        }else{
+            $total_calculated_time = "**h **min **s";
+        }
+
+        if($enrollfields['recommended_time'] == true)
+        {
+            $total_recommended_time =  $timeConversionService->convertSecondsToTime($lpEnrolls->sum('recommended_time'));
+        }else{
+            $total_recommended_time = "**h **min **s";
+        }
+
+        $statLpsTimes =[
+            'total_session_time' => $total_session_time,
+            'total_cmi_time' => $total_cmi_time,
+            'total_calculated_time' => $total_calculated_time,
+            'total_recommended_time' => $total_recommended_time,
+        ];
+        $lpCharts = [
+            'labels' => ['Non démarré', 'En cours', 'Moins de 50% d\'avancement', 'Plus 50% d\'avancement', 'Terminé'],
+            'data' => [$lpEnrollsInEnrolled, $lpEnrollsInProgress, $lpEnrollsInProgressMin, $lpEnrollsInProgressMax, $lpEnrollsInCompleted]
+        ];
 
         return [
             'statLps' => $statLps,
@@ -735,19 +805,12 @@ class ProjectReportService{
             $ticketsLabels [] = $distribution->status;
             $ticketsData [] = $distribution->count;
         }
-        $ticketsCharts = app()->chartjs
-                ->name('ticketsCharts')
-                ->type('doughnut')
-                ->size(['width' => 150, 'height' => 150])
-                ->labels($ticketsLabels)
-                ->datasets([
-                    [
-                        'backgroundColor' => ["#1676FB", "#798bff", "#6b5b95", "#b8acff", "#f9db7b", "#1EE0AC", "#ffa9ce"],
-                        'hoverBackgroundColor' => ["#1676FB", "#798bff", "#6b5b95", "#b8acff", "#f9db7b", "#1EE0AC", "#ffa9ce"],
-                        'data' => $ticketsData
-                    ]
-                ])
-                ->options([]);
+
+        $ticketsCharts = [
+            'labels' => $ticketsLabels,
+            'data' => $ticketsData
+        ];
+
 
         $callStatisticsSubject = Call::select('subject', 'type', DB::raw('COUNT(*) as call_count'))
                         ->where('project_id', $project->id)
@@ -784,43 +847,17 @@ class ProjectReportService{
             $dataCallsStatusSortantes [] = isset($groupedStatisticsStatus[$key]['sortante']) ? $groupedStatisticsStatus[$key]['sortante'] :  0;
         }
 
-        $callsPerStatutAndTypeChart= app()->chartjs
-            ->name('callsPerStatutAndTypeChart')
-            ->type('line')
-            ->size(['width' => 400, 'height' => 100])
-            ->labels($labelsCallsStatus)
-            ->datasets([
-                [
-                    "label" => "Reçu",
-                    'backgroundColor' => ['#D63939'],
-                    'data' => $dataCallsStatusEntrantes
-                ],
-                [
-                    "label" => "Emis",
-                    'backgroundColor' => ['#2FB344'],
-                    'data' => $dataCallsStatusSortantes
-                ]
-            ])
-            ->options([]);
+        $callsPerStatutAndTypeChart =[
+            'labels' => $labelsCallsStatus,
+            'reçu' => $dataCallsStatusEntrantes,
+            'emis' => $dataCallsStatusSortantes
+        ];
 
-        $callsPerSubjectAndTypeChart= app()->chartjs
-                ->name('callsPerSubjectAndTypeChart')
-                ->type('bar')
-                ->size(['width' => 400, 'height' => 300])
-                ->labels($labelsCallsSubject)
-                ->datasets([
-                    [
-                        "label" => "Reçu",
-                        'backgroundColor' => ['#D63939'],
-                        'data' => $dataCallsSubjectEntrantes
-                    ],
-                    [
-                        "label" => "Emis",
-                        'backgroundColor' => ['#2FB344'],
-                        'data' => $dataCallsSubjectSortantes
-                    ]
-                ])
-                ->options([]);
+        $callsPerSubjectAndTypeChart =[
+            'labels' => $labelsCallsSubject,
+            'reçu' => $dataCallsSubjectEntrantes,
+            'emis' => $dataCallsSubjectSortantes
+        ];
 
         return [
             'totalTickets' => $totalTickets,
@@ -832,7 +869,210 @@ class ProjectReportService{
 
     }
 
+    public function getLearnersInscriptionsPerDate($startDate , $endDate, $projectId){
+        $total_learners = Learner::whereBetween('creation_date', [$startDate, $endDate])->where('project_id', $projectId)->count();
+        $active_learners = Learner::whereNotNull('last_access_date')->whereBetween('last_access_date', [$startDate, $endDate])->where('statut', 'active')->where('project_id', $projectId)->count();
+        $inactive_learners =  Learner::whereBetween('creation_date', [$startDate, $endDate])->where('statut', 'inactive')->where('project_id', $projectId)->count();
 
+        $archive_learners =  Learner::where('statut','archive')->where('project_id', $projectId)->count();
+
+        return  [
+            'total' => $total_learners,
+            'active' => $active_learners,
+            'inactive' => $inactive_learners,
+            'archive' => $archive_learners
+        ];
+    }
+
+    public function getTimingDetailsPerDate($enrollfields, $startDate , $endDate, $projectId){
+        $active_learners = Learner::whereNotNull('last_access_date')->whereBetween('last_access_date', [$startDate, $endDate])->where('statut', 'active')->where('project_id',$projectId)->count();
+
+        $moduleDataTimes = Enrollmodule::calculateModuleDataTimesBetweenDatePerProject($startDate, $endDate, $projectId);
+        $moocDataTimes = Enrollmooc::calculateMoocDataTimesBetweenDatePerProject($startDate, $endDate, $projectId);
+        $speexDataTimes = Langenroll::calculateSpeexDataTimesBetweenDatePerProject($startDate, $endDate, $projectId);
+
+        $timeConversionService = new TimeConversionService();
+        $total_session_time = intval($moduleDataTimes->total_session_time) + intval($moocDataTimes->total_session_time) + intval($speexDataTimes->total_session_time);
+        $avg_session_time =  $active_learners != 0 ? intval($total_session_time/$active_learners) : 0;
+        $total_session_time = $timeConversionService->convertSecondsToTime($total_session_time);
+        $avg_session_time = $timeConversionService->convertSecondsToTime($avg_session_time);
+
+
+        if($enrollfields['cmi_time'] == true)
+        {
+            $total_cmi_time = intval($moduleDataTimes->total_cmi_time) + intval($moocDataTimes->total_cmi_time) + intval($speexDataTimes->total_cmi_time);
+            $avg_cmi_time =  $active_learners != 0 ?  intval($total_cmi_time/$active_learners) :  0;
+            $total_cmi_time = $timeConversionService->convertSecondsToTime($total_cmi_time);
+            $avg_cmi_time = $timeConversionService->convertSecondsToTime($avg_cmi_time);
+        }else{
+            $total_cmi_time = "**h **min **s";
+            $avg_cmi_time = "**h **min **s";
+        }
+
+        if($enrollfields['calculated_time'] == true)
+        {
+            $total_calculated_time = intval($moduleDataTimes->total_calculated_time) + intval($moocDataTimes->total_calculated_time) + intval($speexDataTimes->total_calculated_time);
+            $avg_calculated_time =  $active_learners != 0 ?  intval($total_calculated_time/$active_learners) : 0;
+            $total_calculated_time = $timeConversionService->convertSecondsToTime($total_calculated_time);
+            $avg_calculated_time = $timeConversionService->convertSecondsToTime($avg_calculated_time);
+        }else{
+            $total_calculated_time = "**h **min **s";
+            $avg_calculated_time = "**h **min **s";
+        }
+
+        if($enrollfields['recommended_time'] == true)
+        {
+            $total_recommended_time = intval($moduleDataTimes->total_recommended_time) + intval($moocDataTimes->total_recommended_time) + intval($speexDataTimes->total_recommended_time);
+            $avg_recommended_time =  $active_learners != 0 ?  intval($total_recommended_time/$active_learners) :  0;
+            $total_recommended_time = $timeConversionService->convertSecondsToTime($total_recommended_time);
+            $avg_recommended_time = $timeConversionService->convertSecondsToTime($avg_recommended_time);
+        }else{
+            $total_recommended_time = "**h **min **s";
+            $avg_recommended_time = "**h **min **s";
+        }
+        return [
+            'total_session_time' =>$total_session_time ,
+            'avg_session_time' =>$avg_session_time ,
+            'total_cmi_time' =>$total_cmi_time ,
+            'avg_cmi_time' =>$avg_cmi_time ,
+            'total_calculated_time' =>$total_calculated_time ,
+            'avg_calculated_time' =>$avg_calculated_time ,
+            'total_recommended_time' =>$total_recommended_time ,
+            'avg_recommended_time' =>$avg_recommended_time ,
+
+        ];
+
+    }
+
+    public function getLearnersChartsPerDate($categorie, $startDate , $endDate, $projectId)
+    {
+        if($categorie){
+            $learnerCounts = DB::table('learners')
+            ->select('categorie', DB::raw('count(*) as total'))
+            ->whereBetween('creation_date', [$startDate, $endDate])
+            ->where('project_id' , $projectId)
+            ->groupBy('categorie')
+            ->get();
+
+            $totalLearners = DB::table('learners')->whereBetween('creation_date', [$startDate, $endDate])->where('project_id',$projectId)->count();
+
+            $data = [];
+            $labels = [];
+
+            foreach ($learnerCounts as $count) {
+                $percentage = round(($count->total / $totalLearners) * 100 , 2);
+                $data [] = $count->total;
+                $labels [] = $count->categorie !== null ?  ucfirst($count->categorie) .' '.  $count->total .  ' - (' . $percentage .'%)' : 'Indéterminé'.' '.  $count->total .  ' - (' . $percentage .'%)' ;
+            }
+
+            $chartInscritPerCategorie = [
+                'labels' => $labels,
+                'data' => $data
+            ];
+
+            $categories = Learner::distinct()->where('project_id', $projectId)->pluck('categorie')->filter();
+
+            $counts = [
+                'Active' => [],
+                'Inactive' => [],
+            ];
+
+            foreach ($categories as $category) {
+                $counts['Active'][] = Learner::where('categorie', $category)->whereBetween('creation_date', [$startDate, $endDate])->where('statut', 'active')->where('project_id',$projectId)->count();
+                $counts['Inactive'][] = Learner::where('categorie', $category)->whereBetween('creation_date', [$startDate, $endDate])->where('statut', 'inactive')->where('project_id',$projectId)->count();
+            }
+            $chartInscritPerCategoryAndStatus =[
+                'labels' => $categories->toArray(),
+                'actives' => $counts['Active'],
+                'inactives' => $counts['Inactive'],
+            ];
+
+        }else{
+            $chartInscritPerCategorie = null;
+            $chartInscritPerCategoryAndStatus = null;
+        }
+
+        return [
+           'chartInscritPerCategorie' => $chartInscritPerCategorie,
+           'chartInscritPerCategoryAndStatus' => $chartInscritPerCategoryAndStatus
+        ];
+    }
+
+    public function getLscStatsPerDate($startDate , $endDate, $projectId){
+        $totalTickets = Ticket::whereBetween('ticket_created_at', [$startDate, $endDate])->where('project_id', $projectId)->count();
+        $totalCalls = Call::whereBetween('date_call', [$startDate, $endDate])->where('project_id', $projectId)->count();
+        $ticketDistribution = Ticket::select('status', DB::raw('count(*) as count'))
+                                    ->whereBetween('ticket_created_at', [$startDate, $endDate])
+                                    ->where('project_id', $projectId)
+                                    ->groupBy('status')
+                                    ->get();
+        $ticketsLabels =[];
+        $ticketsData = [];
+        foreach ($ticketDistribution as $distribution) {
+            $ticketsLabels [] = $distribution->status . '- (' . $distribution->count .')';
+            $ticketsData [] = $distribution->count;
+        }
+        $ticketsCharts = [
+            'labels' => $ticketsLabels,
+            'data' => $ticketsData
+        ];
+
+        $callStatisticsSubject = Call::select('subject', 'type', DB::raw('COUNT(*) as call_count'))
+                                    ->whereBetween('date_call', [$startDate, $endDate])
+                                    ->where('project_id', $projectId)
+                                    ->groupBy('subject', 'type')
+                                    ->get();
+        $groupedStatisticsSubject = [];
+        foreach ($callStatisticsSubject as $stat) {
+            $groupedStatisticsSubject[$stat->subject][$stat->type] = $stat->call_count;
+        }
+        $labelsCallsSubject = [];
+        $dataCallsSubjectEntrantes = [];
+        $dataCallsSubjectSortantes = [];
+        foreach ($groupedStatisticsSubject as $key => $value) {
+            $labelsCallsSubject [] = $key;
+            $dataCallsSubjectEntrantes [] = isset($groupedStatisticsSubject[$key]['entrante']) ? $groupedStatisticsSubject[$key]['entrante'] :  0;
+            $dataCallsSubjectSortantes [] = isset($groupedStatisticsSubject[$key]['sortante']) ? $groupedStatisticsSubject[$key]['sortante'] :  0;
+        }
+
+        $callStatisticsStatus = Call::select('status', 'type', DB::raw('COUNT(*) as call_count'))
+                                    ->whereBetween('date_call', [$startDate, $endDate])
+                                    ->where('project_id', $projectId)
+                                    ->groupBy('status', 'type')
+                                    ->get();
+        $groupedStatisticsStatus = [];
+        foreach ($callStatisticsStatus as $stat) {
+            $groupedStatisticsStatus[$stat->status][$stat->type] = $stat->call_count;
+        }
+
+        $labelsCallsStatus = [];
+        $dataCallsStatusEntrantes = [];
+        $dataCallsStatusSortantes = [];
+        foreach ($groupedStatisticsStatus as $key => $value) {
+            $labelsCallsStatus [] = $key;
+            $dataCallsStatusEntrantes [] = isset($groupedStatisticsStatus[$key]['entrante']) ? $groupedStatisticsStatus[$key]['entrante'] :  0;
+            $dataCallsStatusSortantes [] = isset($groupedStatisticsStatus[$key]['sortante']) ? $groupedStatisticsStatus[$key]['sortante'] :  0;
+        }
+        $callsPerStatutAndTypeChart =[
+            'labels' => $labelsCallsStatus,
+            'reçu' => $dataCallsStatusEntrantes,
+            'emis' => $dataCallsStatusSortantes
+        ];
+
+        $callsPerSubjectAndTypeChart =[
+            'labels' => $labelsCallsSubject,
+            'reçu' => $dataCallsSubjectEntrantes,
+            'emis' => $dataCallsSubjectSortantes
+        ];
+        return [
+            'totalTickets' => $totalTickets,
+            'totalCalls' => $totalCalls,
+            'ticketsCharts' => $ticketsCharts,
+            'callsPerSubjectAndTypeChart' => $callsPerSubjectAndTypeChart,
+            'callsPerStatutAndTypeChart' => $callsPerStatutAndTypeChart,
+        ];
+
+    }
 
 }
 

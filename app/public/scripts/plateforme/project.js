@@ -1,10 +1,11 @@
 document.addEventListener('DOMContentLoaded', function() {
+    var selectedProject = document.getElementById('select-projects').value;
     var loader = document.getElementById('loader');
     var content = document.getElementById('content');
     // Create a new XMLHttpRequest object
     var xhr = new XMLHttpRequest();
     // Configure the request
-    xhr.open('GET', '/plateforme/getdata', true);
+    xhr.open('GET', '/plateforme/projects/'+ selectedProject +'/getdata', true);
     // Set up a callback function to handle the response
     xhr.onload = function() {
         if (xhr.status >= 200 && xhr.status < 300) { // Parse the JSON response
@@ -15,7 +16,45 @@ document.addEventListener('DOMContentLoaded', function() {
             updateSoftModules(data.softStats);
             updateDigitalModules(data.digitalStats);
             updateMoocModules(data.moocStats);
-            updateLanguageTiming(data.speexStats)
+            updateLanguageTiming(selectedProject, data.speexStats)
+            updateChartTiming(data.timingChart)
+            updateLps(data.lpStats)
+            updateLsc(data.lscStats)
+            // Hide the loader and display the content
+            loader.classList.add('d-none');
+            content.classList.remove('d-none');
+
+        } else {
+            console.error('Request failed with status:', xhr.status);
+        }
+    };
+    // Send the request
+    xhr.send();
+});
+
+document.getElementById('select-projects').addEventListener('change', function () {
+    var selectedProject = document.getElementById('select-projects').value;
+    var loader = document.getElementById('loader');
+    var content = document.getElementById('content');
+
+    loader.classList.remove('d-none');
+    content.classList.add('d-none');
+    // Create a new XMLHttpRequest object
+    var xhr = new XMLHttpRequest();
+    // Configure the request
+    xhr.open('GET', '/plateforme/projects/'+ selectedProject +'/getdata', true);
+    // Set up a callback function to handle the response
+    xhr.onload = function() {
+        if (xhr.status >= 200 && xhr.status < 300) { // Parse the JSON response
+            var data = JSON.parse(xhr.responseText);
+
+            // Call a function to update the page with the data
+            updateDataInscritPerDate(data.learnersInscriptionsPerStatDate, data.timingDetailsPerStatDate);
+            updateDataInscrit(data.learnersInscriptions, data.timingDetails, data.learnersCharts)
+            updateSoftModules(data.softStats);
+            updateDigitalModules(data.digitalStats);
+            updateMoocModules(data.moocStats);
+            updateLanguageTiming(selectedProject, data.speexStats)
             updateChartTiming(data.timingChart)
             updateLps(data.lpStats)
             updateLsc(data.lscStats)
@@ -32,34 +71,37 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 document.getElementById('select-langues').addEventListener('change', function () {
-
     var loaderLG = document.getElementById('loaderLG');
     var contentLG = document.getElementById('contentLG');
     loaderLG.classList.remove('d-none');
     contentLG.classList.add('d-none');
 
     var selectedLangue = document.getElementById('select-langues').value;
-    updateLanguageChart(selectedLangue);
+    var selectedProject = document.getElementById('select-projects').value;
+    updateLanguageChart(selectedProject, selectedLangue);
 });
 
 
 document.getElementById('select-enis').addEventListener('change', function () {
     var selectedDigital = document.getElementById('select-enis').value;
-    updateDigitalModule(selectedDigital);
+    var selectedProject = document.getElementById('select-projects').value;
+    updateDigitalModule(selectedProject,selectedDigital);
 });
 document.getElementById('btnEniReload').addEventListener('click', function () {
-     updateDigitalModule(null);
+    var selectedProject = document.getElementById('select-projects').value;
+    updateDigitalModule(selectedProject, null);
 });
 
 
 document.getElementById('select-lps').addEventListener('change', function () {
     var selectedLp = document.getElementById('select-lps').value;
-    updateLpData(selectedLp);
+    var selectedProject = document.getElementById('select-projects').value;
+    updateLpData(selectedProject,selectedLp);
 });
 document.getElementById('btnFtReload').addEventListener('click', function () {
-    updateLpData(null);
+    var selectedProject = document.getElementById('select-projects').value;
+    updateLpData(selectedProject,null);
 });
-
 
 document.getElementById('btnInsFilter').addEventListener('click', function () {
     var startDateInput = document.getElementById('insStartDate');
@@ -80,6 +122,7 @@ document.getElementById('btnInsFilter').addEventListener('click', function () {
 
     var formattedStartDate = formatDate(startDateValue);
     var formattedEndDate = formatDate(endDateValue);
+    var selectedProject = document.getElementById('select-projects').value;
 
     var loaderIns = document.getElementById('loaderInscrits');
     var contentIns = document.getElementById('contentInscrits');
@@ -87,7 +130,7 @@ document.getElementById('btnInsFilter').addEventListener('click', function () {
     contentIns.classList.add('d-none');
 
     var xhr = new XMLHttpRequest();
-    xhr.open('GET', '/plateforme/getinscritsdata/filter?start_date=' + formattedStartDate + '&end_date=' + formattedEndDate, true);
+    xhr.open('GET', '/plateforme/projects/'+ selectedProject +'/getinscritsdata/filter?start_date=' + formattedStartDate + '&end_date=' + formattedEndDate, true);
     xhr.onreadystatechange = function () {
         if (xhr.readyState === XMLHttpRequest.DONE) {
             if (xhr.status === 200) {
@@ -107,6 +150,7 @@ document.getElementById('btnInsReload').addEventListener('click', function () {
     var endDateInput = document.getElementById('insEndDate');
     startDateInput.value = ''; // Clears the value of the start date input
     endDateInput.value = ''; // Clears the value of the end date input
+    var selectedProject = document.getElementById('select-projects').value;
 
     var loaderIns = document.getElementById('loaderInscrits');
     var contentIns = document.getElementById('contentInscrits');
@@ -114,7 +158,7 @@ document.getElementById('btnInsReload').addEventListener('click', function () {
     contentIns.classList.add('d-none');
 
     var xhr = new XMLHttpRequest();
-    xhr.open('GET', '/plateforme/getinscritsdata/filter', true);
+    xhr.open('GET', '/plateforme/projects/'+ selectedProject +'/getinscritsdata/filter', true);
     xhr.onreadystatechange = function () {
         if (xhr.readyState === XMLHttpRequest.DONE) {
             if (xhr.status === 200) {
@@ -130,11 +174,10 @@ document.getElementById('btnInsReload').addEventListener('click', function () {
     xhr.send();
 });
 
-
 document.getElementById('btnLscFilter').addEventListener('click', function () {
     var startLscDateInput = document.getElementById('lscStartDate');
     var endLscDateInput = document.getElementById('lscEndDate');
-
+    var selectedProject = document.getElementById('select-projects').value;
     var startLscDateValue = startLscDateInput.value;
     var endLscDateValue = endLscDateInput.value;
 
@@ -160,7 +203,7 @@ document.getElementById('btnLscFilter').addEventListener('click', function () {
 
 
     var xhr = new XMLHttpRequest();
-    xhr.open('GET', '/plateforme/getlscdata/filter?start_date=' + formattedLscStartDate + '&end_date=' + formattedLscEndDate, true);
+    xhr.open('GET', '/plateforme/projects/'+ selectedProject +'/getlscdata/filter?start_date=' + formattedLscStartDate + '&end_date=' + formattedLscEndDate, true);
     xhr.onreadystatechange = function () {
         if (xhr.readyState === XMLHttpRequest.DONE) {
             if (xhr.status === 200) {
@@ -180,6 +223,7 @@ document.getElementById('btnLscReload').addEventListener('click', function () {
     var endLscDateInput = document.getElementById('lscEndDate');
     startLscDateInput.value = ''; // Clears the value of the start date input
     endLscDateInput.value = ''; // Clears the value of the end date input
+    var selectedProject = document.getElementById('select-projects').value;
 
     var loaderLsc = document.getElementById('loaderLsc');
     var contentLsc = document.getElementById('contentLsc');
@@ -188,7 +232,7 @@ document.getElementById('btnLscReload').addEventListener('click', function () {
 
 
     var xhr = new XMLHttpRequest();
-    xhr.open('GET', '/plateforme/getlscdata/filter', true);
+    xhr.open('GET', '/plateforme/projects/'+ selectedProject +'/getlscdata/filter', true);
     xhr.onreadystatechange = function () {
         if (xhr.readyState === XMLHttpRequest.DONE) {
             if (xhr.status === 200) {
@@ -202,19 +246,6 @@ document.getElementById('btnLscReload').addEventListener('click', function () {
         }
     };
     xhr.send();
-});
-
-document.getElementById('btnInsExport').addEventListener('click', function () {
-    window.location.href = "/plateforme/inscrits/export";
-});
-document.getElementById('btnModulesExport').addEventListener('click', function () {
-    window.location.href = "/plateforme/modules/export";
-});
-document.getElementById('btnLpsExport').addEventListener('click', function () {
-    window.location.href = "/plateforme/lps/export";
-});
-document.getElementById('btnLscExport').addEventListener('click', function () {
-    window.location.href = "/plateforme/lsc/export";
 });
 
 
@@ -692,7 +723,7 @@ function updateDigitalModules(digitalStats, selectedDigital=null){
     })).render();
 }
 
-function updateLanguageTiming(speexStats){
+function updateLanguageTiming(selectedProject, speexStats){
     var sessionSpeex = document.getElementById('sessionSpeex');
     var cmiSpeex = document.getElementById('cmiSpeex');
     var tcSpeex = document.getElementById('tcSpeex');
@@ -715,7 +746,7 @@ function updateLanguageTiming(speexStats){
     });
 
     var selectedLangue = document.getElementById('select-langues').value;
-    updateLanguageChart(selectedLangue);
+    updateLanguageChart(selectedProject, selectedLangue);
 }
 
 function updateChartTiming(timingChart){
@@ -1086,19 +1117,18 @@ function updateLsc(lscStats){
 
 }
 
-function updateLanguageChart(selectedLangue){
+function updateLanguageChart(selectedProject,selectedLangue){
     var loaderLG = document.getElementById('loaderLG');
     var contentLG = document.getElementById('contentLG');
     loaderLG.classList.remove('d-none');
     contentLG.classList.add('d-none');
     var xhr = new XMLHttpRequest();
-    xhr.open('GET', '/plateforme/getlanguagedata/'+ selectedLangue, true);
+    xhr.open('GET', '/plateforme/projects/'+ selectedProject +'/getlanguagedata/'+ selectedLangue, true);
     xhr.onreadystatechange = function () {
         if (xhr.readyState === XMLHttpRequest.DONE) {
             if (xhr.status === 200) {
                 var data = JSON.parse(xhr.responseText);
                 if(data){
-
                     window.ApexCharts && (new ApexCharts(document.getElementById('chart-speex'), {
                         chart: {
                             type: "line",
@@ -1177,13 +1207,13 @@ function updateLanguageChart(selectedLangue){
     xhr.send();
 }
 
-function updateDigitalModule(selectedDigital=null){
+function updateDigitalModule(selectedProject,selectedDigital=null){
     var loaderDG = document.getElementById('loaderDG');
     var contentDG = document.getElementById('contentDG');
     loaderDG.classList.remove('d-none');
     contentDG.classList.add('d-none');
     var xhr = new XMLHttpRequest();
-    xhr.open('GET', '/plateforme/getdigitaldata/'+ selectedDigital, true);
+    xhr.open('GET', '/plateforme/projects/'+ selectedProject +'/getdigitaldata/'+ selectedDigital, true);
     xhr.onreadystatechange = function () {
         if (xhr.readyState === XMLHttpRequest.DONE) {
             if (xhr.status === 200) {
@@ -1203,13 +1233,13 @@ function updateDigitalModule(selectedDigital=null){
     xhr.send();
 }
 
-function updateLpData(selectedLp=null){
+function updateLpData(selectedProject, selectedLp=null){
     var loaderLP = document.getElementById('loaderLP');
     var contentLP = document.getElementById('contentLP');
     loaderLP.classList.remove('d-none');
     contentLP.classList.add('d-none');
     var xhr = new XMLHttpRequest();
-    xhr.open('GET', '/plateforme/getlpdata/'+ selectedLp, true);
+    xhr.open('GET', '/plateforme/projects/'+ selectedProject +'/getlpdata/'+ selectedLp, true);
     xhr.onreadystatechange = function () {
         if (xhr.readyState === XMLHttpRequest.DONE) {
             if (xhr.status === 200) {
@@ -1228,7 +1258,6 @@ function updateLpData(selectedLp=null){
     };
     xhr.send();
 }
-
 
 function formatDate(dateString) {
     var date = new Date(dateString);

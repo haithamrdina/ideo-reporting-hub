@@ -1,16 +1,14 @@
 <?php
 
 declare(strict_types=1);
+use App\Http\Controllers\Tenant\Plateforme\HomeController as PlateformeHomeController;
+use App\Http\Controllers\Tenant\Plateforme\GroupController as PlateformeGroupController;
+use App\Http\Controllers\Tenant\Plateforme\ProjectController as PlateformeProjectController;
 
 use App\Http\Controllers\Tenant\Project\HomeController as ProjectHomeController;
-use App\Http\Controllers\Tenant\Group\HomeController as GroupHomeController;
-use App\Http\Controllers\Tenant\Plateforme\GroupController;
-use App\Http\Controllers\Tenant\Plateforme\HomeController as PlateformeHomeController;
-use App\Http\Controllers\Tenant\Plateforme\ProjectController;
 use App\Http\Controllers\Tenant\Project\GroupController as ProjectGroupController;
-use App\Livewire\Tenant\Plateforme\Groupe;
-use App\Livewire\Tenant\Plateforme\Home;
-use App\Livewire\Tenant\Plateforme\Project;
+
+use App\Http\Controllers\Tenant\Group\HomeController as GroupHomeController;
 use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Middleware\InitializeTenancyByDomainOrSubdomain;
 use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
@@ -36,9 +34,6 @@ Route::middleware([
 ])->group(function () {
     Route::name('tenant.')->group(function () {
         require __DIR__.'/tenant-auth.php';
-       /* Route::middleware('user.auth:user')->group(function () {
-            Route::get('/home', [HomeController::class , 'index'])->name('home');
-        });*/
 
         Route::middleware(['user.auth:user', 'plateforme'])->prefix('plateforme')->name('plateforme.')->group(function () {
             Route::get('/home', [PlateformeHomeController::class , 'index'])->name('home');
@@ -54,19 +49,58 @@ Route::middleware([
             Route::get('/lsc/export',[PlateformeHomeController::class , 'exportLsc'])->name('lsc.export');
 
 
-            Route::get('/projects', [ProjectController::class , 'index'])->name('projects');
-            Route::get('/projects/{projectId}',[ProjectController::class , 'updateData'])->name('projects.updateData');
-            Route::get('/groups', [GroupController::class , 'index'])->name('groups');
-            Route::get('/groups/{groupeId}',[GroupController::class , 'updateData'])->name('groups.updateData');
+            Route::get('/projects', [PlateformeProjectController::class , 'index'])->name('projects');
+            Route::get('/projects/{projectId}/getdata',[PlateformeProjectController::class , 'getData']);
+            Route::get('/projects/{projectId}/getlanguagedata/{selectedLanguage}',[PlateformeProjectController::class , 'getLanguageData']);
+            Route::get('/projects/{projectId}/getdigitaldata/{selectedDigital}',[PlateformeProjectController::class , 'getDigitalData']);
+            Route::get('/projects/{projectId}/getlpdata/{selectedLp}',[PlateformeProjectController::class , 'getLpData']);
+            Route::get('/projects/{projectId}/getinscritsdata/filter',[PlateformeProjectController::class , 'getInscritsPerDate']);
+            Route::get('/projects/{projectId}/getlscdata/filter',[PlateformeProjectController::class , 'getLscPerDate']);
+
+
+            Route::get('/groups', [PlateformeGroupController::class , 'index'])->name('groups');
+            Route::get('/groups/{groupId}/getdata',[PlateformeGroupController::class , 'getData']);
+            Route::get('/groups/{groupId}/getlanguagedata/{selectedLanguage}',[PlateformeGroupController::class , 'getLanguageData']);
+            Route::get('/groups/{groupId}/getdigitaldata/{selectedDigital}',[PlateformeGroupController::class , 'getDigitalData']);
+            Route::get('/groups/{groupId}/getlpdata/{selectedLp}',[PlateformeGroupController::class , 'getLpData']);
+            Route::get('/groups/{groupId}/getinscritsdata/filter',[PlateformeGroupController::class , 'getInscritsPerDate']);
+            Route::get('/groups/{groupId}/getlscdata/filter',[PlateformeGroupController::class , 'getLscPerDate']);
         });
 
         Route::middleware(['user.auth:user', 'project'])->prefix('project')->name('project.')->group(function () {
             Route::get('/home', [ProjectHomeController::class , 'index'])->name('home');
+            Route::get('/{projectId}/getdata',[ProjectHomeController::class , 'getData']);
+            Route::get('/{projectId}/getlanguagedata/{selectedLanguage}',[ProjectHomeController::class , 'getLanguageData']);
+            Route::get('/{projectId}/getdigitaldata/{selectedDigital}',[ProjectHomeController::class , 'getDigitalData']);
+            Route::get('/{projectId}/getlpdata/{selectedLp}',[ProjectHomeController::class , 'getLpData']);
+            Route::get('/{projectId}/getinscritsdata/filter',[ProjectHomeController::class , 'getInscritsPerDate']);
+            Route::get('/{projectId}/getlscdata/filter',[ProjectHomeController::class , 'getLscPerDate']);
+            Route::get('/{projectId}/inscrits/export',[ProjectHomeController::class , 'exportInscrits'])->name('inscrits.export');
+            Route::get('/{projectId}/modules/export',[ProjectHomeController::class , 'exportModules'])->name('modules.export');
+            Route::get('/{projectId}/lps/export',[ProjectHomeController::class , 'exportLps'])->name('lps.export');
+            Route::get('/{projectId}/lsc/export',[ProjectHomeController::class , 'exportLsc'])->name('lsc.export');
+
             Route::get('/groups', [ProjectGroupController::class , 'index'])->name('groups');
+            Route::get('/groups/{groupId}/getdata',[ProjectGroupController::class , 'getData']);
+            Route::get('/groups/{groupId}/getlanguagedata/{selectedLanguage}',[ProjectGroupController::class , 'getLanguageData']);
+            Route::get('/groups/{groupId}/getdigitaldata/{selectedDigital}',[ProjectGroupController::class , 'getDigitalData']);
+            Route::get('/groups/{groupId}/getlpdata/{selectedLp}',[ProjectGroupController::class , 'getLpData']);
+            Route::get('/groups/{groupId}/getinscritsdata/filter',[ProjectGroupController::class , 'getInscritsPerDate']);
+            Route::get('/groups/{groupId}/getlscdata/filter',[ProjectGroupController::class , 'getLscPerDate']);
         });
 
         Route::middleware(['user.auth:user', 'group'])->prefix('group')->name('group.')->group(function () {
             Route::get('/home', [GroupHomeController::class , 'index'])->name('home');
+            Route::get('/{groupId}/getdata',[GroupHomeController::class , 'getData']);
+            Route::get('/{groupId}/getlanguagedata/{selectedLanguage}',[GroupHomeController::class , 'getLanguageData']);
+            Route::get('/{groupId}/getdigitaldata/{selectedDigital}',[GroupHomeController::class , 'getDigitalData']);
+            Route::get('/{groupId}/getlpdata/{selectedLp}',[GroupHomeController::class , 'getLpData']);
+            Route::get('/{groupId}/getinscritsdata/filter',[GroupHomeController::class , 'getInscritsPerDate']);
+            Route::get('/{groupId}/getlscdata/filter',[GroupHomeController::class , 'getLscPerDate']);
+            Route::get('/{groupId}/inscrits/export',[GroupHomeController::class , 'exportInscrits'])->name('inscrits.export');
+            Route::get('/{groupId}/modules/export',[GroupHomeController::class , 'exportModules'])->name('modules.export');
+            Route::get('/{groupId}/lps/export',[GroupHomeController::class , 'exportLps'])->name('lps.export');
+            Route::get('/{groupId}/lsc/export',[GroupHomeController::class , 'exportLsc'])->name('lsc.export');
         });
     });
 });

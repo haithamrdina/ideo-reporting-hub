@@ -15,87 +15,119 @@ class GroupController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function index($groupeId = null) {
-        $groupes = $groupeId ? Group::find($groupeId) : Group::find(1);
-        $groupes = Group::all();
-        $groupeReportService = new GroupeReportService();
-        $groupe = Group::find(1);
+    public function index() {
+        $groups = Group::where('status', GroupStatusEnum::ACTIVE)->get();
+        return view('tenant.plateforme.group' ,compact('groups'));
+    }
+
+    public function getData($groupId){
+        $group = Group::find($groupId);
+        $groupReportService = new GroupeReportService();
         $contract_start_date_conf = config('tenantconfigfields.contract_start_date');
         $categorie = config('tenantconfigfields.userfields.categorie');
         $enrollfields = config('tenantconfigfields.enrollmentfields');
 
-        $learnersInscriptionsPerStatDate =$groupeReportService->getLearnersInscriptionsPerStatDate($contract_start_date_conf,$groupe);
-        $timingDetailsPerStatDate =$groupeReportService->getTimingDetailsPerStatDate($contract_start_date_conf,$enrollfields,$groupe);
+        $learnersInscriptionsPerStatDate = $groupReportService->getLearnersInscriptionsPerStatDate($contract_start_date_conf,$group);
+        $timingDetailsPerStatDate = $groupReportService->getTimingDetailsPerStatDate($contract_start_date_conf,$enrollfields,$group);
 
-        $learnersInscriptions =$groupeReportService->getLearnersInscriptions($groupe);
-        $timingDetails =$groupeReportService->getTimingDetails($enrollfields,$groupe);
-        $learnersCharts =$groupeReportService->getLearnersCharts($categorie,$groupe);
+        $learnersInscriptions = $groupReportService->getLearnersInscriptions($group);
+        $timingDetails = $groupReportService->getTimingDetails($enrollfields,$group);
+        $learnersCharts = $groupReportService->getLearnersCharts($categorie,$group);
 
-        $softStats =$groupeReportService->getStatSoftskills($enrollfields,$groupe);
-        $digitalStats =$groupeReportService->getStatDigital($enrollfields,$groupe);
-        $speexStats =$groupeReportService->getStatSpeex($enrollfields,$groupe);
-        $moocStats =$groupeReportService->getStatMooc($enrollfields,$groupe);
-        $timingChart =$groupeReportService->getTimingStats($enrollfields,$groupe);
-        $lpStats =$groupeReportService->getLpStats($enrollfields,$groupe);
-        $lscStats =$groupeReportService->getLscStats($groupe);
+        $softStats = $groupReportService->getStatSoftskills($enrollfields,$group);
+        $digitalStats = $groupReportService->getStatDigital($enrollfields,$group);
+        $speexStats = $groupReportService->getStatSpeex($enrollfields,$group);
+        $moocStats = $groupReportService->getStatMooc($enrollfields,$group);
+        $timingChart = $groupReportService->getTimingStats($enrollfields,$group);
+        $lpStats = $groupReportService->getLpStats($enrollfields,$group);
+        $lscStats = $groupReportService->getLscStats($group);
 
-        return view('tenant.plateforme.group' ,compact(
-            'groupes',
-            'groupe',
-            'learnersInscriptionsPerStatDate',
-            'timingDetailsPerStatDate',
-            'learnersInscriptions',
-            'timingDetails',
-            'learnersCharts',
-            'softStats',
-            'digitalStats',
-            'speexStats',
-            'moocStats',
-            'timingChart',
-            'lpStats',
-            'lscStats'
-        ));
+        return response()->json([
+            'learnersInscriptionsPerStatDate' => $learnersInscriptionsPerStatDate,
+            'timingDetailsPerStatDate' => $timingDetailsPerStatDate,
+            'learnersInscriptions' => $learnersInscriptions,
+            'timingDetails' => $timingDetails,
+            'learnersCharts' => $learnersCharts,
+            'softStats' => $softStats,
+            'digitalStats' => $digitalStats,
+            'speexStats' => $speexStats,
+            'moocStats' => $moocStats,
+            'timingChart' => $timingChart,
+            'lpStats' => $lpStats,
+            'lscStats' => $lscStats
+        ]);
     }
 
-    public function updateData($groupeId) {
-        $groupe = Group::find($groupeId);
-        $groupes = Group::where('status', GroupStatusEnum::ACTIVE)->get();
-        $groupeReportService = new GroupeReportService();
-        $groupe = Group::find(1);
-        $contract_start_date_conf = config('tenantconfigfields.contract_start_date');
+    public function getLanguageData($groupId,$selectedLanguage){
+        $groupReportService = new GroupeReportService();
+        $speexChart = $groupReportService->getStatSpeexChart($groupId, $selectedLanguage);
+        return response()->json($speexChart);
+    }
+
+    public function getDigitalData($groupId, $selectedDigital){
+        $enrollfields = config('tenantconfigfields.enrollmentfields');
+        $groupReportService = new GroupeReportService();
+
+        if($selectedDigital != "null"){
+            $digitalStats = $groupReportService->getStatDigitalPerModule($enrollfields, $selectedDigital,$groupId);
+        }else{
+            $group = Group::find($groupId);
+            $digitalStats = $groupReportService->getStatDigital($enrollfields,$group);
+        }
+        return response()->json($digitalStats);
+    }
+
+    public function getLpData($groupId, $selectedLp){
+        $enrollfields = config('tenantconfigfields.enrollmentfields');
+        $groupReportService = new GroupeReportService();
+
+        if($selectedLp != "null"){
+            $digitalStats = $groupReportService->geStatsPerLp($enrollfields, $selectedLp, $groupId);
+        }else{
+            $group = Group::find($groupId);
+            $digitalStats = $groupReportService->getLpStats($enrollfields,$group);
+        }
+        return response()->json($digitalStats);
+    }
+
+
+    public function getInscritsPerDate(Request $request, $groupId){
+
         $categorie = config('tenantconfigfields.userfields.categorie');
         $enrollfields = config('tenantconfigfields.enrollmentfields');
 
-        $learnersInscriptionsPerStatDate =$groupeReportService->getLearnersInscriptionsPerStatDate($contract_start_date_conf,$groupe);
-        $timingDetailsPerStatDate =$groupeReportService->getTimingDetailsPerStatDate($contract_start_date_conf,$enrollfields,$groupe);
-
-        $learnersInscriptions =$groupeReportService->getLearnersInscriptions($groupe);
-        $timingDetails =$groupeReportService->getTimingDetails($enrollfields,$groupe);
-        $learnersCharts =$groupeReportService->getLearnersCharts($categorie,$groupe);
-
-        $softStats =$groupeReportService->getStatSoftskills($enrollfields,$groupe);
-        $digitalStats =$groupeReportService->getStatDigital($enrollfields,$groupe);
-        $speexStats =$groupeReportService->getStatSpeex($enrollfields,$groupe);
-        $moocStats =$groupeReportService->getStatMooc($enrollfields,$groupe);
-        $timingChart =$groupeReportService->getTimingStats($enrollfields,$groupe);
-        $lpStats =$groupeReportService->getLpStats($enrollfields,$groupe);
-        $lscStats =$groupeReportService->getLscStats($groupe);
-
-        return view('tenant.plateforme.group' ,compact(
-            'groupes',
-            'groupe',
-            'learnersInscriptionsPerStatDate',
-            'timingDetailsPerStatDate',
-            'learnersInscriptions',
-            'timingDetails',
-            'learnersCharts',
-            'softStats',
-            'digitalStats',
-            'speexStats',
-            'moocStats',
-            'timingChart',
-            'lpStats',
-            'lscStats'
-        ));
+        $groupReportService = new GroupeReportService();
+        if ($request->has('start_date') && $request->has('end_date')) {
+            $dateStart = $request->input('start_date');
+            $dateEnd = $request->input('end_date');
+            $learnersInscriptions = $groupReportService->getLearnersInscriptionsPerDate($dateStart , $dateEnd, $groupId);
+            $timingDetails = $groupReportService->getTimingDetailsPerDate($enrollfields, $dateStart , $dateEnd, $groupId);
+            $learnersCharts = $groupReportService->getLearnersChartsPerDate($categorie, $dateStart , $dateEnd, $groupId);
+        } else {
+            $group = Group::find($groupId);
+            $learnersInscriptions = $groupReportService->getLearnersInscriptions($group);
+            $timingDetails = $groupReportService->getTimingDetails($enrollfields, $group);
+            $learnersCharts = $groupReportService->getLearnersCharts($categorie,$group);
+        }
+        return response()->json([
+            'learnersInscriptions' => $learnersInscriptions,
+            'timingDetails' => $timingDetails,
+            'learnersCharts' => $learnersCharts,
+        ]);
     }
+
+    public function getLscPerDate(Request $request, $groupId){
+        $groupReportService = new GroupeReportService();
+        if ($request->has('start_date') && $request->has('end_date')) {
+            $dateStart = $request->input('start_date');
+            $dateEnd = $request->input('end_date');
+            $lscStats = $groupReportService->getLscStatsPerDate($dateStart, $dateEnd, $groupId);
+        } else {
+            $group = Group::find($groupId);
+            $lscStats = $groupReportService->getLscStats($group);
+        }
+
+        return response()->json($lscStats);
+    }
+
 }
