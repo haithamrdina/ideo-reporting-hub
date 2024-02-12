@@ -8,10 +8,14 @@ use App\Http\Controllers\Central\ProjectController;
 use App\Http\Controllers\Central\TenantController;
 use App\Http\Integrations\Docebo\DoceboConnector;
 use App\Http\Integrations\Docebo\Requests\DoceboCoursesEnrollements;
+use App\Http\Integrations\Docebo\Requests\DoceboGroupeUsersList;
 use App\Http\Integrations\Docebo\Requests\DoceboLpsEnrollements;
 use App\Http\Integrations\Docebo\Requests\DoceboMoocsEnrollements;
+use App\Http\Integrations\Speex\Requests\SpeexUserId;
+use App\Http\Integrations\Speex\SpeexConnector;
 use App\Models\Enrollmodule;
 use App\Models\Enrollmooc;
+use App\Models\Group;
 use App\Models\Learner;
 use App\Models\Lp;
 use App\Models\Lpenroll;
@@ -23,6 +27,7 @@ use App\Services\ModuleEnrollmentsService;
 use App\Services\ModuleTimingFieldsService;
 use App\Services\MoocEnrollmentsService;
 use App\Services\SpeexEnrollmentsService;
+use App\Services\UserFieldsService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
@@ -37,7 +42,46 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
-
+Route::get("/", function(){
+    $tenant = Tenant::find('85caeca1-a182-424b-a776-7cf5c1e2a5af');
+    tenancy()->initialize($tenant);
+    $doceboConnector = new DoceboConnector();
+    $speexConnector = new SpeexConnector();
+    $userFieldsService = new UserFieldsService();
+    $userfields = config('tenantconfigfields.userfields');
+    $datafields = $userFieldsService->getTenantUserFields($userfields);
+    $groups = Group::whereIn('status' , [GroupStatusEnum::ACTIVE, GroupStatusEnum::ARCHIVE])->get();
+    dump($groups);
+    $i = 0;
+    foreach($groups as $group){
+        $i++;
+        dump($i);
+        dump($group);
+        $paginator = $doceboConnector->paginate(new DoceboGroupeUsersList($userFieldsService, $group->docebo_id, $userfields));
+        $result = [];
+        foreach($paginator as $pg){
+            $data = $pg->dto();
+            $result = array_merge($result, $data);
+        }
+       $filteredItems = array_map(function ($item) use($speexConnector, $group){
+            $speexResponse = $speexConnector->send(new SpeexUserId($item['username']));
+            $item['speex_id'] = $speexResponse->dto();
+            $item['group_id'] = $group->id;
+            $item['project_id'] = $group->projects()->first()->id;
+            return  $item;
+        }, $result);
+        dump($filteredItems);
+        /*DB::transaction(function () use ($filteredItems,$datafields) {
+            Learner::upsert(
+                $filteredItems,
+                ['docebo_id'],
+                $datafields
+            );
+        });*/
+    }
+    die();
+    tenancy()->end();
+});
 
 Route::name('admin.')->group(function () {
     require __DIR__.'/central-auth.php';

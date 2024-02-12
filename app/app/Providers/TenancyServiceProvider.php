@@ -112,6 +112,10 @@ class TenancyServiceProvider extends ServiceProvider
 
             'contract_start_date' => 'tenantconfigfields.contract_start_date',
 
+            'archive' => 'tenantconfigfields.archive',
+
+            'sur_mesure' => 'tenantconfigfields.sur_mesure',
+
             'cmi_time' => 'tenantconfigfields.enrollmentfields.cmi_time',
             'calculated_time' => 'tenantconfigfields.enrollmentfields.calculated_time',
             'recommended_time' => 'tenantconfigfields.enrollmentfields.recommended_time',

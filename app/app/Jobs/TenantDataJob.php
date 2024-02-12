@@ -2,9 +2,12 @@
 
 namespace App\Jobs;
 
+use App\Enums\ProjectStatusEnum;
 use App\Enums\UserRoleEnum;
+use App\Models\Project;
 use App\Models\Tenant;
 use App\Models\User;
+use App\Services\InitTenantService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -30,30 +33,13 @@ class TenantDataJob implements ShouldQueue
     public function handle(): void
     {
         $this->tenant->run(function(){
-            User::create([
-                'firstname' => $this->tenant->company_code,
-                'lastname' => 'Plateforme',
-                'email' => 'rplateforme@ideo-reporting.com',
-                'password' => Hash::make('password'),
-                'role' => UserRoleEnum::PLATEFORME,
-            ]);
+            $initTenantService = new InitTenantService();
+            $initTenantService->createUsers($this->tenant);
 
-            User::create([
-                'firstname' => $this->tenant->company_code,
-                'lastname' => 'Project',
-                'email' => 'rproject@ideo-reporting.com',
-                'password' => Hash::make('password'),
-                'role' => UserRoleEnum::PROJECT,
-            ]);
-
-
-            User::create([
-                'firstname' => $this->tenant->company_code,
-                'lastname' => 'Group',
-                'email' => 'rgroup@ideo-reporting.com',
-                'password' => Hash::make('password'),
-                'role' => UserRoleEnum::GROUP,
-            ]);
+            $archive = $this->tenant->archive;
+            if($archive == true){
+                $initTenantService->initialiseArchives($this->tenant);
+            }
         });
     }
 }

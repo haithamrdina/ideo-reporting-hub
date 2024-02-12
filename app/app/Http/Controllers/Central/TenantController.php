@@ -91,6 +91,8 @@ class TenantController extends Controller
         $categorie = $request->has('categorie') ? true : false;
         $sexe = $request->has('sexe') ? true : false;
         $cin = $request->has('cin') ? true : false;
+        $archive = $request->has('archive') ? true : false;
+        $sur_mesure = $request->has('sur_mesure') ? true : false;
 
         $cmi_time = $request->has('cmi_time') ? true : false;
         $recommended_time = $request->has('recommended_time') ? true : false;
@@ -103,8 +105,6 @@ class TenantController extends Controller
             $calculated_time = false;
         }
 
-
-
         $validated = $request->validated();
         $tenant = Tenant::create([
             'company_code' => $validated['company_code'],
@@ -113,6 +113,9 @@ class TenantController extends Controller
             'zendesk_org_id' => $validated['zendesk_org_id'],
 
             'contract_start_date'=> $contract_start_date,
+
+            'archive'=> $archive,
+            'sur_mesure'=> $sur_mesure,
 
             'matricule' => $matricule,
             'fonction'=> $fonction ,
@@ -125,6 +128,7 @@ class TenantController extends Controller
             'calculated_time'=> $calculated_time ,
             'recommended_time'=> $recommended_time,
         ]);
+
         $tenant->domains()->create(['domain' => $validated['subdomain']]);
 
         return redirect()->route('admin.tenants.index')->with('success', 'Tenant ajouté avec succès');

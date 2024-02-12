@@ -4,6 +4,10 @@ return [
 
     'contract_start_date' => null,
 
+    'archive' => null,
+
+    'sur_mesure' => null,
+
     'userfields' => [
         'matricule' => null,
         'fonction' => null,

@@ -165,6 +165,47 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                            <div class="col-lg-3">
+                                                <div class="mb-3">
+                                                    <div class="form-label">Les inscrits archivés :</div>
+                                                    <div>
+                                                        <label class="form-check form-check-inline">
+                                                            <input class="form-check-input" type="checkbox"  id="archive" name="archive">
+                                                            <span class="form-check-label">Inclure les inscrits archivés dans les calculs</span>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-3">
+                                                <div class="mb-3">
+                                                    <div class="form-label">Les modules sur mesure :</div>
+                                                    <div>
+                                                        <label class="form-check form-check-inline">
+                                                            <input class="form-check-input" type="checkbox"  id="sur_mesure" name="sur_mesure">
+                                                            <span class="form-check-label">Possède des modules sur mesure</span>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <div class="mb-3">
+                                                    <div class="form-label">Champs supplémentaires pour les inscriptions :</div>
+                                                    <div>
+                                                        <label class="form-check form-check-inline">
+                                                            <input class="form-check-input" type="checkbox"  id="cmi_time" name="cmi_time">
+                                                            <span class="form-check-label">Temps d'engagement</span>
+                                                        </label>
+                                                        <label class="form-check form-check-inline">
+                                                            <input class="form-check-input" type="checkbox"  id="calculated_time" name="calculated_time">
+                                                            <span class="form-check-label">Temps calculé</span>
+                                                        </label>
+                                                        <label class="form-check form-check-inline">
+                                                            <input class="form-check-input" type="checkbox"  id="recommended_time" name="recommended_time">
+                                                            <span class="form-check-label">Temps pédagogique recommandé</span>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
                                             <div class="col-lg-6">
                                                 <div class="mb-3">
                                                     <label class="form-label">Date début contrat :</label>
@@ -190,25 +231,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="col-lg-6">
-                                                <div class="mb-3">
-                                                    <div class="form-label">Champs supplémentaires pour les inscriptions :</div>
-                                                    <div>
-                                                        <label class="form-check form-check-inline">
-                                                            <input class="form-check-input" type="checkbox"  id="cmi_time" name="cmi_time">
-                                                            <span class="form-check-label">Temps d'engagement</span>
-                                                        </label>
-                                                        <label class="form-check form-check-inline">
-                                                            <input class="form-check-input" type="checkbox"  id="calculated_time" name="calculated_time">
-                                                            <span class="form-check-label">Temps calculé</span>
-                                                        </label>
-                                                        <label class="form-check form-check-inline">
-                                                            <input class="form-check-input" type="checkbox"  id="recommended_time" name="recommended_time">
-                                                            <span class="form-check-label">Temps pédagogique recommandé</span>
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                            </div>
+
 
                                         </div>
                                     </div>

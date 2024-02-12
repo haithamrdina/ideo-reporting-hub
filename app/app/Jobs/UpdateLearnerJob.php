@@ -44,12 +44,13 @@ class UpdateLearnerJob implements ShouldQueue
     {
         $tenant = Tenant::find($this->tenantId);
         tenancy()->initialize($tenant);
-            $groups = Group::where('status' , GroupStatusEnum::ACTIVE)->get();
             $doceboConnector = new DoceboConnector();
             $speexConnector = new SpeexConnector();
             $datafields = $this->userFieldsService->getTenantUserFields($this->userfields);
+
+            $groups = Group::whereIn('status' , [GroupStatusEnum::ACTIVE,GroupStatusEnum::ARCHIVE])->get();
             foreach($groups as $group){
-                $paginator = $doceboConnector->paginate(new DoceboGroupeUsersList($this->userFieldsService, $group->docebo_id, $this->userfields));
+                $paginator = $doceboConnector->paginate(new DoceboGroupeUsersList($this->userFieldsService, $group->docebo_id, $this->userfields, $group->status));
                 $result = [];
                 foreach($paginator as $pg){
                     $data = $pg->dto();
@@ -63,7 +64,6 @@ class UpdateLearnerJob implements ShouldQueue
                     $item['project_id'] = $group->projects()->first()->id;
                     return  $item;
                 }, $result);
-
                 DB::transaction(function () use ($filteredItems,$datafields) {
                     Learner::upsert(
                         $filteredItems,

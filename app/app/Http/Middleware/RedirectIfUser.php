@@ -17,11 +17,9 @@ class RedirectIfUser
      */
     public function handle($request, Closure $next, $guard = 'user')
     {
-        if (Auth::guard($guard)->check()) {
-            return redirect()->route('tenant.home');
+        if (!Auth::guard('user')->check()) {
+            return $next($request);
         }
-
-        return $next($request);
     }
 
 }
