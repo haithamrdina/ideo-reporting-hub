@@ -1088,7 +1088,7 @@ function updateLsc(lscStats){
 
 }
 
-function updateLanguageChart(selectedLangue){
+function updateLanguageChart(selectedLangue=null){
     var loaderLG = document.getElementById('loaderLG');
     var contentLG = document.getElementById('contentLG');
     loaderLG.classList.remove('d-none');

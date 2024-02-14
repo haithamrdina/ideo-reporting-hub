@@ -1119,7 +1119,7 @@ function updateLsc(lscStats){
 
 }
 
-function updateLanguageChart(selectedProject,selectedLangue){
+function updateLanguageChart(selectedProject,selectedLangue=null){
     var loaderLG = document.getElementById('loaderLG');
     var contentLG = document.getElementById('contentLG');
     loaderLG.classList.remove('d-none');
