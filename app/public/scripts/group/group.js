@@ -342,118 +342,124 @@ function updateDataInscrit(learnersInscriptions, timingDetails, learnersCharts) 
     tpr.textContent = timingDetails.total_recommended_time;
     avgtpr.textContent = timingDetails.avg_recommended_time;
 
-    window.ApexCharts && (new ApexCharts(document.getElementById('chart-demo-pie'), {
-        chart: {
-            type: "donut",
-            fontFamily: 'inherit',
-            height: 240,
-            sparkline: {
-                enabled: true
-            },
-            animations: {
-                enabled: true
-            }
-        },
-        fill: {
-            opacity: 1
-        },
-        series: learnersCharts.chartInscritPerCategorie.data,
-        labels: learnersCharts.chartInscritPerCategorie.labels,
-        tooltip: {
-            theme: 'dark'
-        },
-        grid: {
-            strokeDashArray: 4
-        },
-        colors: ["#1676FB", "#798bff", "#6b5b95", "#b8acff", "#f9db7b", "#1EE0AC", "#ffa9ce"],
-        legend: {
-            show: true,
-            position: 'bottom',
-            offsetY: 12,
-            markers: {
-                width: 10,
-                height: 10,
-                radius: 100
-            },
-            itemMargin: {
-                horizontal: 8,
-                vertical: 8
-            }
-        },
-        tooltip: {
-            fillSeriesColor: false
-        }
-    })).render();
-    window.ApexCharts && (new ApexCharts(document.getElementById('chart-completion-tasks-9'),
+    if(learnersCharts.chartInscritPerCategorie != null)
     {
-        chart: {
-            type: "bar",
-            fontFamily: 'inherit',
-            height: 240,
-            parentHeightOffset: 0,
-            toolbar: {
-                show: false
+        window.ApexCharts && (new ApexCharts(document.getElementById('chart-demo-pie'), {
+            chart: {
+                type: "donut",
+                fontFamily: 'inherit',
+                height: 240,
+                sparkline: {
+                    enabled: true
+                },
+                animations: {
+                    enabled: true
+                }
             },
-            animations: {
-                enabled: true
+            fill: {
+                opacity: 1
             },
-            stacked: true
-        },
-        plotOptions: {
-            bar: {
-                columnWidth: '50%'
-            }
-        },
-        dataLabels: {
-            enabled: false
-        },
-        fill: {
-            opacity: 1
-        },
-        series: [{
-            name: "actif",
-            data: learnersCharts.chartInscritPerCategoryAndStatus.actives
-        }, {
-            name: "inactive",
-            data: learnersCharts.chartInscritPerCategoryAndStatus.inactives
-        }],
-        tooltip: {
-            theme: 'dark'
-        },
-        grid: {
-            padding: {
-                top: -20,
-                right: 0,
-                left: -4,
-                bottom: -4
+            series: learnersCharts.chartInscritPerCategorie.data,
+            labels: learnersCharts.chartInscritPerCategorie.labels,
+            tooltip: {
+                theme: 'dark'
             },
-            strokeDashArray: 4
-        },
-        xaxis: {
-            labels: {
-                padding: 0
+            grid: {
+                strokeDashArray: 4
+            },
+            colors: ["#1676FB", "#798bff", "#6b5b95", "#b8acff", "#f9db7b", "#1EE0AC", "#ffa9ce"],
+            legend: {
+                show: true,
+                position: 'bottom',
+                offsetY: 12,
+                markers: {
+                    width: 10,
+                    height: 10,
+                    radius: 100
+                },
+                itemMargin: {
+                    horizontal: 8,
+                    vertical: 8
+                }
             },
             tooltip: {
+                fillSeriesColor: false
+            }
+        })).render();
+    }
+    if(learnersCharts.chartInscritPerCategoryAndStatus != null)
+    {
+        window.ApexCharts && (new ApexCharts(document.getElementById('chart-completion-tasks-9'),
+        {
+            chart: {
+                type: "bar",
+                fontFamily: 'inherit',
+                height: 240,
+                parentHeightOffset: 0,
+                toolbar: {
+                    show: false
+                },
+                animations: {
+                    enabled: true
+                },
+                stacked: true
+            },
+            plotOptions: {
+                bar: {
+                    columnWidth: '50%'
+                }
+            },
+            dataLabels: {
                 enabled: false
             },
-            axisBorder: {
-                show: false
+            fill: {
+                opacity: 1
+            },
+            series: [{
+                name: "actif",
+                data: learnersCharts.chartInscritPerCategoryAndStatus.actives
+            }, {
+                name: "inactive",
+                data: learnersCharts.chartInscritPerCategoryAndStatus.inactives
+            }],
+            tooltip: {
+                theme: 'dark'
+            },
+            grid: {
+                padding: {
+                    top: -20,
+                    right: 0,
+                    left: -4,
+                    bottom: -4
+                },
+                strokeDashArray: 4
+            },
+            xaxis: {
+                labels: {
+                    padding: 0
+                },
+                tooltip: {
+                    enabled: false
+                },
+                axisBorder: {
+                    show: false
+                }
+            },
+            yaxis: {
+                labels: {
+                    padding: 4
+                }
+            },
+            labels: learnersCharts.chartInscritPerCategoryAndStatus.labels,
+            colors: [
+                tabler.getColor("green"), tabler.getColor("red")
+            ],
+            legend: {
+                show: true
             }
-        },
-        yaxis: {
-            labels: {
-                padding: 4
-            }
-        },
-        labels: learnersCharts.chartInscritPerCategoryAndStatus.labels,
-        colors: [
-            tabler.getColor("green"), tabler.getColor("red")
-        ],
-        legend: {
-            show: true
         }
+        )).render();
     }
-    )).render();
 }
 
 function updateSoftModules(softStats){
