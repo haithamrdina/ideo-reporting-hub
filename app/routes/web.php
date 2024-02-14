@@ -42,6 +42,11 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+Route::get('/test', function(){
+    Tenant::all()->runForEach(function () {
+        $tenant = tenant();
+    });
+});
 Route::name('admin.')->group(function () {
     require __DIR__.'/central-auth.php';
 

@@ -58,4 +58,21 @@ COPY laravel-worker.conf /etc/supervisor/conf.d/laravel-worker.conf
 RUN service supervisor start && supervisorctl reread && supervisorctl update && supervisorctl start laravel-worker:*
 RUN service supervisor start
 
+# Cron config
+RUN apt-get update && apt-get -y install cron && apt-get install nano
 
+# Copy laravel-cron file to the cron.d directory
+COPY laravel-cron /etc/cron.d/laravel-cron
+ 
+# Give execution rights on the cron job
+RUN chown root:root /etc/cron.d/laravel-cron
+RUN chmod 0644 /etc/cron.d/laravel-cron
+
+# Apply cron job
+RUN crontab /etc/cron.d/laravel-cron
+ 
+# Create the log file to be able to run tail
+# RUN touch /var/log/cron.log
+ 
+# Run the command on container startup
+CMD ["cron", "-f"]
