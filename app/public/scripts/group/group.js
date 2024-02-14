@@ -278,17 +278,39 @@ function updateDataInscritPerDate(learnersInscriptionsPerStatDate, timingDetails
     var tprAY = document.getElementById('tprAY');
     var avgtprAY = document.getElementById('avgtprAY');
 
-    inscritsAY.textContent = learnersInscriptionsPerStatDate.total;
-    actifsAY.textContent = learnersInscriptionsPerStatDate.active;
-    inactifsAY.textContent = learnersInscriptionsPerStatDate.inactive;
-    sessionAY.textContent = timingDetailsPerStatDate.total_session_time;
-    avgsessionAY.textContent = timingDetailsPerStatDate.avg_session_time;
-    cmiAY.textContent = timingDetailsPerStatDate.total_cmi_time;
-    avgcmiAY.textContent = timingDetailsPerStatDate.avg_cmi_time;
-    tcAY.textContent = timingDetailsPerStatDate.total_calculated_time;
-    avgtcAY.textContent = timingDetailsPerStatDate.avg_calculated_time;
-    tprAY.textContent = timingDetailsPerStatDate.total_recommended_time;
-    avgtprAY.textContent = timingDetailsPerStatDate.avg_recommended_time;
+    if(inscritsAY != null){
+        inscritsAY.textContent = learnersInscriptionsPerStatDate.total;
+    }
+    if(actifsAY != null){
+        actifsAY.textContent = learnersInscriptionsPerStatDate.active;
+    }
+    if(inactifsAY != null){
+        inactifsAY.textContent = learnersInscriptionsPerStatDate.inactive;
+    }
+    if(sessionAY != null){
+        sessionAY.textContent = timingDetailsPerStatDate.total_session_time;
+    }
+    if(avgsessionAY != null){
+        avgsessionAY.textContent = timingDetailsPerStatDate.avg_session_time;
+    }
+    if(cmiAY != null){
+        cmiAY.textContent = timingDetailsPerStatDate.total_cmi_time;
+    }
+    if(avgcmiAY != null){
+        avgcmiAY.textContent = timingDetailsPerStatDate.avg_cmi_time;
+    }
+    if(tcAY != null){
+        tcAY.textContent = timingDetailsPerStatDate.total_calculated_time;
+    }
+    if(avgtcAY != null){
+        avgtcAY.textContent = timingDetailsPerStatDate.avg_calculated_time;
+    }
+    if(tprAY != null){
+        tprAY.textContent = timingDetailsPerStatDate.total_recommended_time;
+    }
+    if(avgtprAY != null){
+        avgtprAY.textContent = timingDetailsPerStatDate.avg_recommended_time;
+    }
 }
 
 function updateDataInscrit(learnersInscriptions, timingDetails, learnersCharts) {
