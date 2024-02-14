@@ -42,52 +42,10 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
-Route::get("/", function(){
-    $tenant = Tenant::find('85caeca1-a182-424b-a776-7cf5c1e2a5af');
-    tenancy()->initialize($tenant);
-    $doceboConnector = new DoceboConnector();
-    $speexConnector = new SpeexConnector();
-    $userFieldsService = new UserFieldsService();
-    $userfields = config('tenantconfigfields.userfields');
-    $datafields = $userFieldsService->getTenantUserFields($userfields);
-    $groups = Group::whereIn('status' , [GroupStatusEnum::ACTIVE, GroupStatusEnum::ARCHIVE])->get();
-    dump($groups);
-    $i = 0;
-    foreach($groups as $group){
-        $i++;
-        dump($i);
-        dump($group);
-        $paginator = $doceboConnector->paginate(new DoceboGroupeUsersList($userFieldsService, $group->docebo_id, $userfields));
-        $result = [];
-        foreach($paginator as $pg){
-            $data = $pg->dto();
-            $result = array_merge($result, $data);
-        }
-       $filteredItems = array_map(function ($item) use($speexConnector, $group){
-            $speexResponse = $speexConnector->send(new SpeexUserId($item['username']));
-            $item['speex_id'] = $speexResponse->dto();
-            $item['group_id'] = $group->id;
-            $item['project_id'] = $group->projects()->first()->id;
-            return  $item;
-        }, $result);
-        dump($filteredItems);
-        /*DB::transaction(function () use ($filteredItems,$datafields) {
-            Learner::upsert(
-                $filteredItems,
-                ['docebo_id'],
-                $datafields
-            );
-        });*/
-    }
-    die();
-    tenancy()->end();
-});
-
 Route::name('admin.')->group(function () {
     require __DIR__.'/central-auth.php';
 
     Route::middleware('admin.auth:admin')->group(function () {
-        // Routes for authenticated admins
         // Dashboard
         Route::get('/home', [HomeController::class , 'index'])->name('home');
         // Tenants
@@ -139,6 +97,13 @@ Route::name('admin.')->group(function () {
     });
 });
 
+
+
+
+
+
+
+
 function getCmiTime($responseBody){
     $totalTime = 0;
     $totalTimeRegex = '/<td>cmi\.core\.total_time<\/td><td>(.*?)<\/td>/';
@@ -170,9 +135,4 @@ function convertTimeToSeconds($time)
 
     return $hours * 3600 + $minutes * 60 + $seconds;
 }
-
-
-
-
-
 

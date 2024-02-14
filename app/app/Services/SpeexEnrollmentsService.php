@@ -41,24 +41,9 @@ class SpeexEnrollmentsService implements SpeexInterface
             $item['niveau'] = $speexData['niveau'];
 
             $item['session_time'] = $this->getSessionTime($item, $speexData);
-
-            if (isset($fields['cmi_time']) && $fields['cmi_time'] === true) {
-                $item['cmi_time'] = $this->getCmiTime($item, $speexData);
-            }else{
-                $item['cmi_time'] = null;
-            }
-
-            if (isset($fields['calculated_time']) && $fields['calculated_time'] === true) {
-                $item['calculated_time'] = $this->getCalculatedTime($item, $speexData);
-            }else{
-                $item['calculated_time'] = null;
-            }
-
-            if (isset($fields['recommended_time']) && $fields['recommended_time'] === true) {
-                $item['recommended_time'] = $this->getRecommendedTime($item, $speexData);
-            }else{
-                $item['recommended_time'] = null;
-            }
+            $item['cmi_time'] = !empty($fields['cmi_time']) ? $this->getCmiTime($item, $speexData) : null;
+            $item['calculated_time'] = !empty($fields['calculated_time']) ? $this->getCalculatedTime($item, $speexData) : null;
+            $item['recommended_time'] = !empty($fields['recommended_time']) ?$this->getRecommendedTime($item, $speexData) : null;
 
             return $item;
 
@@ -70,31 +55,23 @@ class SpeexEnrollmentsService implements SpeexInterface
 
     public function getSessionTime($item, $speexData): string
     {
-        if($item['status'] != 'enrolled' || $item['status'] != 'waiting' ){
-            $session_time = intval($item['session_time']) +  intval($speexData['time']);
-        }else{
-            $session_time = 0;
-        }
+        $session_time = ($item['status'] != 'enrolled' || $item['status'] != 'waiting' ) ? intval($item['session_time']) +  intval($speexData['time']) : 0 ;
         return $session_time;
     }
 
     public function getCmiTime($item, $speexData): string
     {
-        if($item['status'] != 'enrolled' || $item['status'] != 'waiting' ){
-            $cmi_time = $speexData['time'];
-        }else{
-            $cmi_time = 0;
-        }
+        $cmi_time = ($item['status'] != 'enrolled' || $item['status'] != 'waiting' ) ? $speexData['time'] : 0 ;
         return $cmi_time;
     }
 
     public function getCalculatedTime($item, $speexData): string
     {
-        $recommended_time = $this->getRecommendedTime($item,$speexData);
-        if($item['status'] == 'completed'){
-            $calculated_time = $recommended_time;
-        }elseif($item['status'] == 'in_progress' && $speexData['time'] > $recommended_time){
-            $calculated_time = $recommended_time;
+        $recommended_time =  $this->getRecommendedTime($item,$speexData);
+        if($item['status'] == 'enrolled' || $item['status'] == 'waiting'){
+            $calculated_time = 0;
+        }elseif ($item['status'] === 'completed' || ($item['status'] === 'in_progress' && $speexData['time'] > $recommended_time)) {
+            $calculated_time =  $recommended_time;
         }else{
             $calculated_time = $speexData['time'];
         }
@@ -103,6 +80,7 @@ class SpeexEnrollmentsService implements SpeexInterface
 
     public function getRecommendedTime($item, $speexData): string
     {
+        $recommended_time = 32400;
         if($item['status'] != 'enrolled' || $item['status'] != 'waiting' ){
 
             $multipliers = [
@@ -118,14 +96,8 @@ class SpeexEnrollmentsService implements SpeexInterface
 
             if($speexData['niveau'] != null){
                 $recommended_time = 32400 * $multipliers[$item['niveau']];
-            }else{
-                $recommended_time = 32400;
             }
-
-        }else{
-            $recommended_time = 32400;
         }
-
         return $recommended_time;
     }
 

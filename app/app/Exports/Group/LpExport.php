@@ -32,7 +32,13 @@ class LpExport implements FromArray, WithMapping, WithHeadings, WithStrictNullCo
 
     public function array(): array
     {
-        $lpEnrolls = Lpenroll::where('group_id',$this->groupId)->get()->toArray();
+        $archive = config('tenantconfigfields.archive');
+        if($archive == true){
+            $lpEnrolls = Lpenroll::where('group_id',$this->groupId)->get()->toArray();
+        }else{
+            $learnersIds = Learner::where('statut', '!=' , 'archive')->pluck('docebo_id')->toArray();
+            $lpEnrolls = Lpenroll::whereIn('learner_docebo_id', $learnersIds)->where('group_id',$this->groupId)->get()->toArray();
+        }
         return $lpEnrolls;
     }
 

@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('docebo_id')->unique();
             $table->string('code')->nullable();
             $table->string('name')->nullable();
-            $table->integer('status')->default(GroupStatusEnum::ACTIVE);
+            $table->integer('status')->default(GroupStatusEnum::INACTIVE);
             $table->timestamps();
             $table->softDeletes();
         });

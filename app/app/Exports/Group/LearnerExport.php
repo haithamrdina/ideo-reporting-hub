@@ -21,8 +21,11 @@ class LearnerExport implements WithMultipleSheets, ShouldQueue
         $sheets = [
             new ActiveLearnerExport($this->groupId),
             new InactiveLearnerExport($this->groupId),
-            new ArchiveLearnerExport($this->groupId),
         ];
+        $archive = config('tenantconfigfields.archive');
+        if($archive == true){
+            $sheets []= new ArchiveLearnerExport($this->groupId);
+        }
         return $sheets;
     }
 

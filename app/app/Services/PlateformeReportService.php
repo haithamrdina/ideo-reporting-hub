@@ -13,6 +13,7 @@ use App\Models\Lp;
 use App\Models\Lpenroll;
 use App\Models\Module;
 use App\Models\Ticket;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class PlateformeReportService{
@@ -25,14 +26,14 @@ class PlateformeReportService{
             $currentYear = now()->year;
 
             if ($yearOfDate > $currentYear) {
-                $statDate = now()->year . $date->format('-m-d');
+                $startDate = now()->year . $date->format('-m-d');
             } else {
-                $statDate =  (now()->year - 1) . $date->format('-m-d');
+                $startDate =  (now()->year - 1) . $date->format('-m-d');
             }
-
-            $total_learners = Learner::where('creation_date', '>=', $statDate)->count();
-            $active_learners = Learner::where('last_access_date', '>=', $statDate)->where('statut', 'active')->count();
-            $inactive_learners =  Learner::where('creation_date', '>=', $statDate)->where('statut', 'inactive')->count();
+            $endDate = Carbon::now()->format('Y-m-d');
+            $total_learners = Learner::whereBetween('creation_date', [$startDate, $endDate])->count();
+            $active_learners = Learner::whereBetween('last_access_date', [$startDate, $endDate])->where('statut', 'active')->count();
+            $inactive_learners =  Learner::whereBetween('creation_date', [$startDate, $endDate])->where('statut', 'inactive')->count();
             $statsLearners = [
                 'total' => $total_learners,
                 'active' => $active_learners,
@@ -54,20 +55,28 @@ class PlateformeReportService{
             $currentYear = now()->year;
 
             if ($yearOfDate > $currentYear) {
-                $statDate = now()->year . $date->format('-m-d');
+                $startDate = now()->year . $date->format('-m-d');
             } else {
-                $statDate =  (now()->year - 1) . $date->format('-m-d');
+                $startDate =  (now()->year - 1) . $date->format('-m-d');
+            }
+            $endDate = Carbon::now()->format('Y-m-d');
+            $archive = config('tenantconfigfields.archive');
+            if($archive == true){
+                $learners = Learner::whereIn('statut' , ['active', 'archive'])->whereBetween('last_access_date', [$startDate, $endDate])->count();
+                $learnersIds = Learner::whereIn('statut' , ['active', 'archive'])->whereBetween('last_access_date', [$startDate, $endDate])->pluck('docebo_id')->toArray();
+            }else{
+                $learners = Learner::where('statut' , 'active')->whereBetween('last_access_date', [$startDate, $endDate])->count();
+                $learnersIds = Learner::where('statut' , 'active')->whereBetween('last_access_date', [$startDate, $endDate])->pluck('docebo_id')->toArray();
             }
 
-            $active_learners = Learner::where('last_access_date', '>=', $statDate)->where('statut', 'active')->count();
-            $moduleDataTimes = Enrollmodule::calculateModuleDataTimes($statDate);
-            $moocDataTimes = Enrollmooc::calculateMoocDataTimes($statDate);
-            $speexDataTimes = Langenroll::calculateSpeexDataTimes($statDate);
 
+            $moduleDataTimes = Enrollmodule::calculateModuleDataTimesBetweenDate($startDate, $endDate, $learnersIds);
+            $moocDataTimes = Enrollmooc::calculateMoocDataTimesBetweenDate($startDate, $endDate, $learnersIds);
+            $speexDataTimes = Langenroll::calculateSpeexDataTimesBetweenDate($startDate, $endDate, $learnersIds);
 
             $timeConversionService = new TimeConversionService();
             $total_session_time = intval($moduleDataTimes->total_session_time) + intval($moocDataTimes->total_session_time) + intval($speexDataTimes->total_session_time);
-            $avg_session_time =  $active_learners != 0 ? intval($total_session_time/$active_learners) : 0;
+            $avg_session_time =  $learners != 0 ? intval($total_session_time/$learners) : 0;
             $total_session_time = $timeConversionService->convertSecondsToTime($total_session_time);
             $avg_session_time = $timeConversionService->convertSecondsToTime($avg_session_time);
 
@@ -75,7 +84,7 @@ class PlateformeReportService{
             if($enrollfields['cmi_time'] == true)
             {
                 $total_cmi_time = intval($moduleDataTimes->total_cmi_time) + intval($moocDataTimes->total_cmi_time) + intval($speexDataTimes->total_cmi_time);
-                $avg_cmi_time =  $active_learners != 0 ?  intval($total_cmi_time/$active_learners) :  0;
+                $avg_cmi_time =  $learners != 0 ?  intval($total_cmi_time/$learners) :  0;
                 $total_cmi_time = $timeConversionService->convertSecondsToTime($total_cmi_time);
                 $avg_cmi_time = $timeConversionService->convertSecondsToTime($avg_cmi_time);
             }else{
@@ -86,7 +95,7 @@ class PlateformeReportService{
             if($enrollfields['calculated_time'] == true)
             {
                 $total_calculated_time = intval($moduleDataTimes->total_calculated_time) + intval($moocDataTimes->total_calculated_time) + intval($speexDataTimes->total_calculated_time);
-                $avg_calculated_time =  $active_learners != 0 ?  intval($total_calculated_time/$active_learners) : 0;
+                $avg_calculated_time =  $learners != 0 ?  intval($total_calculated_time/$learners) : 0;
                 $total_calculated_time = $timeConversionService->convertSecondsToTime($total_calculated_time);
                 $avg_calculated_time = $timeConversionService->convertSecondsToTime($avg_calculated_time);
             }else{
@@ -97,15 +106,13 @@ class PlateformeReportService{
             if($enrollfields['recommended_time'] == true)
             {
                 $total_recommended_time = intval($moduleDataTimes->total_recommended_time) + intval($moocDataTimes->total_recommended_time) + intval($speexDataTimes->total_recommended_time);
-                $avg_recommended_time =  $active_learners != 0 ?  intval($total_recommended_time/$active_learners) :  0;
+                $avg_recommended_time =  $learners != 0 ?  intval($total_recommended_time/$learners) :  0;
                 $total_recommended_time = $timeConversionService->convertSecondsToTime($total_recommended_time);
                 $avg_recommended_time = $timeConversionService->convertSecondsToTime($avg_recommended_time);
             }else{
                 $total_recommended_time = "**h **min **s";
                 $avg_recommended_time = "**h **min **s";
             }
-
-
             return [
                 'total_session_time' =>$total_session_time ,
                 'avg_session_time' =>$avg_session_time ,
@@ -140,14 +147,24 @@ class PlateformeReportService{
     }
 
     public function getTimingDetails($enrollfields){
-        $active_learners = Learner::whereNotNull('last_access_date')->count();
-        $enrollModules = EnrollModule::all();
-        $enrollMoocs = Enrollmooc::all();
-        $enrollSpeex = Langenroll::all();
+
+        $archive = config('tenantconfigfields.archive');
+
+        if($archive == true){
+            $learners = Learner::whereIn('statut' , ['active', 'archive'])->count();
+            $learnersIds = Learner::whereIn('statut' , ['active', 'archive'])->pluck('docebo_id')->toArray();
+        }else{
+            $learners = Learner::where('statut' , 'active')->count();
+            $learnersIds = Learner::where('statut' , 'active')->pluck('docebo_id')->toArray();
+        }
+
+        $enrollModules = EnrollModule::whereIn('learner_docebo_id' , $learnersIds)->get();
+        $enrollMoocs = Enrollmooc::whereIn('learner_docebo_id' , $learnersIds)->get();
+        $enrollSpeex = Langenroll::whereIn('learner_docebo_id' , $learnersIds)->get();
 
         $timeConversionService = new TimeConversionService();
         $total_session_time =  intval($enrollModules->sum('session_time')) + intval($enrollMoocs->sum('session_time')) + intval($enrollSpeex->sum('session_time'));
-        $avg_session_time =  $active_learners != 0 ? intval($total_session_time/$active_learners) : 0;
+        $avg_session_time =  $learners != 0 ? intval($total_session_time/$learners) : 0;
         $total_session_time = $timeConversionService->convertSecondsToTime($total_session_time);
         $avg_session_time = $timeConversionService->convertSecondsToTime($avg_session_time);
 
@@ -155,7 +172,7 @@ class PlateformeReportService{
         if($enrollfields['cmi_time'] == true)
         {
             $total_cmi_time = intval($enrollModules->sum('cmi_time')) + intval($enrollMoocs->sum('cmi_time')) + intval($enrollSpeex->sum('cmi_time'));
-            $avg_cmi_time =  $active_learners != 0 ?  intval($total_cmi_time/$active_learners) :  0;
+            $avg_cmi_time =  $learners != 0 ?  intval($total_cmi_time/$learners) :  0;
             $total_cmi_time = $timeConversionService->convertSecondsToTime($total_cmi_time);
             $avg_cmi_time = $timeConversionService->convertSecondsToTime($avg_cmi_time);
         }else{
@@ -166,7 +183,7 @@ class PlateformeReportService{
         if($enrollfields['calculated_time'] == true)
         {
             $total_calculated_time = intval($enrollModules->sum('calculated_time')) + intval($enrollMoocs->sum('calculated_time')) + intval($enrollSpeex->sum('calculated_time'));;
-            $avg_calculated_time =  $active_learners != 0 ?  intval($total_calculated_time/$active_learners) : 0;
+            $avg_calculated_time =  $learners != 0 ?  intval($total_calculated_time/$learners) : 0;
             $total_calculated_time = $timeConversionService->convertSecondsToTime($total_calculated_time);
             $avg_calculated_time = $timeConversionService->convertSecondsToTime($avg_calculated_time);
         }else{
@@ -177,7 +194,7 @@ class PlateformeReportService{
         if($enrollfields['recommended_time'] == true)
         {
             $total_recommended_time = intval($enrollModules->sum('recommended_time')) + intval($enrollMoocs->sum('recommended_time')) + intval($enrollSpeex->sum('recommended_time'));;
-            $avg_recommended_time =  $active_learners != 0 ?  intval($total_recommended_time/$active_learners) :  0;
+            $avg_recommended_time =  $learners != 0 ?  intval($total_recommended_time/$learners) :  0;
             $total_recommended_time = $timeConversionService->convertSecondsToTime($total_recommended_time);
             $avg_recommended_time = $timeConversionService->convertSecondsToTime($avg_recommended_time);
         }else{
@@ -202,13 +219,23 @@ class PlateformeReportService{
 
     public function getLearnersCharts($categorie)
     {
+        $archive = config('tenantconfigfields.archive');
         if($categorie){
-            $learnerCounts = DB::table('learners')
-            ->select('categorie', DB::raw('count(*) as total'))
-            ->groupBy('categorie')
-            ->get();
 
-            $totalLearners = DB::table('learners')->count();
+            if($archive == true){
+                $learnerCounts = DB::table('learners')
+                ->select('categorie', DB::raw('count(*) as total'))
+                ->groupBy('categorie')
+                ->get();
+                $totalLearners = DB::table('learners')->count();
+            }else{
+                $learnerCounts = DB::table('learners')
+                ->select('categorie', DB::raw('count(*) as total'))
+                ->where('statut','!=', 'archive')
+                ->groupBy('categorie')
+                ->get();
+                $totalLearners = DB::table('learners')->where('statut','!=', 'archive')->count();
+            }
 
             $data = [];
             $labels = [];
@@ -255,11 +282,17 @@ class PlateformeReportService{
     public function getStatSoftskills($enrollfields){
         $softModules = Module::where(['category' => 'CEGOS', 'status' => CourseStatusEnum::ACTIVE])->pluck('docebo_id')->toArray();
 
-        $softEnrolls = Enrollmodule::whereIn('module_docebo_id', $softModules)->get();
+        $archive = config('tenantconfigfields.archive');
+        if($archive != true){
+            $learnersIds = Learner::where('statut', '!=' , 'archive')->pluck('docebo_id')->toArray();
+        }else{
+            $learnersIds = Learner::pluck('docebo_id')->toArray();
+        }
 
-        $softEnrollsInEnrolled = Enrollmodule::whereIn('module_docebo_id', $softModules)->where('status', 'enrolled')->count();
-        $softEnrollsInProgress = Enrollmodule::whereIn('module_docebo_id', $softModules)->where('status', 'in_progress')->count();
-        $softEnrollsInCompleted = Enrollmodule::whereIn('module_docebo_id', $softModules)->where('status', 'completed')->count();
+        $softEnrolls = Enrollmodule::whereIn('module_docebo_id', $softModules)->whereIn('learner_docebo_id', $learnersIds)->get();
+        $softEnrollsInEnrolled = Enrollmodule::whereIn('module_docebo_id', $softModules)->whereIn('learner_docebo_id', $learnersIds)->where('status', 'enrolled')->count();
+        $softEnrollsInProgress = Enrollmodule::whereIn('module_docebo_id', $softModules)->whereIn('learner_docebo_id', $learnersIds)->where('status', 'in_progress')->count();
+        $softEnrollsInCompleted = Enrollmodule::whereIn('module_docebo_id', $softModules)->whereIn('learner_docebo_id', $learnersIds)->where('status', 'completed')->count();
 
         $statSoftskills = [
             'enrolled' =>  $softEnrollsInEnrolled,
@@ -317,9 +350,16 @@ class PlateformeReportService{
 
         $digitalEnrolls = Enrollmodule::whereIn('module_docebo_id', $digitalModules)->get();
 
-        $digitalEnrollsInEnrolled = Enrollmodule::whereIn('module_docebo_id', $digitalModules)->where('status', 'enrolled')->count();
-        $digitalEnrollsInProgress = Enrollmodule::whereIn('module_docebo_id', $digitalModules)->where('status', 'in_progress')->count();
-        $digitalEnrollsInCompleted = Enrollmodule::whereIn('module_docebo_id', $digitalModules)->where('status', 'completed')->count();
+        $archive = config('tenantconfigfields.archive');
+        if($archive != true){
+            $learnersIds = Learner::where('statut', '!=' , 'archive')->pluck('docebo_id')->toArray();
+        }else{
+            $learnersIds = Learner::pluck('docebo_id')->toArray();
+        }
+
+        $digitalEnrollsInEnrolled = Enrollmodule::whereIn('module_docebo_id', $digitalModules)->whereIn('learner_docebo_id', $learnersIds)->where('status', 'enrolled')->count();
+        $digitalEnrollsInProgress = Enrollmodule::whereIn('module_docebo_id', $digitalModules)->whereIn('learner_docebo_id', $learnersIds)->where('status', 'in_progress')->count();
+        $digitalEnrollsInCompleted = Enrollmodule::whereIn('module_docebo_id', $digitalModules)->whereIn('learner_docebo_id', $learnersIds)->where('status', 'completed')->count();
 
         $statDigital = [
             'enrolled' =>  $digitalEnrollsInEnrolled,
@@ -376,9 +416,16 @@ class PlateformeReportService{
 
         $digitalEnrolls = Enrollmodule::where('module_docebo_id', $selectedDigital)->get();
 
-        $digitalEnrollsInEnrolled = Enrollmodule::where('module_docebo_id', $selectedDigital)->where('status', 'enrolled')->count();
-        $digitalEnrollsInProgress = Enrollmodule::where('module_docebo_id', $selectedDigital)->where('status', 'in_progress')->count();
-        $digitalEnrollsInCompleted = Enrollmodule::where('module_docebo_id', $selectedDigital)->where('status', 'completed')->count();
+        $archive = config('tenantconfigfields.archive');
+        if($archive != true){
+            $learnersIds = Learner::where('statut', '!=' , 'archive')->pluck('docebo_id')->toArray();
+        }else{
+            $learnersIds = Learner::pluck('docebo_id')->toArray();
+        }
+
+        $digitalEnrollsInEnrolled = Enrollmodule::where('module_docebo_id', $selectedDigital)->whereIn('learner_docebo_id', $learnersIds)->where('status', 'enrolled')->count();
+        $digitalEnrollsInProgress = Enrollmodule::where('module_docebo_id', $selectedDigital)->whereIn('learner_docebo_id', $learnersIds)->where('status', 'in_progress')->count();
+        $digitalEnrollsInCompleted = Enrollmodule::where('module_docebo_id', $selectedDigital)->whereIn('learner_docebo_id', $learnersIds)->where('status', 'completed')->count();
 
         $statDigital = [
             'enrolled' =>  $digitalEnrollsInEnrolled,
@@ -431,9 +478,17 @@ class PlateformeReportService{
     }
 
     public function getStatSpeex($enrollfields){
-        $langEnrollsInEnrolled = Langenroll::whereIn('status', ['enrolled', 'waiting'])->count();
-        $langEnrollsInProgress = Langenroll::where('status', 'in_progress')->count();
-        $langEnrollsInCompleted = Langenroll::where('status', 'completed')->count();
+
+        $archive = config('tenantconfigfields.archive');
+        if($archive != true){
+            $learnersIds = Learner::where('statut', '!=' , 'archive')->pluck('docebo_id')->toArray();
+        }else{
+            $learnersIds = Learner::pluck('docebo_id')->toArray();
+        }
+
+        $langEnrollsInEnrolled = Langenroll::whereIn('status', ['enrolled', 'waiting'])->whereIn('learner_docebo_id', $learnersIds)->count();
+        $langEnrollsInProgress = Langenroll::where('status', 'in_progress')->whereIn('learner_docebo_id', $learnersIds)->count();
+        $langEnrollsInCompleted = Langenroll::where('status', 'completed')->whereIn('learner_docebo_id', $learnersIds)->count();
 
         $statSpeex = [
             'enrolled' =>  $langEnrollsInEnrolled,
@@ -441,7 +496,7 @@ class PlateformeReportService{
             'completed' => $langEnrollsInCompleted,
         ];
 
-        $langEnrolls = Langenroll::all();
+        $langEnrolls = Langenroll::whereIn('learner_docebo_id', $learnersIds)->get();
 
         $timeConversionService = new TimeConversionService();
         $total_session_time =  $timeConversionService->convertSecondsToTime($langEnrolls->sum('session_time'));
@@ -487,11 +542,18 @@ class PlateformeReportService{
         $timeConversionService = new TimeConversionService();
         $niveaux = ['A1', 'A2', 'B1.1', 'B1.2', 'B2.1', 'B2.2', 'C1.1', 'C1.2', 'Indéterminé'];
 
+        $archive = config('tenantconfigfields.archive');
+        if($archive == true){
+            $learnersIds = Learner::where('statut', '!=' , 'archive')->pluck('docebo_id')->toArray();
+        }else{
+            $learnersIds = Learner::pluck('docebo_id')->toArray();
+        }
+
         $statistiques = Langenroll::selectRaw('niveau, COUNT(*) AS nombre_total, SUM(cmi_time) AS temps_total_cmi')
+            ->whereIn('learner_docebo_id' , $learnersIds)
             ->where('language', $selectedLanguage)
             ->groupBy('niveau')
             ->get();
-
         $nombreTotalArray = [];
         $tempsTotalCmiArray = [];
 
@@ -516,10 +578,17 @@ class PlateformeReportService{
     }
 
     public function getStatMooc($enrollfields){
-        $moocEnrollsInWaiting = Enrollmooc::where('status', 'waiting')->count();
-        $moocEnrollsInEnrolled = Enrollmooc::where('status', 'enrolled')->count();
-        $moocEnrollsInProgress = Enrollmooc::where('status', 'in_progress')->count();
-        $moocEnrollsInCompleted = Enrollmooc::where('status', 'completed')->count();
+        $archive = config('tenantconfigfields.archive');
+        if($archive != true){
+            $learnersIds = Learner::where('statut', '!=' , 'archive')->pluck('docebo_id')->toArray();
+        }else{
+            $learnersIds = Learner::pluck('docebo_id')->toArray();
+        }
+
+        $moocEnrollsInWaiting = Enrollmooc::where('status', 'waiting')->whereIn('learner_docebo_id' , $learnersIds)->count();
+        $moocEnrollsInEnrolled = Enrollmooc::where('status', 'enrolled')->whereIn('learner_docebo_id' , $learnersIds)->count();
+        $moocEnrollsInProgress = Enrollmooc::where('status', 'in_progress')->whereIn('learner_docebo_id' , $learnersIds)->count();
+        $moocEnrollsInCompleted = Enrollmooc::where('status', 'completed')->whereIn('learner_docebo_id' , $learnersIds)->count();
 
         $statMooc = [
             'waiting' =>  $moocEnrollsInWaiting,
@@ -528,7 +597,7 @@ class PlateformeReportService{
             'completed' => $moocEnrollsInCompleted,
         ];
 
-        $moocEnrolls = Enrollmooc::all();
+        $moocEnrolls = Enrollmooc::whereIn('learner_docebo_id' , $learnersIds)->get();
 
         $timeConversionService = new TimeConversionService();
         $total_session_time =  $timeConversionService->convertSecondsToTime($moocEnrolls->sum('session_time'));
@@ -576,10 +645,17 @@ class PlateformeReportService{
 
         $digitalModules = Module::where(['category' => 'ENI', 'status' => CourseStatusEnum::ACTIVE])->pluck('docebo_id')->toArray();
         $softModules = Module::where(['category' => 'CEGOS', 'status' => CourseStatusEnum::ACTIVE])->pluck('docebo_id')->toArray();
-        $softEnrolls = Enrollmodule::whereIn('module_docebo_id', $softModules)->get();
-        $digitalEnrolls = Enrollmodule::whereIn('module_docebo_id', $digitalModules)->get();
-        $langEnrolls = Langenroll::all();
-        $moocEnrolls = Enrollmooc::all();
+        $archive = config('tenantconfigfields.archive');
+        if($archive != true){
+            $learnersIds = Learner::where('statut', '!=' , 'archive')->pluck('docebo_id')->toArray();
+        }else{
+            $learnersIds = Learner::pluck('docebo_id')->toArray();
+        }
+
+        $softEnrolls = Enrollmodule::whereIn('module_docebo_id', $softModules)->whereIn('learner_docebo_id' , $learnersIds)->get();
+        $digitalEnrolls = Enrollmodule::whereIn('module_docebo_id', $digitalModules)->whereIn('learner_docebo_id' , $learnersIds)->get();
+        $langEnrolls = Langenroll::whereIn('learner_docebo_id' , $learnersIds)->get();
+        $moocEnrolls = Enrollmooc::whereIn('learner_docebo_id' , $learnersIds)->get();
 
 
         $timeConversionService = new TimeConversionService();
@@ -639,13 +715,19 @@ class PlateformeReportService{
 
     public function getLpStats($enrollfields){
         $lps = Lp::all();
-        $lpEnrolls = Lpenroll::all();
+        $archive = config('tenantconfigfields.archive');
+        if($archive != true){
+            $learnersIds = Learner::where('statut', '!=' , 'archive')->pluck('docebo_id')->toArray();
+        }else{
+            $learnersIds = Learner::pluck('docebo_id')->toArray();
+        }
+        $lpEnrolls = Lpenroll::whereIn('learner_docebo_id' , $learnersIds)->get();
 
-        $lpEnrollsInEnrolled = Lpenroll::where('status', 'enrolled')->count();
-        $lpEnrollsInProgress = Lpenroll::where('status', 'in_progress')->count();
-        $lpEnrollsInProgressMax = Lpenroll::where('status', 'in_progress')->where('enrollment_completion_percentage','>=','50')->count();
-        $lpEnrollsInProgressMin = Lpenroll::where('status', 'in_progress')->where('enrollment_completion_percentage','<','50')->count();
-        $lpEnrollsInCompleted = Lpenroll::where('status', 'completed')->count();
+        $lpEnrollsInEnrolled = Lpenroll::where('status', 'enrolled')->whereIn('learner_docebo_id' , $learnersIds)->count();
+        $lpEnrollsInProgress = Lpenroll::where('status', 'in_progress')->whereIn('learner_docebo_id' , $learnersIds)->count();
+        $lpEnrollsInProgressMax = Lpenroll::where('status', 'in_progress')->whereIn('learner_docebo_id' , $learnersIds)->where('enrollment_completion_percentage','>=','50')->count();
+        $lpEnrollsInProgressMin = Lpenroll::where('status', 'in_progress')->whereIn('learner_docebo_id' , $learnersIds)->where('enrollment_completion_percentage','<','50')->count();
+        $lpEnrollsInCompleted = Lpenroll::where('status', 'completed')->whereIn('learner_docebo_id' , $learnersIds)->count();
 
         $statLps = [
             'enrolled' =>  $lpEnrollsInEnrolled,
@@ -701,13 +783,20 @@ class PlateformeReportService{
 
     public function geStatsPerLp($enrollfields, $selectedLp){
         $lps = Lp::all();
-        $lpEnrolls = Lpenroll::where('lp_docebo_id', $selectedLp)->get();
 
-        $lpEnrollsInEnrolled = Lpenroll::where('status', 'enrolled')->where('lp_docebo_id', $selectedLp)->count();
-        $lpEnrollsInProgress = Lpenroll::where('status', 'in_progress')->where('lp_docebo_id', $selectedLp)->count();
-        $lpEnrollsInProgressMax = Lpenroll::where('status', 'in_progress')->where('enrollment_completion_percentage','>=','50')->where('lp_docebo_id', $selectedLp)->count();
-        $lpEnrollsInProgressMin = Lpenroll::where('status', 'in_progress')->where('enrollment_completion_percentage','<','50')->where('lp_docebo_id', $selectedLp)->count();
-        $lpEnrollsInCompleted = Lpenroll::where('status', 'completed')->where('lp_docebo_id', $selectedLp)->count();
+        $archive = config('tenantconfigfields.archive');
+        if($archive != true){
+            $learnersIds = Learner::where('statut', '!=' , 'archive')->pluck('docebo_id')->toArray();
+        }else{
+            $learnersIds = Learner::pluck('docebo_id')->toArray();
+        }
+        $lpEnrolls = Lpenroll::where('lp_docebo_id', $selectedLp)->whereIn('learner_docebo_id' , $learnersIds)->get();
+
+        $lpEnrollsInEnrolled = Lpenroll::where('status', 'enrolled')->whereIn('learner_docebo_id' , $learnersIds)->where('lp_docebo_id', $selectedLp)->count();
+        $lpEnrollsInProgress = Lpenroll::where('status', 'in_progress')->whereIn('learner_docebo_id' , $learnersIds)->where('lp_docebo_id', $selectedLp)->count();
+        $lpEnrollsInProgressMax = Lpenroll::where('status', 'in_progress')->whereIn('learner_docebo_id' , $learnersIds)->where('enrollment_completion_percentage','>=','50')->where('lp_docebo_id', $selectedLp)->count();
+        $lpEnrollsInProgressMin = Lpenroll::where('status', 'in_progress')->whereIn('learner_docebo_id' , $learnersIds)->where('enrollment_completion_percentage','<','50')->where('lp_docebo_id', $selectedLp)->count();
+        $lpEnrollsInCompleted = Lpenroll::where('status', 'completed')->whereIn('learner_docebo_id' , $learnersIds)->where('lp_docebo_id', $selectedLp)->count();
 
         $statLps = [
             'enrolled' =>  $lpEnrollsInEnrolled,
@@ -762,9 +851,18 @@ class PlateformeReportService{
     }
 
     public function getLscStats(){
-        $totalTickets = Ticket::count();
-        $totalCalls = Call::count();
+
+        $archive = config('tenantconfigfields.archive');
+        if($archive != true){
+            $learnersIds = Learner::where('statut', '!=' , 'archive')->pluck('docebo_id')->toArray();
+        }else{
+            $learnersIds = Learner::pluck('docebo_id')->toArray();
+        }
+        $totalTickets = Ticket::whereIn('learner_docebo_id' , $learnersIds)->count();
+        $totalCalls = Call::whereIn('learner_docebo_id' , $learnersIds)->count();
+
         $ticketDistribution = Ticket::select('status', DB::raw('count(*) as count'))
+                                    ->whereIn('learner_docebo_id' , $learnersIds)
                                     ->groupBy('status')
                                     ->get();
         $ticketsLabels =[];
@@ -779,6 +877,7 @@ class PlateformeReportService{
         ];
 
         $callStatisticsSubject = Call::select('subject', 'type', DB::raw('COUNT(*) as call_count'))
+                        ->whereIn('learner_docebo_id' , $learnersIds)
                         ->groupBy('subject', 'type')
                         ->get();
         $groupedStatisticsSubject = [];
@@ -795,6 +894,7 @@ class PlateformeReportService{
         }
 
         $callStatisticsStatus = Call::select('status', 'type', DB::raw('COUNT(*) as call_count'))
+            ->whereIn('learner_docebo_id' , $learnersIds)
             ->groupBy('status', 'type')
             ->get();
         $groupedStatisticsStatus = [];
@@ -833,10 +933,19 @@ class PlateformeReportService{
 
 
     public function getLscStatsPerDate($startDate , $endDate){
-        $totalTickets = Ticket::whereBetween('ticket_created_at', [$startDate, $endDate])->count();
-        $totalCalls = Call::whereBetween('date_call', [$startDate, $endDate])->count();
+        $archive = config('tenantconfigfields.archive');
+
+        if($archive != true){
+            $learnersIds = Learner::where('statut', '!=' , 'archive')->pluck('docebo_id')->toArray();
+        }else{
+            $learnersIds = Learner::pluck('docebo_id')->toArray();
+        }
+
+        $totalTickets = Ticket::whereBetween('ticket_created_at', [$startDate, $endDate])->whereIn('learner_docebo_id' , $learnersIds)->count();
+        $totalCalls = Call::whereBetween('date_call', [$startDate, $endDate])->whereIn('learner_docebo_id' , $learnersIds)->count();
         $ticketDistribution = Ticket::select('status', DB::raw('count(*) as count'))
                                     ->whereBetween('ticket_created_at', [$startDate, $endDate])
+                                    ->whereIn('learner_docebo_id' , $learnersIds)
                                     ->groupBy('status')
                                     ->get();
         $ticketsLabels =[];
@@ -852,6 +961,7 @@ class PlateformeReportService{
 
         $callStatisticsSubject = Call::select('subject', 'type', DB::raw('COUNT(*) as call_count'))
                                     ->whereBetween('date_call', [$startDate, $endDate])
+                                    ->whereIn('learner_docebo_id' , $learnersIds)
                                     ->groupBy('subject', 'type')
                                     ->get();
         $groupedStatisticsSubject = [];
@@ -869,6 +979,7 @@ class PlateformeReportService{
 
         $callStatisticsStatus = Call::select('status', 'type', DB::raw('COUNT(*) as call_count'))
                                     ->whereBetween('date_call', [$startDate, $endDate])
+                                    ->whereIn('learner_docebo_id' , $learnersIds)
                                     ->groupBy('status', 'type')
                                     ->get();
         $groupedStatisticsStatus = [];
@@ -908,7 +1019,7 @@ class PlateformeReportService{
 
     public function getLearnersInscriptionsPerDate($startDate , $endDate){
         $total_learners = Learner::whereBetween('creation_date', [$startDate, $endDate])->count();
-        $active_learners = Learner::whereNotNull('last_access_date')->whereBetween('last_access_date', [$startDate, $endDate])->where('statut', 'active')->count();
+        $active_learners = Learner::whereBetween('last_access_date', [$startDate, $endDate])->where('statut', 'active')->count();
         $inactive_learners =  Learner::whereBetween('creation_date', [$startDate, $endDate])->where('statut', 'inactive')->count();
 
         $archive_learners =  Learner::where('statut','archive')->count();
@@ -922,15 +1033,24 @@ class PlateformeReportService{
     }
 
     public function getTimingDetailsPerDate($enrollfields, $startDate , $endDate){
-        $active_learners = Learner::whereNotNull('last_access_date')->whereBetween('last_access_date', [$startDate, $endDate])->where('statut', 'active')->count();
 
-        $moduleDataTimes = Enrollmodule::calculateModuleDataTimesBetweenDate($startDate, $endDate);
-        $moocDataTimes = Enrollmooc::calculateMoocDataTimesBetweenDate($startDate, $endDate);
-        $speexDataTimes = Langenroll::calculateSpeexDataTimesBetweenDate($startDate, $endDate);
+        $archive = config('tenantconfigfields.archive');
+        if($archive == true){
+            $learners = Learner::whereIn('statut' , ['active', 'archive'])->whereBetween('last_access_date', [$startDate, $endDate])->count();
+            $learnersIds = Learner::whereIn('statut' , ['active', 'archive'])->whereBetween('last_access_date', [$startDate, $endDate])->pluck('docebo_id')->toArray();
+        }else{
+            $learners = Learner::where('statut' , 'active')->whereBetween('last_access_date', [$startDate, $endDate])->count();
+            $learnersIds = Learner::where('statut' , 'active')->whereBetween('last_access_date', [$startDate, $endDate])->pluck('docebo_id')->toArray();
+        }
+
+
+        $moduleDataTimes = Enrollmodule::calculateModuleDataTimesBetweenDate($startDate, $endDate, $learnersIds);
+        $moocDataTimes = Enrollmooc::calculateMoocDataTimesBetweenDate($startDate, $endDate, $learnersIds);
+        $speexDataTimes = Langenroll::calculateSpeexDataTimesBetweenDate($startDate, $endDate, $learnersIds);
 
         $timeConversionService = new TimeConversionService();
         $total_session_time = intval($moduleDataTimes->total_session_time) + intval($moocDataTimes->total_session_time) + intval($speexDataTimes->total_session_time);
-        $avg_session_time =  $active_learners != 0 ? intval($total_session_time/$active_learners) : 0;
+        $avg_session_time =  $learners != 0 ? intval($total_session_time/$learners) : 0;
         $total_session_time = $timeConversionService->convertSecondsToTime($total_session_time);
         $avg_session_time = $timeConversionService->convertSecondsToTime($avg_session_time);
 
@@ -938,7 +1058,7 @@ class PlateformeReportService{
         if($enrollfields['cmi_time'] == true)
         {
             $total_cmi_time = intval($moduleDataTimes->total_cmi_time) + intval($moocDataTimes->total_cmi_time) + intval($speexDataTimes->total_cmi_time);
-            $avg_cmi_time =  $active_learners != 0 ?  intval($total_cmi_time/$active_learners) :  0;
+            $avg_cmi_time =  $learners != 0 ?  intval($total_cmi_time/$learners) :  0;
             $total_cmi_time = $timeConversionService->convertSecondsToTime($total_cmi_time);
             $avg_cmi_time = $timeConversionService->convertSecondsToTime($avg_cmi_time);
         }else{
@@ -949,7 +1069,7 @@ class PlateformeReportService{
         if($enrollfields['calculated_time'] == true)
         {
             $total_calculated_time = intval($moduleDataTimes->total_calculated_time) + intval($moocDataTimes->total_calculated_time) + intval($speexDataTimes->total_calculated_time);
-            $avg_calculated_time =  $active_learners != 0 ?  intval($total_calculated_time/$active_learners) : 0;
+            $avg_calculated_time =  $learners != 0 ?  intval($total_calculated_time/$learners) : 0;
             $total_calculated_time = $timeConversionService->convertSecondsToTime($total_calculated_time);
             $avg_calculated_time = $timeConversionService->convertSecondsToTime($avg_calculated_time);
         }else{
@@ -960,7 +1080,7 @@ class PlateformeReportService{
         if($enrollfields['recommended_time'] == true)
         {
             $total_recommended_time = intval($moduleDataTimes->total_recommended_time) + intval($moocDataTimes->total_recommended_time) + intval($speexDataTimes->total_recommended_time);
-            $avg_recommended_time =  $active_learners != 0 ?  intval($total_recommended_time/$active_learners) :  0;
+            $avg_recommended_time =  $learners != 0 ?  intval($total_recommended_time/$learners) :  0;
             $total_recommended_time = $timeConversionService->convertSecondsToTime($total_recommended_time);
             $avg_recommended_time = $timeConversionService->convertSecondsToTime($avg_recommended_time);
         }else{
@@ -983,14 +1103,27 @@ class PlateformeReportService{
 
     public function getLearnersChartsPerDate($categorie, $startDate , $endDate)
     {
+        $archive = config('tenantconfigfields.archive');
         if($categorie){
-            $learnerCounts = DB::table('learners')
-            ->select('categorie', DB::raw('count(*) as total'))
-            ->whereBetween('creation_date', [$startDate, $endDate])
-            ->groupBy('categorie')
-            ->get();
+            if($archive == true){
+                $learnerCounts = DB::table('learners')
+                ->select('categorie', DB::raw('count(*) as total'))
+                ->whereBetween('creation_date', [$startDate, $endDate])
+                ->groupBy('categorie')
+                ->get();
 
-            $totalLearners = DB::table('learners')->whereBetween('creation_date', [$startDate, $endDate])->count();
+                $totalLearners = DB::table('learners')->whereBetween('creation_date', [$startDate, $endDate])->count();
+
+            }else{
+                $learnerCounts = DB::table('learners')
+                ->select('categorie', DB::raw('count(*) as total'))
+                ->where('statut' , '!=', 'archive')
+                ->whereBetween('creation_date', [$startDate, $endDate])
+                ->groupBy('categorie')
+                ->get();
+
+                $totalLearners = DB::table('learners')->whereBetween('creation_date', [$startDate, $endDate])->where('statut' , '!=', 'archive')->count();
+            }
 
             $data = [];
             $labels = [];
@@ -1033,8 +1166,6 @@ class PlateformeReportService{
            'chartInscritPerCategoryAndStatus' => $chartInscritPerCategoryAndStatus
         ];
     }
-
-
 
 }
 

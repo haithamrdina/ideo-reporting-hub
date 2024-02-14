@@ -64,7 +64,31 @@ class InitTenantService{
                 [
                     'code',
                     'name',
-                    'status'
+                ]
+            );
+        });
+
+        $groupsIDs = Group::pluck('id')->toArray();
+        $project->groups()->sync($groupsIDs);
+    }
+
+
+    public function syncArchives($tenant){
+        $project = Project::where(['name' => 'Archives', 'status' => ProjectStatusEnum::INACTIVE])->first();
+        $doceboConnector = new DoceboConnector();
+        $paginator = $doceboConnector->paginate(new DoceboArchiveGroupList($tenant->company_code));
+        $result = [];
+        foreach($paginator as $pg){
+            $data = $pg->dto();
+            $result = array_merge($result, $data);
+        }
+        DB::transaction(function () use ($result) {
+            Group::upsert(
+                $result,
+                ['docebo_id'],
+                [
+                    'code',
+                    'name',
                 ]
             );
         });

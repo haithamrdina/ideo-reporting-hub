@@ -136,7 +136,7 @@
                                                     @endforeach
                                                 @else
                                                     <tr>
-                                                        <td colspan="7">
+                                                        <td colspan="12">
                                                             <div class="empty-img">
                                                                 <img src="{{ global_asset('static/illustrations/no-data-found.svg') }}"
                                                                     class="w-100" height="128" alt="">

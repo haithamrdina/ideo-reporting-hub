@@ -261,7 +261,9 @@ function updateDataInscrit(learnersInscriptions, timingDetails, learnersCharts) 
     inscrits.textContent = learnersInscriptions.total;
     actifs.textContent = learnersInscriptions.active;
     inactifs.textContent = learnersInscriptions.inactive;
-    archives.textContent = learnersInscriptions.archive;
+    if(archives != null){
+        archives.textContent = learnersInscriptions.archive;
+    }
     session.textContent = timingDetails.total_session_time;
     avgsession.textContent = timingDetails.avg_session_time;
     cmi.textContent = timingDetails.total_cmi_time;
@@ -501,7 +503,7 @@ function updateMoocModules(moocStats){
     insMcT.textContent = moocStats.statMooc.completed;
     insMcND.textContent = moocStats.statMooc.enrolled;
     insMcP.textContent= moocStats.statMooc.in_progress;
-    var insMcW = moocStats.statMooc.waiting;
+    insMcW.textContent = moocStats.statMooc.waiting;
 
     window.ApexCharts && (new ApexCharts(document.getElementById('chart-moocs'), {
         chart: {

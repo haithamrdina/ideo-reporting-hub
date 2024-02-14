@@ -2,18 +2,13 @@
 
 namespace App\Jobs;
 
-use App\Enums\ProjectStatusEnum;
-use App\Enums\UserRoleEnum;
-use App\Models\Project;
 use App\Models\Tenant;
-use App\Models\User;
 use App\Services\InitTenantService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Hash;
 
 class TenantDataJob implements ShouldQueue
 {

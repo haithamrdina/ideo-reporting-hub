@@ -30,7 +30,7 @@ class DoceboLpList extends Request implements Paginatable
     protected function defaultQuery(): array
     {
         return [
-            'search_text' => $this->company_code,
+            'search_text' => $this->company_code.'-PR',
             'return_courses' => 'true',
             'get_cursor' => '1'
         ];

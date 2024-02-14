@@ -30,7 +30,13 @@ class CallExport implements FromArray, WithMapping, WithHeadings, WithStrictNull
 
     public function array(): array
     {
-        $calls = Call::where('project_id', $this->projectId)->get()->toArray();
+        $archive = config('tenantconfigfields.archive');
+        if($archive == true){
+            $calls = Call::where('project_id', $this->projectId)->get()->toArray();
+        }else{
+            $learnersIds = Learner::where('statut', '!=' , 'archive')->pluck('docebo_id')->toArray();
+            $calls = Call::whereIn('learner_docebo_id', $learnersIds)->where('project_id',$this->projectId)->get()->toArray();
+        }
         return $calls;
     }
 

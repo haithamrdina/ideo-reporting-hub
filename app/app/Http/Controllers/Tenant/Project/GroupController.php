@@ -20,7 +20,7 @@ class GroupController extends Controller
         $projectId = Auth::guard('user')->user()->project_id;
         $project = Project::find($projectId);
         $groups = $project->groups;
-        return view('tenant.project.group', compact('groups'));
+        return view('tenant.project.group', compact('groups', 'project'));
     }
 
     public function getData($groupId){

@@ -47,7 +47,7 @@ class ZendeskConnector extends Connector implements HasPagination
     protected function defaultConfig(): array
     {
         return [
-            'timeout' => 60,
+            'timeout' => 120,
         ];
     }
 

@@ -29,8 +29,13 @@ class EniExport implements FromArray, WithMapping, WithHeadings, WithStrictNullC
     public function array(): array
     {
         $eniModules = Module::where(['category' => 'ENI', 'status' => CourseStatusEnum::ACTIVE])->pluck('docebo_id')->toArray();
-
-        $eniEnrolls = Enrollmodule::whereIn('module_docebo_id', $eniModules)->get()->toArray();
+        $archive = config('tenantconfigfields.archive');
+        if($archive == true){
+            $eniEnrolls = Enrollmodule::whereIn('module_docebo_id', $eniModules)->get()->toArray();
+        }else{
+            $learnersIds = Learner::where('statut', '!=' , 'archive')->pluck('docebo_id')->toArray();
+            $eniEnrolls = Enrollmodule::whereIn('module_docebo_id', $eniModules)->whereIn('learner_docebo_id', $learnersIds)->get()->toArray();
+        }
         return $eniEnrolls;
     }
 

@@ -36,8 +36,13 @@ class CegosExport implements FromArray, WithMapping, WithHeadings, WithStrictNul
         $softModules = $group->modules->filter(function ($module) {
             return $module->category === 'CEGOS' && $module->status === CourseStatusEnum::ACTIVE;
         })->pluck('docebo_id')->toArray();
-
-        $softEnrolls = Enrollmodule::whereIn('module_docebo_id', $softModules)->where('group_id',$this->groupId)->get()->toArray();
+        $archive = config('tenantconfigfields.archive');
+        if($archive == true){
+            $softEnrolls = Enrollmodule::whereIn('module_docebo_id', $softModules)->where('group_id',$this->groupId)->get()->toArray();
+        }else{
+            $learnersIds = Learner::where('statut', '!=' , 'archive')->pluck('docebo_id')->toArray();
+            $softEnrolls = Enrollmodule::whereIn('module_docebo_id', $softModules)->whereIn('learner_docebo_id', $learnersIds)->where('group_id',$this->groupId)->get()->toArray();
+        }
         return $softEnrolls;
     }
 

@@ -1,6 +1,8 @@
 @extends('master')
 @php
     $contract_start_date_conf = config('tenantconfigfields.contract_start_date');
+    $archive = config('tenantconfigfields.archive');
+    $sur_mesure = config('tenantconfigfields.sur_mesure');
     $cmi_time_conf = config('tenantconfigfields.enrollmentfields.cmi_time');
     $calculated_time_conf = config('tenantconfigfields.enrollmentfields.calculated_time');
     $recommended_time_conf = config('tenantconfigfields.enrollmentfields.recommended_time');

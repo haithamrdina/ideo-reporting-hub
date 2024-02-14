@@ -29,8 +29,17 @@
         <div class="container-xl">
             <div class="row g-2 align-items-center">
                 <div class="col">
-                    <div class="page-pretitle">
-                        IDEO Reporting
+                    <!-- Page pre-title -->
+                    <span class="h1 text-red">
+                        @if(isset($project))
+                            {{ $project->name  }}
+                        @elseif(isset($group))
+                            {{ $group->name  }}
+                        @endif
+                    </span>
+                    <!-- Page pre-title -->
+                    <div class="page-pretitle mt-2">
+                            Ideo Reporting
                     </div>
                     <h2 class="page-title">
                         Vos données de progression sur la e-académie.

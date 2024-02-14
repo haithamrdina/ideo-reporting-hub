@@ -81,59 +81,54 @@ class Enrollmooc extends Model
         return $moocDataTimes;
     }
 
-    public static function calculateMoocDataTimesBetweenDate($startDate, $endDate)
+    public static function calculateMoocDataTimesBetweenDate($startDate, $endDate,$learnersIds)
     {
-        $moduleDataTimes = DB::table('enrollmoocs')
+       $moocDataTimes = DB::table('enrollmoocs')
+                        ->whereIn('learner_docebo_id', $learnersIds)
                         ->select(
                             DB::raw('SUM(
                                 CASE
-                                            WHEN (status = "enrolled" OR status = "waiting") AND enrollment_created_at BETWEEN ? AND ? THEN session_time
-                                            WHEN  status = "in_progress" AND enrollment_updated_at BETWEEN ? AND ? THEN session_time
-                                            WHEN status = "completed" AND enrollment_completed_at BETWEEN ? AND ? THEN session_time
-                                            ELSE 0
+                                    WHEN
+                                        ((status = "enrolled" OR status = "waiting") AND enrollment_created_at BETWEEN "'. $startDate.'" AND "'.$endDate.'") OR
+                                        (status = "in_progress" AND enrollment_updated_at BETWEEN "'. $startDate.'" AND "'.$endDate.'") OR
+                                        (status = "completed" AND enrollment_completed_at BETWEEN "'. $startDate.'" AND "'.$endDate.'")
+                                    THEN COALESCE(session_time, 0)
+                                    ELSE 0
                                 END
                             ) as total_session_time'),
                             DB::raw('SUM(
                                 CASE
-                                            WHEN (status = "enrolled" OR status = "waiting") AND enrollment_created_at BETWEEN ? AND ? THEN cmi_time
-                                            WHEN  status = "in_progress" AND enrollment_updated_at BETWEEN ? AND ? THEN cmi_time
-                                            WHEN status = "completed" AND enrollment_completed_at BETWEEN ? AND ? THEN cmi_time
-                                            ELSE 0
+                                    WHEN
+                                        ((status = "enrolled" OR status = "waiting") AND enrollment_created_at BETWEEN "'. $startDate.'" AND "'.$endDate.'") OR
+                                        (status = "in_progress" AND enrollment_updated_at BETWEEN "'. $startDate.'" AND "'.$endDate.'") OR
+                                        (status = "completed" AND enrollment_completed_at BETWEEN "'. $startDate.'" AND "'.$endDate.'")
+                                    THEN COALESCE(cmi_time, 0)
+                                    ELSE 0
                                 END
                             ) as total_cmi_time'),
                             DB::raw('SUM(
                                 CASE
-                                            WHEN (status = "enrolled" OR status = "waiting") AND enrollment_created_at BETWEEN ? AND ? THEN calculated_time
-                                            WHEN  status = "in_progress" AND enrollment_updated_at BETWEEN ? AND ? THEN calculated_time
-                                            WHEN status = "completed" AND enrollment_completed_at BETWEEN ? AND ? THEN calculated_time
-                                            ELSE 0
+                                    WHEN
+                                        ((status = "enrolled" OR status = "waiting") AND enrollment_created_at BETWEEN "'. $startDate.'" AND "'.$endDate.'") OR
+                                        (status = "in_progress" AND enrollment_updated_at BETWEEN "'. $startDate.'" AND "'.$endDate.'") OR
+                                        (status = "completed" AND enrollment_completed_at BETWEEN "'. $startDate.'" AND "'.$endDate.'")
+                                    THEN COALESCE(calculated_time, 0)
+                                    ELSE 0
                                 END
                             ) as total_calculated_time'),
                             DB::raw('SUM(
                                 CASE
-                                            WHEN (status = "enrolled" OR status = "waiting") AND enrollment_created_at BETWEEN ? AND ? THEN recommended_time
-                                            WHEN  status = "in_progress" AND enrollment_updated_at BETWEEN ? AND ? THEN recommended_time
-                                            WHEN status = "completed" AND enrollment_completed_at BETWEEN ? AND ? THEN recommended_time
-                                            ELSE 0
+                                    WHEN
+                                        ((status = "enrolled" OR status = "waiting") AND enrollment_created_at BETWEEN "'. $startDate.'" AND "'.$endDate.'") OR
+                                        (status = "in_progress" AND enrollment_updated_at BETWEEN "'. $startDate.'" AND "'.$endDate.'") OR
+                                        (status = "completed" AND enrollment_completed_at BETWEEN "'. $startDate.'" AND "'.$endDate.'")
+                                    THEN COALESCE(recommended_time, 0)
+                                    ELSE 0
                                 END
                             ) as total_recommended_time'),
-                        )
-                        ->setBindings([
-                            $startDate, $endDate,
-                            $startDate, $endDate,
-                            $startDate, $endDate,
-                            $startDate, $endDate,
-                            $startDate, $endDate,
-                            $startDate, $endDate,
-                            $startDate, $endDate,
-                            $startDate, $endDate,
-                            $startDate, $endDate,
-                            $startDate, $endDate,
-                            $startDate, $endDate,
-                            $startDate, $endDate
-                        ])
-                        ->first();
-        return $moduleDataTimes;
+                        )->first();
+        return $moocDataTimes;
+
     }
 
     public static function calculateMoocDataTimesPerProject($statDate,$projectId)
@@ -180,61 +175,54 @@ class Enrollmooc extends Model
         return $moocDataTimes;
     }
 
-    public static function calculateMoocDataTimesBetweenDatePerProject($startDate, $endDate, $projectId)
+    public static function calculateMoocDataTimesBetweenDatePerProject($startDate, $endDate, $projectId,$learnersIds )
     {
-        $moduleDataTimes = DB::table('enrollmoocs')
-                        ->where('project_id','?')
-                        ->select(
-                            DB::raw('SUM(
-                                CASE
-                                            WHEN (status = "enrolled" OR status = "waiting") AND enrollment_created_at BETWEEN ? AND ? THEN session_time
-                                            WHEN  status = "in_progress" AND enrollment_updated_at BETWEEN ? AND ? THEN session_time
-                                            WHEN status = "completed" AND enrollment_completed_at BETWEEN ? AND ? THEN session_time
-                                            ELSE 0
-                                END
-                            ) as total_session_time'),
-                            DB::raw('SUM(
-                                CASE
-                                            WHEN (status = "enrolled" OR status = "waiting") AND enrollment_created_at BETWEEN ? AND ? THEN cmi_time
-                                            WHEN  status = "in_progress" AND enrollment_updated_at BETWEEN ? AND ? THEN cmi_time
-                                            WHEN status = "completed" AND enrollment_completed_at BETWEEN ? AND ? THEN cmi_time
-                                            ELSE 0
-                                END
-                            ) as total_cmi_time'),
-                            DB::raw('SUM(
-                                CASE
-                                            WHEN (status = "enrolled" OR status = "waiting") AND enrollment_created_at BETWEEN ? AND ? THEN calculated_time
-                                            WHEN  status = "in_progress" AND enrollment_updated_at BETWEEN ? AND ? THEN calculated_time
-                                            WHEN status = "completed" AND enrollment_completed_at BETWEEN ? AND ? THEN calculated_time
-                                            ELSE 0
-                                END
-                            ) as total_calculated_time'),
-                            DB::raw('SUM(
-                                CASE
-                                            WHEN (status = "enrolled" OR status = "waiting") AND enrollment_created_at BETWEEN ? AND ? THEN recommended_time
-                                            WHEN  status = "in_progress" AND enrollment_updated_at BETWEEN ? AND ? THEN recommended_time
-                                            WHEN status = "completed" AND enrollment_completed_at BETWEEN ? AND ? THEN recommended_time
-                                            ELSE 0
-                                END
-                            ) as total_recommended_time'),
-                        )
-                        ->setBindings([
-                            $startDate, $endDate,
-                            $startDate, $endDate,
-                            $startDate, $endDate,
-                            $startDate, $endDate,
-                            $startDate, $endDate,
-                            $startDate, $endDate,
-                            $startDate, $endDate,
-                            $startDate, $endDate,
-                            $startDate, $endDate,
-                            $startDate, $endDate,
-                            $startDate, $endDate,
-                            $startDate, $endDate,
-                            $projectId
-                        ])
-                        ->first();
-        return $moduleDataTimes;
+        $moocDataTimes = DB::table('enrollmoocs')
+                ->where('project_id', $projectId)
+                ->whereIn('learner_docebo_id', $learnersIds)
+                ->select(
+                    DB::raw('SUM(
+                        CASE
+                            WHEN
+                                ((status = "enrolled" OR status = "waiting") AND enrollment_created_at BETWEEN "'. $startDate.'" AND "'.$endDate.'") OR
+                                (status = "in_progress" AND enrollment_updated_at BETWEEN "'. $startDate.'" AND "'.$endDate.'") OR
+                                (status = "completed" AND enrollment_completed_at BETWEEN "'. $startDate.'" AND "'.$endDate.'")
+                            THEN COALESCE(session_time, 0)
+                            ELSE 0
+                        END
+                    ) as total_session_time'),
+                    DB::raw('SUM(
+                        CASE
+                            WHEN
+                                ((status = "enrolled" OR status = "waiting") AND enrollment_created_at BETWEEN "'. $startDate.'" AND "'.$endDate.'") OR
+                                (status = "in_progress" AND enrollment_updated_at BETWEEN "'. $startDate.'" AND "'.$endDate.'") OR
+                                (status = "completed" AND enrollment_completed_at BETWEEN "'. $startDate.'" AND "'.$endDate.'")
+                            THEN COALESCE(cmi_time, 0)
+                            ELSE 0
+                        END
+                    ) as total_cmi_time'),
+                    DB::raw('SUM(
+                        CASE
+                            WHEN
+                                ((status = "enrolled" OR status = "waiting") AND enrollment_created_at BETWEEN "'. $startDate.'" AND "'.$endDate.'") OR
+                                (status = "in_progress" AND enrollment_updated_at BETWEEN "'. $startDate.'" AND "'.$endDate.'") OR
+                                (status = "completed" AND enrollment_completed_at BETWEEN "'. $startDate.'" AND "'.$endDate.'")
+                            THEN COALESCE(calculated_time, 0)
+                            ELSE 0
+                        END
+                    ) as total_calculated_time'),
+                    DB::raw('SUM(
+                        CASE
+                            WHEN
+                                ((status = "enrolled" OR status = "waiting") AND enrollment_created_at BETWEEN "'. $startDate.'" AND "'.$endDate.'") OR
+                                (status = "in_progress" AND enrollment_updated_at BETWEEN "'. $startDate.'" AND "'.$endDate.'") OR
+                                (status = "completed" AND enrollment_completed_at BETWEEN "'. $startDate.'" AND "'.$endDate.'")
+                            THEN COALESCE(recommended_time, 0)
+                            ELSE 0
+                        END
+                    ) as total_recommended_time'),
+                )->first();
+        return $moocDataTimes;
     }
 
     public static function calculateMoocDataTimesPerGroup($statDate,$groupId)
@@ -281,60 +269,53 @@ class Enrollmooc extends Model
         return $moocDataTimes;
     }
 
-    public static function calculateMoocDataTimesBetweenDatePerGroup($startDate, $endDate, $groupId)
+    public static function calculateMoocDataTimesBetweenDatePerGroup($startDate, $endDate, $groupId, $learnersIds)
     {
-        $moduleDataTimes = DB::table('enrollmoocs')
-                        ->where('group_id','?')
-                        ->select(
-                            DB::raw('SUM(
-                                CASE
-                                            WHEN (status = "enrolled" OR status = "waiting") AND enrollment_created_at BETWEEN ? AND ? THEN session_time
-                                            WHEN  status = "in_progress" AND enrollment_updated_at BETWEEN ? AND ? THEN session_time
-                                            WHEN status = "completed" AND enrollment_completed_at BETWEEN ? AND ? THEN session_time
-                                            ELSE 0
-                                END
-                            ) as total_session_time'),
-                            DB::raw('SUM(
-                                CASE
-                                            WHEN (status = "enrolled" OR status = "waiting") AND enrollment_created_at BETWEEN ? AND ? THEN cmi_time
-                                            WHEN  status = "in_progress" AND enrollment_updated_at BETWEEN ? AND ? THEN cmi_time
-                                            WHEN status = "completed" AND enrollment_completed_at BETWEEN ? AND ? THEN cmi_time
-                                            ELSE 0
-                                END
-                            ) as total_cmi_time'),
-                            DB::raw('SUM(
-                                CASE
-                                            WHEN (status = "enrolled" OR status = "waiting") AND enrollment_created_at BETWEEN ? AND ? THEN calculated_time
-                                            WHEN  status = "in_progress" AND enrollment_updated_at BETWEEN ? AND ? THEN calculated_time
-                                            WHEN status = "completed" AND enrollment_completed_at BETWEEN ? AND ? THEN calculated_time
-                                            ELSE 0
-                                END
-                            ) as total_calculated_time'),
-                            DB::raw('SUM(
-                                CASE
-                                            WHEN (status = "enrolled" OR status = "waiting") AND enrollment_created_at BETWEEN ? AND ? THEN recommended_time
-                                            WHEN  status = "in_progress" AND enrollment_updated_at BETWEEN ? AND ? THEN recommended_time
-                                            WHEN status = "completed" AND enrollment_completed_at BETWEEN ? AND ? THEN recommended_time
-                                            ELSE 0
-                                END
-                            ) as total_recommended_time'),
-                        )
-                        ->setBindings([
-                            $startDate, $endDate,
-                            $startDate, $endDate,
-                            $startDate, $endDate,
-                            $startDate, $endDate,
-                            $startDate, $endDate,
-                            $startDate, $endDate,
-                            $startDate, $endDate,
-                            $startDate, $endDate,
-                            $startDate, $endDate,
-                            $startDate, $endDate,
-                            $startDate, $endDate,
-                            $startDate, $endDate,
-                            $groupId
-                        ])
-                        ->first();
-        return $moduleDataTimes;
+        $moocDataTimes = DB::table('enrollmoocs')
+                ->where('project_id', $groupId)
+                ->whereIn('learner_docebo_id', $learnersIds)
+                ->select(
+                    DB::raw('SUM(
+                        CASE
+                            WHEN
+                                ((status = "enrolled" OR status = "waiting") AND enrollment_created_at BETWEEN "'. $startDate.'" AND "'.$endDate.'") OR
+                                (status = "in_progress" AND enrollment_updated_at BETWEEN "'. $startDate.'" AND "'.$endDate.'") OR
+                                (status = "completed" AND enrollment_completed_at BETWEEN "'. $startDate.'" AND "'.$endDate.'")
+                            THEN COALESCE(session_time, 0)
+                            ELSE 0
+                        END
+                    ) as total_session_time'),
+                    DB::raw('SUM(
+                        CASE
+                            WHEN
+                                ((status = "enrolled" OR status = "waiting") AND enrollment_created_at BETWEEN "'. $startDate.'" AND "'.$endDate.'") OR
+                                (status = "in_progress" AND enrollment_updated_at BETWEEN "'. $startDate.'" AND "'.$endDate.'") OR
+                                (status = "completed" AND enrollment_completed_at BETWEEN "'. $startDate.'" AND "'.$endDate.'")
+                            THEN COALESCE(cmi_time, 0)
+                            ELSE 0
+                        END
+                    ) as total_cmi_time'),
+                    DB::raw('SUM(
+                        CASE
+                            WHEN
+                                ((status = "enrolled" OR status = "waiting") AND enrollment_created_at BETWEEN "'. $startDate.'" AND "'.$endDate.'") OR
+                                (status = "in_progress" AND enrollment_updated_at BETWEEN "'. $startDate.'" AND "'.$endDate.'") OR
+                                (status = "completed" AND enrollment_completed_at BETWEEN "'. $startDate.'" AND "'.$endDate.'")
+                            THEN COALESCE(calculated_time, 0)
+                            ELSE 0
+                        END
+                    ) as total_calculated_time'),
+                    DB::raw('SUM(
+                        CASE
+                            WHEN
+                                ((status = "enrolled" OR status = "waiting") AND enrollment_created_at BETWEEN "'. $startDate.'" AND "'.$endDate.'") OR
+                                (status = "in_progress" AND enrollment_updated_at BETWEEN "'. $startDate.'" AND "'.$endDate.'") OR
+                                (status = "completed" AND enrollment_completed_at BETWEEN "'. $startDate.'" AND "'.$endDate.'")
+                            THEN COALESCE(recommended_time, 0)
+                            ELSE 0
+                        END
+                    ) as total_recommended_time'),
+                )->first();
+        return $moocDataTimes;
     }
 }

@@ -39,7 +39,13 @@ class SpeexExport implements FromArray, WithMapping, WithHeadings, WithStrictNul
             return $module->category === 'SPEEX' && $module->status === CourseStatusEnum::ACTIVE;
         })->pluck('docebo_id')->toArray();
 
-        $speexEnrolls = Langenroll::whereIn('module_docebo_id', $speexModules)->where('project_id',$this->projectId)->get()->toArray();
+        $archive = config('tenantconfigfields.archive');
+        if($archive == true){
+            $speexEnrolls = Langenroll::whereIn('module_docebo_id', $speexModules)->where('project_id',$this->projectId)->get()->toArray();
+        }else{
+            $learnersIds = Learner::where('statut', '!=' , 'archive')->pluck('docebo_id')->toArray();
+            $speexEnrolls = Langenroll::whereIn('module_docebo_id', $speexModules)->whereIn('learner_docebo_id', $learnersIds)->where('project_id',$this->projectId)->get()->toArray();
+        }
         return $speexEnrolls;
     }
 

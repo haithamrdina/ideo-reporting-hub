@@ -46,17 +46,17 @@ class UpdateLearnerJob implements ShouldQueue
         tenancy()->initialize($tenant);
             $doceboConnector = new DoceboConnector();
             $speexConnector = new SpeexConnector();
-            $datafields = $this->userFieldsService->getTenantUserFields($this->userfields);
-
-            $groups = Group::whereIn('status' , [GroupStatusEnum::ACTIVE,GroupStatusEnum::ARCHIVE])->get();
+            $userFieldsService = new UserFieldsService();
+            $userfields = config('tenantconfigfields.userfields');
+            $datafields = $userFieldsService->getTenantUserFields($userfields);
+            $groups = Group::whereIn('status' , [GroupStatusEnum::ACTIVE, GroupStatusEnum::ARCHIVE])->get();
             foreach($groups as $group){
-                $paginator = $doceboConnector->paginate(new DoceboGroupeUsersList($this->userFieldsService, $group->docebo_id, $this->userfields, $group->status));
+                $paginator = $doceboConnector->paginate(new DoceboGroupeUsersList($userFieldsService, $group->docebo_id, $userfields, $group->status));
                 $result = [];
                 foreach($paginator as $pg){
                     $data = $pg->dto();
                     $result = array_merge($result, $data);
                 }
-
                 $filteredItems = array_map(function ($item) use($speexConnector, $group){
                     $speexResponse = $speexConnector->send(new SpeexUserId($item['username']));
                     $item['speex_id'] = $speexResponse->dto();

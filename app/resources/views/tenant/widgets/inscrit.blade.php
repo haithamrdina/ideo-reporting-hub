@@ -1,3 +1,7 @@
+@php
+    $archive = config('tenantconfigfields.archive');
+@endphp
+
 <div class="col-md-12">
     <div class="card">
         <div class="card-header">
@@ -82,7 +86,7 @@
                 </div>
             </div>
             <div class="row row-cards" id="contentInscrits">
-                <div class="col-md-3">
+                <div class="{{ $archive == true && request()->routeIs('tenant.plateforme.home') ? 'col-md-3' :  'col-md-4' }}">
                     <div class="card h-100">
                         <div class="card-body">
                             <div class="d-flex justify-content-center">
@@ -93,7 +97,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="{{ $archive == true && request()->routeIs('tenant.plateforme.home') ? 'col-md-3' :  'col-md-4' }}">
                     <div class="card h-100">
                         <div class="card-body">
                             <div class="d-flex justify-content-center">
@@ -104,7 +108,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="{{ $archive == true && request()->routeIs('tenant.plateforme.home') ? 'col-md-3' :  'col-md-4' }}">
                     <div class="card h-100">
                         <div class="card-body">
                             <div class="d-flex justify-content-center">
@@ -115,6 +119,7 @@
                         </div>
                     </div>
                 </div>
+                @if($archive == true && request()->routeIs('tenant.plateforme.home'))
                 <div class="col-md-3">
                     <div class="card h-100">
                         <div class="card-body">
@@ -126,6 +131,7 @@
                         </div>
                     </div>
                 </div>
+                @endif
                 <div class="col-md-3">
                     <div class="card h-100 bg-danger-lt">
                         <div class="card-body">

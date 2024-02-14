@@ -12,11 +12,14 @@ class LearnerExport implements WithMultipleSheets, ShouldQueue
     use Exportable, Queueable;
 
     public function sheets(): array{
+        $archive = config('tenantconfigfields.archive');
         $sheets = [
             new ActiveLearnerExport(),
-            new InactiveLearnerExport(),
-            new ArchiveLearnerExport(),
+            new InactiveLearnerExport()
         ];
+        if($archive == true){
+            $sheets []= new ArchiveLearnerExport();
+        }
         return $sheets;
     }
 

@@ -31,7 +31,13 @@ class TicketExport implements FromArray, WithMapping, WithHeadings, WithStrictNu
 
     public function array(): array
     {
-        $tickets = Ticket::where('group_id', $this->groupId)->get()->toArray();
+        $archive = config('tenantconfigfields.archive');
+        if($archive == true){
+            $tickets = Ticket::where('group_id', $this->groupId)->get()->toArray();
+        }else{
+            $learnersIds = Learner::where('statut', '!=' , 'archive')->pluck('docebo_id')->toArray();
+            $tickets = Ticket::whereIn('learner_docebo_id', $learnersIds)->where('group_id',$this->groupId)->get()->toArray();
+        }
         return $tickets;
     }
 

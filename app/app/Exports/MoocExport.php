@@ -27,7 +27,13 @@ class MoocExport implements FromArray, WithMapping, WithHeadings, WithStrictNull
 
     public function array(): array
     {
-        $moocEnrolls = Enrollmooc::get()->toArray();
+        $archive = config('tenantconfigfields.archive');
+        if($archive == true){
+            $moocEnrolls = Enrollmooc::get()->toArray();
+        }else{
+            $learnersIds = Learner::where('statut', '!=' , 'archive')->pluck('docebo_id')->toArray();
+            $moocEnrolls = Enrollmooc::whereIn('learner_docebo_id', $learnersIds)->get()->toArray();
+        }
         return $moocEnrolls;
     }
 

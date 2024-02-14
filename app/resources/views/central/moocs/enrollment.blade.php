@@ -82,6 +82,7 @@
                                                     <th><button class="table-sort" data-sort="sort-mooc">Mooc</button></th>
                                                     <th><button class="table-sort" data-sort="sort-status">Statut</button></th>
                                                     <th><button class="table-sort" data-sort="sort-session">Temps de session</button></th>
+                                                    <th><button class="table-sort" data-sort="sort-session">Temps d'engagement</button></th>
                                                     <th><button class="table-sort" data-sort="sort-calculated">Temps calculé</button></th>
                                                     <th><button class="table-sort" data-sort="sort-recommended">Temps pédagogique recommandé</button></th>
                                                     <th><button class="table-sort" data-sort="sort-created">date de création</button></th>
@@ -113,6 +114,9 @@
                                                             <td class="sort-session">
                                                                 {{ $enroll->session_time}}
                                                             </td>
+                                                            <td class="sort-cmi">
+                                                                {{ $enroll->cmi_time}}
+                                                            </td>
                                                             <td class="sort-calculated">
                                                                 {{ $enroll->calculated_time}}
                                                             </td>
@@ -132,7 +136,7 @@
                                                     @endforeach
                                                 @else
                                                     <tr>
-                                                        <td colspan="7">
+                                                        <td colspan="12">
                                                             <div class="empty-img">
                                                                 <img src="{{ global_asset('static/illustrations/no-data-found.svg') }}"
                                                                     class="w-100" height="128" alt="">
@@ -175,6 +179,7 @@
                 'sort-mooc',
                 'sort-status',
                 'sort-session',
+                'sort-cmi',
                 'sort-calculated',
                 'sort-recommended',
                 {

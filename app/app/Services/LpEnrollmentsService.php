@@ -37,7 +37,7 @@ class LpEnrollmentsService implements EnrollmentInterface
                 $item['group_id'] = $learner->group->id;
                 $item['project_id'] = $learner->project->id;
 
-                $sumData = Enrollmodule::where('learner_docebo_id', $learner->docebo_id)
+                $sumTimesData = Enrollmodule::where('learner_docebo_id', $learner->docebo_id)
                             ->whereIn('module_docebo_id', $modulesIds)
                             ->selectRaw('SUM(session_time) as total_session_time')
                             ->selectRaw('SUM(cmi_time) as total_cmi_time')
@@ -45,25 +45,10 @@ class LpEnrollmentsService implements EnrollmentInterface
                             ->selectRaw('SUM(recommended_time) as total_recommended_time')
                             ->first();
 
-                $item['session_time'] = $this->getSessionTime($sumData);
-
-                if (isset($fields['cmi_time']) && $fields['cmi_time'] === true) {
-                    $item['cmi_time'] = $this->getCmiTime($sumData);
-                }else{
-                    $item['cmi_time'] = null;
-                }
-
-                if (isset($fields['calculated_time']) && $fields['calculated_time'] === true) {
-                    $item['calculated_time'] = $this->getCalculatedTime($sumData);
-                }else{
-                    $item['calculated_time'] = null;
-                }
-
-                if (isset($fields['recommended_time']) && $fields['recommended_time'] === true) {
-                    $item['recommended_time'] = $this->getRecommendedTime($sumData);
-                }else{
-                    $item['recommended_time'] = null;
-                }
+                $item['session_time'] = $item['status'] != 'not_started' ? $this->getSessionTime($sumTimesData) : 0;
+                $item['cmi_time'] = !empty($fields['cmi_time']) ? ( $item['status'] != 'not_started' ? $this->getCmiTime($sumTimesData): 0 ) : null;
+                $item['calculated_time'] = !empty($fields['calculated_time']) ? ( $item['status'] != 'not_started' ? $this->getCalculatedTime($sumTimesData): 0 ) : null;
+                $item['recommended_time'] = !empty($fields['recommended_time']) ? ( $item['status'] != 'not_started' ? $this->getRecommendedTime($sumTimesData): 0 ) : null;
 
                 return $item;
             }
@@ -74,47 +59,20 @@ class LpEnrollmentsService implements EnrollmentInterface
 
     public function getSessionTime($item): string
     {
-        if($item['status'] != 'not_started')
-        {
-            $session_time = $item->total_session_time;
-        }else{
-            $session_time = 0;
-        }
-
-        return $session_time;
+        return $item->total_session_time;
     }
 
     public function getCmiTime($item): string
     {
-        if($item['status'] != 'not_started')
-        {
-            $session_time = $item->total_cmi_time;
-        }else{
-            $session_time = 0;
-        }
-
-        return $session_time;
+        return $item->total_cmi_time;
     }
     public function getCalculatedTime($item): string
     {
-        if($item['status'] != 'not_started')
-        {
-            $session_time = $item->total_calculated_time;
-        }else{
-            $session_time = 0;
-        }
-
-        return $session_time;
+        return $item->total_calculated_time;
     }
     public function getRecommendedTime($item): string
     {
-        if($item['status'] != 'not_started')
-        {
-            $session_time = $item->total_recommended_time;
-        }else{
-            $session_time = 0;
-        }
-        return $session_time;
+        return $item->total_recommended_time;
     }
 
     public function batchInsert($items,$fields){

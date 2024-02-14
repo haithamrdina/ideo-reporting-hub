@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Tenant\Plateforme;
 
+use App\Enums\ProjectStatusEnum;
 use App\Http\Controllers\Controller;
 use App\Models\Project;
 use App\Services\ProjectReportService;
@@ -15,7 +16,7 @@ class ProjectController extends Controller
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function index() {
-        $projects = Project::all();
+        $projects = Project::where('status', ProjectStatusEnum::ACTIVE)->get();
         return view('tenant.plateforme.project' ,compact('projects'));
     }
 

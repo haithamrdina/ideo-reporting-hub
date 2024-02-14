@@ -3,9 +3,7 @@
 namespace App\Http\Integrations\Docebo\Requests;
 
 use App\Enums\GroupStatusEnum;
-use App\Models\Group;
 use App\Services\UserFieldsService;
-use Illuminate\Database\Eloquent\Model;
 use Saloon\Enums\Method;
 use Saloon\Http\Request;
 use Saloon\Http\Response;
@@ -47,7 +45,6 @@ class DoceboGroupeUsersList extends Request implements Paginatable
     }
 
     public function createDtoFromResponse(Response $response): mixed{
-
         if($this->status == GroupStatusEnum::ACTIVE){
             $filteredItems = $this->userFieldsService->getLearnersFilteredItems($response->json('data.items'),$this->userfields);
         }elseif($this->status == GroupStatusEnum::ARCHIVE){

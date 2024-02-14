@@ -8,6 +8,7 @@ use App\Http\Integrations\Docebo\Requests\DoceboGroupeList;
 use App\Http\Integrations\Docebo\Requests\DoceboGroupeUsersList;
 use App\Models\Group;
 use App\Models\Tenant;
+use App\Services\InitTenantService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -35,6 +36,10 @@ class UpdateGroupJob implements ShouldQueue
     {
         $tenant = Tenant::find($this->tenantId);
         tenancy()->initialize($tenant);
+
+            $initTenantService = new InitTenantService();
+            $initTenantService->syncArchives($tenant);
+
             $doceboConnector = new DoceboConnector;
             $paginator = $doceboConnector->paginate(new DoceboGroupeList($tenant->docebo_org_id));
             $result = [];
@@ -52,6 +57,8 @@ class UpdateGroupJob implements ShouldQueue
                     ]
                 );
             });
+
+
         tenancy()->end();
     }
 }
