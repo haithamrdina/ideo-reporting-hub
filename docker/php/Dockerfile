@@ -75,4 +75,6 @@ RUN crontab /etc/cron.d/laravel-cron
 # RUN touch /var/log/cron.log
  
 # Run the command on container startup
-CMD ["cron", "-f"]
+# CMD ["cron", "-f"]
+
+CMD ["sh", "-c", "apache2-foreground & service supervisor start & cron -f"]
