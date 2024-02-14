@@ -39,7 +39,11 @@ class ProjectReportService{
                 'inactive' => $inactive_learners,
             ];
         } else{
-            $statsLearners = null;
+            $statsLearners = [
+                'total' => 0,
+                'active' => 0,
+                'inactive' => 0,
+            ];
         }
 
         return $statsLearners;
@@ -112,7 +116,7 @@ class ProjectReportService{
                 $total_recommended_time = "**h **min **s";
                 $avg_recommended_time = "**h **min **s";
             }
-            return [
+            $statsTimes =  [
                 'total_session_time' =>$total_session_time ,
                 'avg_session_time' =>$avg_session_time ,
                 'total_cmi_time' =>$total_cmi_time ,
@@ -125,9 +129,18 @@ class ProjectReportService{
             ];
 
         }else{
-            $statsTimes = null;
-        }
+            $statsTimes =  [
+                'total_session_time' =>"**h **min **s",
+                'avg_session_time' =>"**h **min **s",
+                'total_cmi_time' =>"**h **min **s",
+                'avg_cmi_time' =>"**h **min **s",
+                'total_calculated_time' =>"**h **min **s",
+                'avg_calculated_time' =>"**h **min **s",
+                'total_recommended_time' =>"**h **min **s",
+                'avg_recommended_time' =>"**h **min **s",
 
+            ];
+        }
         return $statsTimes;
     }
 
