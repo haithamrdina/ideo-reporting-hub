@@ -3,6 +3,7 @@
 
 namespace App\Services;
 
+use App\Enums\GroupStatusEnum;
 use App\Enums\ProjectStatusEnum;
 use App\Enums\UserRoleEnum;
 use App\Http\Integrations\Docebo\DoceboConnector;
@@ -68,7 +69,7 @@ class InitTenantService{
             );
         });
 
-        $groupsIDs = Group::pluck('id')->toArray();
+        $groupsIDs = Group::where('status', GroupStatusEnum::ARCHIVE)->pluck('id')->toArray();
         $project->groups()->sync($groupsIDs);
     }
 
@@ -93,7 +94,7 @@ class InitTenantService{
             );
         });
 
-        $groupsIDs = Group::pluck('id')->toArray();
+        $groupsIDs = Group::where('status', GroupStatusEnum::ARCHIVE)->pluck('id')->toArray();
         $project->groups()->sync($groupsIDs);
     }
 }
