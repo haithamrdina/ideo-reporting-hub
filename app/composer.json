@@ -17,6 +17,7 @@
         "laravel/ui": "^4.4",
         "livewire/livewire": "^3.4",
         "maatwebsite/excel": "^3.1",
+        "opcodesio/log-viewer": "^3.4",
         "saloonphp/laravel-http-sender": "^2.1",
         "saloonphp/laravel-plugin": "^3.2",
         "saloonphp/pagination-plugin": "^2.2",

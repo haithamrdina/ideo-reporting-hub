@@ -35,38 +35,24 @@ class UpdateEnrollementsLpsJob implements ShouldQueue
         $tenant = Tenant::find($this->tenantId);
         tenancy()->initialize($tenant);
 
-            // Initialize all neccessary Service
-            $doceboConnector = new DoceboConnector();
-            $LpEnrollmentsService = new LpEnrollmentsService();
+             // Initialize all neccessary Service
+        $doceboConnector = new DoceboConnector();
+        $LpEnrollmentsService = new LpEnrollmentsService();
 
-            //Define Enrollments Fields
-            $fields = config('tenantconfigfields.enrollmentfields');
-            $enrollFields = $LpEnrollmentsService->getEnrollmentsFields($fields);
+        //Define Enrollments Fields
+        $fields = config('tenantconfigfields.enrollmentfields');
+        $enrollFields = $LpEnrollmentsService->getEnrollmentsFields($fields);
 
-            // GET Enrollements List DATA
-            $lpsDoceboIds = Lp::pluck('docebo_id')->toArray();
-            $request = new DoceboLpsEnrollements($lpsDoceboIds);
-            $lpenrollsResponses = $doceboConnector->paginate($request);
-
-            $results = [];
-            foreach($lpenrollsResponses as $md){
-                $data = $md->dto();
-                $results = array_merge($results, $data);
-            }
-
-            // BATCH insert DATA
+        // GET Enrollements List DATA
+        $lpsDoceboIds = Lp::pluck('docebo_id')->toArray();
+        $request = new DoceboLpsEnrollements($lpsDoceboIds);
+        $lpenrollsResponses = $doceboConnector->paginate($request);
+        foreach($lpenrollsResponses as $md){
+            $results = $md->dto();
             if(!empty($results)){
-                $result = $LpEnrollmentsService->getEnrollmentsList($results, $fields);
-                if(count($result) > 1000)
-                {
-                    $batchData = array_chunk(array_filter($result), 1000);
-                    foreach($batchData as $data){
-                        $LpEnrollmentsService->batchInsert($data, $enrollFields);
-                    }
-                }else{
-                    $LpEnrollmentsService->batchInsert($result, $enrollFields);
-                }
+                $LpEnrollmentsService->batchInsert($results, $enrollFields);
             }
+        }
         tenancy()->end();
     }
 }
