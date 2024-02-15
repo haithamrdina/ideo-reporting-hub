@@ -1,34 +1,24 @@
 <?php
 
 use App\Enums\CourseStatusEnum;
-use App\Enums\GroupStatusEnum;
 use App\Http\Controllers\Central\GroupController;
 use App\Http\Controllers\Central\HomeController;
 use App\Http\Controllers\Central\ProjectController;
 use App\Http\Controllers\Central\TenantController;
 use App\Http\Integrations\Docebo\DoceboConnector;
 use App\Http\Integrations\Docebo\Requests\DoceboCoursesEnrollements;
-use App\Http\Integrations\Docebo\Requests\DoceboGroupeUsersList;
 use App\Http\Integrations\Docebo\Requests\DoceboLpsEnrollements;
 use App\Http\Integrations\Docebo\Requests\DoceboMoocsEnrollements;
-use App\Http\Integrations\Speex\Requests\SpeexUserId;
-use App\Http\Integrations\Speex\SpeexConnector;
-use App\Models\Enrollmodule;
-use App\Models\Enrollmooc;
-use App\Models\Group;
+use App\Http\Integrations\Docebo\Requests\DoceboSpeexEnrollements;
 use App\Models\Learner;
 use App\Models\Lp;
-use App\Models\Lpenroll;
 use App\Models\Module;
 use App\Models\Mooc;
 use App\Models\Tenant;
 use App\Services\LpEnrollmentsService;
 use App\Services\ModuleEnrollmentsService;
-use App\Services\ModuleTimingFieldsService;
 use App\Services\MoocEnrollmentsService;
 use App\Services\SpeexEnrollmentsService;
-use App\Services\UserFieldsService;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
 
@@ -43,10 +33,138 @@ use Illuminate\Support\Facades\Route;
 |
 */
 Route::get('/test', function(){
-    Tenant::all()->runForEach(function () {
-        $tenant = tenant();
-    });
+    $tenant = Tenant::find('85caeca1-a182-424b-a776-7cf5c1e2a5af');
+    tenancy()->initialize($tenant);
+
+    // Initialize all neccessary Service
+    $doceboConnector = new DoceboConnector();
+    $moduleEnrollmentsService = new ModuleEnrollmentsService();
+
+    //Define Enrollments Fields
+    $fields = config('tenantconfigfields.enrollmentfields');
+    $enrollFields = $moduleEnrollmentsService->getEnrollmentsFields($fields);
+
+    $modulesDoceboIds = Module::whereIn('category', ['CEGOS','ENI', 'SM'])->pluck('docebo_id')->toArray();
+    $learners = Learner::all();
+    foreach( $learners as $learner){
+        // GET LEARNER Enrollements
+        $request = new DoceboCoursesEnrollements($modulesDoceboIds, $learner->docebo_id);
+        $mdenrollsResponses = $doceboConnector->paginate($request);
+        $results = [];
+        foreach($mdenrollsResponses as $md){
+            $data = $md->dto();
+            $results = array_merge($results, $data);
+        }
+        // BATCH INSERT LEARNER DATA
+        if(!empty($results)){
+            if(count($results) > 1000)
+            {
+                $batchData = array_chunk(array_filter($results), 1000);
+                foreach($batchData as $data){
+                    $moduleEnrollmentsService->batchInsert($data, $enrollFields);
+                }
+            }else{
+                $moduleEnrollmentsService->batchInsert($results, $enrollFields);
+            }
+        }
+    }
+    tenancy()->end();
 });
+
+Route::get('/speex', function(){
+    $tenant = Tenant::find('85caeca1-a182-424b-a776-7cf5c1e2a5af');
+    tenancy()->initialize($tenant);
+
+    // Initialize all neccessary Service
+    $doceboConnector = new DoceboConnector();
+    $speexEnrollmentsService = new SpeexEnrollmentsService();
+    //Define Enrollments Fields
+    $fields = config('tenantconfigfields.enrollmentfields');
+    $enrollFields = $speexEnrollmentsService->getEnrollmentsFields($fields);
+
+    $modulesDoceboIds = Module::where(['category'=> 'SPEEX', 'status' => CourseStatusEnum::ACTIVE])->pluck('docebo_id')->toArray();
+    $learners = Learner::whereNotNull('speex_id')->get();
+    foreach( $learners as $learner){
+        // GET LEARNER Enrollements
+        $request = new DoceboSpeexEnrollements($modulesDoceboIds, $learner->docebo_id);
+        $mdenrollsResponses = $doceboConnector->paginate($request);
+        $results = [];
+        foreach($mdenrollsResponses as $md){
+            $data = $md->dto();
+            $results = array_merge($results, $data);
+        }
+        // BATCH INSERT LEARNER DATA
+        if(!empty($results)){
+            $speexEnrollmentsService->batchInsert($results, $enrollFields);
+        }
+    }
+    tenancy()->end();
+});
+
+Route::get('/mooc', function(){
+
+    $tenant = Tenant::find('85caeca1-a182-424b-a776-7cf5c1e2a5af');
+    tenancy()->initialize($tenant);
+    // Initialize all neccessary Service
+    $doceboConnector = new DoceboConnector();
+    $moocEnrollmentsService = new MoocEnrollmentsService();
+
+    //Define Enrollments Fields
+    $fields = config('tenantconfigfields.enrollmentfields');
+    $enrollFields = $moocEnrollmentsService->getEnrollmentsFields($fields);
+
+    // GET Enrollements List DATA
+    $moocsDoceboIds = Mooc::pluck('docebo_id')->toArray();
+    $moocsDoceboIds = array_chunk($moocsDoceboIds , 100);
+    foreach($moocsDoceboIds as $moocsDoceboId){
+        $request = new DoceboMoocsEnrollements($moocsDoceboId);
+        $mdenrollsResponses = $doceboConnector->paginate($request);
+        $results = [];
+        foreach($mdenrollsResponses as $md){
+            $data = $md->dto();
+            $results = array_merge($results, $data);
+        }
+        if(!empty($results)){
+            if(count($results) > 1000)
+            {
+                $batchData = array_chunk(array_filter($results), 1000);
+                foreach($batchData as $data){
+                    $moocEnrollmentsService->batchInsert($data, $enrollFields);
+                }
+            }else{
+                $moocEnrollmentsService->batchInsert($results, $enrollFields);
+            }
+        }
+    }
+    tenancy()->end();
+
+
+});
+
+Route::get('/lp', function(){
+    $tenant = Tenant::find('85caeca1-a182-424b-a776-7cf5c1e2a5af');
+    tenancy()->initialize($tenant);
+        // Initialize all neccessary Service
+        $doceboConnector = new DoceboConnector();
+        $LpEnrollmentsService = new LpEnrollmentsService();
+
+        //Define Enrollments Fields
+        $fields = config('tenantconfigfields.enrollmentfields');
+        $enrollFields = $LpEnrollmentsService->getEnrollmentsFields($fields);
+
+        // GET Enrollements List DATA
+        $lpsDoceboIds = Lp::pluck('docebo_id')->toArray();
+        $request = new DoceboLpsEnrollements($lpsDoceboIds);
+        $lpenrollsResponses = $doceboConnector->paginate($request);
+        foreach($lpenrollsResponses as $md){
+            $results = $md->dto();
+            if(!empty($results)){
+                $LpEnrollmentsService->batchInsert($results, $enrollFields);
+            }
+        }
+    tenancy()->end();
+});
+
 Route::name('admin.')->group(function () {
     require __DIR__.'/central-auth.php';
 
@@ -101,43 +219,4 @@ Route::name('admin.')->group(function () {
 
     });
 });
-
-
-
-
-
-
-
-
-function getCmiTime($responseBody){
-    $totalTime = 0;
-    $totalTimeRegex = '/<td>cmi\.core\.total_time<\/td><td>(.*?)<\/td>/';
-    $sessionTimeRegex = '/<td>cmi\.core\.session_time<\/td><td>(.*?)<\/td>/';
-    if (preg_match($totalTimeRegex, $responseBody, $totalTimeMatches)) {
-        $totalTimeValue = $totalTimeMatches[1];
-        if($totalTimeValue ==  '0000:00:00.00'){
-            if(preg_match($sessionTimeRegex, $responseBody, $sessionTimeMatches)) {
-                $sessionTimeValue = $sessionTimeMatches[1];
-                $totalTime += convertTimeToSeconds($sessionTimeValue);
-            }
-        }else{
-            $totalTime += convertTimeToSeconds($totalTimeValue);
-        }
-    }
-    return $totalTime;
-}
-
-function convertTimeToSeconds($time)
-{
-    $timeArray = explode(':', $time);
-    if (count($timeArray) !== 3) {
-        return 0; // Invalid time format, return 0 seconds
-    }
-
-    $hours = intval($timeArray[0]);
-    $minutes = intval($timeArray[1]);
-    $seconds = intval($timeArray[2]);
-
-    return $hours * 3600 + $minutes * 60 + $seconds;
-}
 

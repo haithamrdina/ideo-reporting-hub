@@ -49,27 +49,24 @@ class UpdateEnrollementMoocJob implements ShouldQueue
             // GET Enrollements List DATA
             $moocsDoceboIds = Mooc::pluck('docebo_id')->toArray();
             $moocsDoceboIds = array_chunk($moocsDoceboIds , 100);
-            $results = [];
             foreach($moocsDoceboIds as $moocsDoceboId){
                 $request = new DoceboMoocsEnrollements($moocsDoceboId);
                 $mdenrollsResponses = $doceboConnector->paginate($request);
+                $results = [];
                 foreach($mdenrollsResponses as $md){
                     $data = $md->dto();
                     $results = array_merge($results, $data);
                 }
-            }
-
-            // BATCH insert DATA
-            if(!empty($results)){
-                $result = $moocEnrollmentsService->getEnrollmentsList($results, $fields);
-                if(count($result) > 1000)
-                {
-                    $batchData = array_chunk(array_filter($result), 1000);
-                    foreach($batchData as $data){
-                        $moocEnrollmentsService->batchInsert($data, $enrollFields);
+                if(!empty($results)){
+                    if(count($results) > 1000)
+                    {
+                        $batchData = array_chunk(array_filter($results), 1000);
+                        foreach($batchData as $data){
+                            $moocEnrollmentsService->batchInsert($data, $enrollFields);
+                        }
+                    }else{
+                        $moocEnrollmentsService->batchInsert($results, $enrollFields);
                     }
-                }else{
-                    $moocEnrollmentsService->batchInsert($result, $enrollFields);
                 }
             }
 

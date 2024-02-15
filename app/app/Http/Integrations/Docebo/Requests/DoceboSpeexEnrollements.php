@@ -3,6 +3,8 @@
 namespace App\Http\Integrations\Docebo\Requests;
 
 use App\Http\Integrations\Docebo\DoceboConnector;
+use App\Http\Integrations\Speex\Requests\SpeexUserArticleResult;
+use App\Http\Integrations\Speex\SpeexConnector;
 use App\Models\Learner;
 use App\Models\Module;
 use App\Services\TimeConversionService;
@@ -11,7 +13,7 @@ use Saloon\Http\Request;
 use Saloon\Http\Response;
 use Saloon\PaginationPlugin\Contracts\Paginatable;
 
-class DoceboCoursesEnrollements extends Request implements Paginatable
+class DoceboSpeexEnrollements extends Request implements Paginatable
 {
     /**
      * The HTTP method of the request
@@ -49,7 +51,8 @@ class DoceboCoursesEnrollements extends Request implements Paginatable
             $learner = Learner::where('docebo_id' ,  $item['user_id'])->first();
             $module = Module::where('docebo_id' , $item['course_id'])->first();
             $status = $item['enrollment_status'];
-            $dataTiming = $this->getTimingData($item, $module, $learner, $status);
+            $speexData = $this->getSpeexData($module, $learner);
+            $dataTiming = $this->getTimingData($item, $status, $speexData);
             return [
                 'learner_docebo_id' => $learner->docebo_id,
                 'module_docebo_id' => $module->docebo_id,
@@ -57,6 +60,8 @@ class DoceboCoursesEnrollements extends Request implements Paginatable
                 'enrollment_created_at' => $item['enrollment_created_at'],
                 'enrollment_updated_at' => $item['enrollment_date_last_updated'],
                 'enrollment_completed_at' => $item['enrollment_completion_date'],
+                'niveau' => $speexData['niveau'],
+                'language' => $module->language,
                 'session_time' => $dataTiming->session_time,
                 'cmi_time' => $dataTiming->cmi_time,
                 'calculated_time' => $dataTiming->calculated_time,
@@ -70,37 +75,26 @@ class DoceboCoursesEnrollements extends Request implements Paginatable
         return $filteredItems;
     }
 
-    public function getCmiTime($module,$learner): string
-    {
-        $doceboConnector = new DoceboConnector();
-        $timeConverisonService = new TimeConversionService();
-        $cmi_time = 0;
-        foreach($module->los as $lo){
-            $cmiRequest = new DoceboGetLoCmiData($lo,$module->docebo_id,$learner->docebo_id);
-            $cmiResponse = $doceboConnector->send($cmiRequest);
-            if($cmiResponse->status() === 200){
-                $cmi_time += $timeConverisonService->getDoceboCmiTime($cmiResponse->body());
-            }else{
-                $cmi_time += 0;
-            }
-        }
-        return $cmi_time;
+    public function getSpeexData($module, $learner){
+        $speexConnector = new SpeexConnector();
+        $speexResponse = $speexConnector->send(new SpeexUserArticleResult($learner->speex_id, $module->article_id));
+        return $speexResponse->dto();
     }
 
-    public function getCalculatedTime($recommended_time, $cmi_time, $status): string
+    public function getCalculatedTime($status, $recommended_time, $cmi_time)
     {
         if ($status === 'completed' || ($status === 'in_progress' && $cmi_time > $recommended_time)) {
-            $calculated_time = $recommended_time;
+            $calculated_time =  $recommended_time;
         }else{
             $calculated_time = $cmi_time;
         }
         return $calculated_time;
     }
 
-    public function getRecommendedTime($item, $speexData): string
+    public function getRecommendedTime($status, $niveau): string
     {
         $recommended_time = 32400;
-        if($item['status'] != 'enrolled' || $item['status'] != 'waiting' ){
+        if($status != 'enrolled' || $status != 'waiting' ){
 
             $multipliers = [
                 'A1' => 1,
@@ -113,21 +107,21 @@ class DoceboCoursesEnrollements extends Request implements Paginatable
                 'C1.2' => 8
             ];
 
-            if($speexData['niveau'] != null){
-                $recommended_time = 32400 * $multipliers[$item['niveau']];
+            if($niveau != null){
+                $recommended_time = 32400 * $multipliers[$niveau];
             }
         }
         return $recommended_time;
     }
 
-    public function getTimingData($item, $module, $learner, $status)
+    public function getTimingData($item, $status, $speexData)
     {
         $fields = config('tenantconfigfields.enrollmentfields');
         if((($status != 'enrolled') && ($status !== 'waiting'))){
-            $session_time = $item['enrollment_time_spent'];
-            $recommended_time = !empty($fields['recommended_time']) ? $module->recommended_time : null;
-            $cmi_time = !empty($fields['cmi_time']) ? $this->getCmiTime($module, $learner) : null;
-            $calculated_time = !empty($fields['calculated_time']) ? $this->getCalculatedTime($module->recommended_time, $cmi_time, $status) : null;
+            $session_time = $item['enrollment_time_spent'] + $speexData['time'];
+            $recommended_time = !empty($fields['recommended_time']) ? $this->getRecommendedTime($status, $speexData['niveau']) : null;
+            $cmi_time = !empty($fields['cmi_time']) ? $speexData['time'] : null;
+            $calculated_time = !empty($fields['calculated_time']) ? $this->getCalculatedTime($status, $recommended_time, $cmi_time) : null;
         }else{
             $session_time = "0";
             $recommended_time = !empty($fields['recommended_time']) ? "0" : null;
