@@ -2,10 +2,22 @@
 
 namespace App\Console\Commands;
 
+use App\Jobs\UpdateCallJob;
+use App\Jobs\UpdateEnrollementLangueJob;
+use App\Jobs\UpdateEnrollementModuleJob;
+use App\Jobs\UpdateEnrollementMoocJob;
+use App\Jobs\UpdateEnrollementsLpsJob;
 use App\Jobs\UpdateGroupJob;
+use App\Jobs\UpdateLearnerJob;
+use App\Jobs\UpdateLpJob;
+use App\Jobs\UpdateModuleJob;
+use App\Jobs\UpdateMoocJob;
+use App\Jobs\UpdateTicketJob;
 use App\Mail\TestMail;
 use App\Models\Tenant;
+use App\Services\UserFieldsService;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 class DailyUpdateData extends Command
@@ -29,9 +41,31 @@ class DailyUpdateData extends Command
      */
     public function handle()
     {
-        Mail::to('your_test_mail@gmail.com')->send(new TestMail([
-            'title' => 'The Title',
-            'body' => 'The Body',
-        ]));
+        Tenant::all()->runForEach(function () {
+            $userFieldsService = new UserFieldsService();
+            $userfields = config('tenantconfigfields.userfields');
+            $id = tenant('id');
+
+            $start_datetime = date('Y-m-d H:i:s');
+            Log::info("[$start_datetime]: UpdateTicketJob for tenant {$id} has started.");
+
+            UpdateLearnerJob::withChain([
+                new UpdateCallJob($id),
+                new UpdateTicketJob($id),
+                new UpdateMoocJob($id),
+                new UpdateLpJob($id),
+                new UpdateModuleJob($id),
+                new UpdateEnrollementMoocJob($id),
+                new UpdateEnrollementLangueJob($id),
+                new UpdateEnrollementModuleJob($id),
+                new UpdateEnrollementsLpsJob($id),
+            ])->dispatch($userFieldsService, $id, $userfields);
+
+            $end_datetime = date('Y-m-d H:i:s');
+            Log::info("[$end_datetime]: UpdateTicketJob for tenant {$id} has started.");
+        });
+
+        $end_datetime = date('Y-m-d H:i:s');
+        Log::info("[$end_datetime]: Update Data for all tenants has finished.");
     }
 }

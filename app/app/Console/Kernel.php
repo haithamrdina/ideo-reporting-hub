@@ -13,7 +13,11 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         // $schedule->command('inspire')->hourly();
-        $schedule->command('app:daily-update-data')->everyMinute();
+        //$schedule->command('app:daily-update-data')->everyTenMinutes();
+        $schedule
+            ->command('app:daily-update-data')
+            ->dailyAt('16:30')
+            ->appendOutputTo("daily-update-data.log");
     }
 
     /**

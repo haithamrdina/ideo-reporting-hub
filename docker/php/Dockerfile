@@ -54,7 +54,7 @@ WORKDIR /var/www/app
 
 #install supervisor 
 RUN apt-get install -y supervisor
-COPY laravel-worker.conf /etc/supervisor/conf.d/laravel-worker.conf
+COPY ./workers/laravel-worker.conf /etc/supervisor/conf.d/laravel-worker.conf
 RUN service supervisor start && supervisorctl reread && supervisorctl update && supervisorctl start laravel-worker:*
 RUN service supervisor start
 
@@ -62,7 +62,7 @@ RUN service supervisor start
 RUN apt-get update && apt-get -y install cron && apt-get install nano
 
 # Copy laravel-cron file to the cron.d directory
-COPY laravel-cron /etc/cron.d/laravel-cron
+COPY ./tasks/laravel-cron /etc/cron.d/laravel-cron
  
 # Give execution rights on the cron job
 RUN chown root:root /etc/cron.d/laravel-cron

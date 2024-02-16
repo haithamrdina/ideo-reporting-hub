@@ -21,7 +21,7 @@ class DoceboAuth implements Authenticator
         if ($pendingRequest->getRequest() instanceof DoceboAccess) {
             return;
         }
-        $response = $pendingRequest->getConnector()->send(new DoceboAccess);
+        $response = $pendingRequest->getConnector()->sendAndRetry(new DoceboAccess, 3, 500, null, true, null, true);
 
         $pendingRequest->headers()->add('Authorization', 'Bearer ' . $response->dto());
     }

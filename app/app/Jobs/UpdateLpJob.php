@@ -14,6 +14,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class UpdateLpJob implements ShouldQueue
 {
@@ -34,6 +35,9 @@ class UpdateLpJob implements ShouldQueue
      */
     public function handle(): void
     {
+        $start_datetime = date('Y-m-d H:i:s');
+        Log::info("[$start_datetime]: UpdateLpJob for tenant {$this->tenantId} has started.");
+
         $tenant = Tenant::find($this->tenantId);
         tenancy()->initialize($tenant);
             // Get LPS from DOCEBO API
@@ -70,6 +74,9 @@ class UpdateLpJob implements ShouldQueue
                 $group->projects()->first()->lps()->sync($lpsIds);
             }
         tenancy()->end();
+
+        $end_datetime = date('Y-m-d H:i:s');
+        Log::info("[$end_datetime]: UpdateLpJob for tenant {$this->tenantId} has finished.");
     }
 }
 

@@ -15,6 +15,13 @@ use Saloon\Traits\Plugins\AcceptsJson;
 
 class DoceboConnector extends Connector implements HasPagination
 {
+
+    public ?int $tries = 3;
+
+    public ?int $retryInterval = 500;
+
+    public ?bool $useExponentialBackoff = true;
+
     use AcceptsJson;
 
     /**

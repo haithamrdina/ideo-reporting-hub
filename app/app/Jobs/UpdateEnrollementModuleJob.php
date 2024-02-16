@@ -13,6 +13,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
 class UpdateEnrollementModuleJob implements ShouldQueue
 {
@@ -34,6 +35,9 @@ class UpdateEnrollementModuleJob implements ShouldQueue
      */
     public function handle(): void
     {
+        $start_datetime = date('Y-m-d H:i:s');
+        Log::info("[$start_datetime]: UpdateEnrollementModuleJob for tenant {$this->tenantId} has started.");
+
         $tenant = Tenant::find($this->tenantId);
         tenancy()->initialize($tenant);
              // Initialize all neccessary Service
@@ -69,5 +73,8 @@ class UpdateEnrollementModuleJob implements ShouldQueue
                 }
             }
         tenancy()->end();
+
+        $end_datetime = date('Y-m-d H:i:s');
+        Log::info("[$end_datetime]: UpdateEnrollementMoocJob for tenant {$this->tenantId} has finished.");
     }
 }

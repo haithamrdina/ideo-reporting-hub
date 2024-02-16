@@ -12,6 +12,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class UpdateTicketJob implements ShouldQueue
 {
@@ -33,6 +34,10 @@ class UpdateTicketJob implements ShouldQueue
     public function handle(): void
     {
         $tenant = Tenant::find($this->tenantId);
+
+        $start_datetime = date('Y-m-d H:i:s');
+        Log::info("[$start_datetime]: UpdateTicketJob for tenant {$this->tenantId} has started.");
+
         tenancy()->initialize($tenant);
             $zendeskConnector = new ZendeskConnector();
             $request = new ZendeskOrganizationsTickets($tenant->zendesk_org_id);
@@ -58,5 +63,8 @@ class UpdateTicketJob implements ShouldQueue
                 });
             }
         tenancy()->end();
+
+        $end_datetime = date('Y-m-d H:i:s');
+        Log::info("[$end_datetime]: UpdateTicketJob for tenant {$this->tenantId} has finished.");
     }
 }
