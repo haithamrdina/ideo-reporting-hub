@@ -21,5 +21,4 @@
 # For more information see the manual pages of crontab(5) and cron(8)
 # 
 # m h  dom mon dow   command
-* * * * * echo "Hello world 2" >> /var/log/cron.log 2>&1
 * * * * * cd /var/www/app && /usr/local/bin/php artisan schedule:run >> /var/log/cron2.log 2>&1
