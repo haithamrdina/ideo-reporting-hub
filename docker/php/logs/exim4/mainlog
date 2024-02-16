@@ -1,0 +1,6 @@
+2024-02-16 16:23:02 1rb0zO-0001Zm-8w <= root@localhost U=root P=local S=698
+2024-02-16 16:23:03 1rb0zO-0001Zm-8w failed to read delivery status for /var/mail/mail:root@localhost from delivery subprocess
+2024-02-16 16:23:03 1rb0zO-0001Zm-8w appendfile transport process returned non-zero status 0x0100: exit code 1
+2024-02-16 16:23:03 1rb0zO-0001Zm-8w == /var/mail/mail <root@localhost> R=mail4root T=address_file defer (-1)
+2024-02-16 16:23:03 1rb0zP-0001Zv-M5 <= <> R=1rb0zO-0001Zm-8w U=Debian-exim P=local S=569
+2024-02-16 16:23:03 1rb0zO-0001Zm-8w Frozen

@@ -4,3 +4,23 @@ In LoadConfiguration.php line 66:
   Unable to load the "app" configuration file.  
                                                 
 
+
+Warning: require(/var/www/app/vendor/symfony/polyfill-intl-normalizer/bootstrap80.php): Failed to open stream: Input/output error in /var/www/app/vendor/symfony/polyfill-intl-normalizer/bootstrap.php on line 15
+
+Fatal error: Uncaught Error: Failed opening required '/var/www/app/vendor/symfony/polyfill-intl-normalizer/bootstrap80.php' (include_path='.:/usr/local/lib/php') in /var/www/app/vendor/symfony/polyfill-intl-normalizer/bootstrap.php:15
+Stack trace:
+#0 /var/www/app/vendor/composer/autoload_real.php(41): require()
+#1 /var/www/app/vendor/composer/autoload_real.php(45): {closure}('e69f7f6ee287b96...', '/var/www/app/ve...')
+#2 /var/www/app/vendor/autoload.php(25): ComposerAutoloaderInit31dd9eead4d1b4b9e22290d43a38f509::getLoader()
+#3 /var/www/app/artisan(18): require('/var/www/app/ve...')
+#4 {main}
+  thrown in /var/www/app/vendor/symfony/polyfill-intl-normalizer/bootstrap.php on line 15
+
+Warning: require(/var/www/app/vendor/composer/platform_check.php): Failed to open stream: Input/output error in /var/www/app/vendor/composer/autoload_real.php on line 25
+
+Fatal error: Uncaught Error: Failed opening required '/var/www/app/vendor/composer/platform_check.php' (include_path='.:/usr/local/lib/php') in /var/www/app/vendor/composer/autoload_real.php:25
+Stack trace:
+#0 /var/www/app/vendor/autoload.php(25): ComposerAutoloaderInit31dd9eead4d1b4b9e22290d43a38f509::getLoader()
+#1 /var/www/app/artisan(18): require('/var/www/app/ve...')
+#2 {main}
+  thrown in /var/www/app/vendor/composer/autoload_real.php on line 25
