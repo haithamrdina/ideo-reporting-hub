@@ -34,7 +34,7 @@ class UpdateCallJob implements ShouldQueue
     public function handle(): void
     {
         $start_datetime = date('Y-m-d H:i:s');
-        Log::info("[$start_datetime]: UpdateCallJob for tenant {$this->tenantId} has started.");
+        Log::info("['start'][$start_datetime]: UpdateCallJob for tenant {$this->tenantId} has started.");
 
         $tenant = Tenant::find($this->tenantId);
         tenancy()->initialize($tenant);
@@ -65,6 +65,6 @@ class UpdateCallJob implements ShouldQueue
         tenancy()->end();
 
         $end_datetime = date('Y-m-d H:i:s');
-        Log::info("[$end_datetime]: UpdateCallJob for tenant {$this->tenantId} has finished.");
+        Log::info("['end'][$end_datetime]: UpdateCallJob for tenant {$this->tenantId} has finished.");
     }
 }

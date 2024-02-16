@@ -36,7 +36,7 @@ class UpdateTicketJob implements ShouldQueue
         $tenant = Tenant::find($this->tenantId);
 
         $start_datetime = date('Y-m-d H:i:s');
-        Log::info("[$start_datetime]: UpdateTicketJob for tenant {$this->tenantId} has started.");
+        Log::info("['start'][$start_datetime]: UpdateTicketJob for tenant {$this->tenantId} has started.");
 
         tenancy()->initialize($tenant);
             $zendeskConnector = new ZendeskConnector();
@@ -65,6 +65,6 @@ class UpdateTicketJob implements ShouldQueue
         tenancy()->end();
 
         $end_datetime = date('Y-m-d H:i:s');
-        Log::info("[$end_datetime]: UpdateTicketJob for tenant {$this->tenantId} has finished.");
+        Log::info("['end'][$end_datetime]: UpdateTicketJob for tenant {$this->tenantId} has finished.");
     }
 }

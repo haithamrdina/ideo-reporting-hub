@@ -8,4 +8,5 @@ Homestead.yaml
 Homestead.json
 /.vagrant
 .phpunit.result.cache
-./docker/php/logs/*
+/docker/php/logs/*
+./docker/redis/dump.rdb
