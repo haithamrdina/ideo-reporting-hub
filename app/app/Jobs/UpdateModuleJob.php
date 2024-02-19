@@ -54,7 +54,7 @@ class UpdateModuleJob implements ShouldQueue
 
             // MAP COURSES to set los details
             $result = array_map(function ($item) use($doceboConnector){
-                if($item['category'] == "CEGOS" || $item['category'] == "ENI"){
+                if($item['category'] == "CEGOS" || $item['category'] == "ENI" || $item['category'] == "SM"){
                     $losResponse = $doceboConnector->send(new DoceboCourseLosList($item['docebo_id']));
                     $item['los'] = json_encode($losResponse->dto());
                 }else{

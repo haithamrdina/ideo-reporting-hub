@@ -48,7 +48,8 @@ Route::get('/test', function(){
     $fields = config('tenantconfigfields.enrollmentfields');
     $enrollFields = $moduleEnrollmentsService->getEnrollmentsFields($fields);
 
-    $modulesDoceboIds = Module::whereIn('category', ['CEGOS','ENI', 'SM'])->pluck('docebo_id')->toArray();
+    $modulesDoceboIds = Module::whereIn('category', ['CEGOS','ENI', 'SM'])->where('status',CourseStatusEnum::ACTIVE)->pluck('docebo_id')->toArray();
+    dump($modulesDoceboIds);
     $learners = Learner::all();
     foreach( $learners as $learner){
         // GET LEARNER Enrollements
