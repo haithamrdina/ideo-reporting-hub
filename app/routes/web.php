@@ -38,7 +38,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 Route::get('/test', function(){
-   $tenant = Tenant::find('dbd053f4-2847-40b7-bcda-79f5c76c9c08');
+   $tenant = Tenant::find('523badfa-3d62-475c-bbe8-4fdf2bcaed1b');
 
     tenancy()->initialize($tenant);
 
@@ -52,7 +52,9 @@ Route::get('/test', function(){
 
     $modulesDoceboIds = Module::whereIn('category', ['CEGOS','ENI', 'SM'])->where('status',CourseStatusEnum::ACTIVE)->pluck('docebo_id')->toArray();
     $learners = Learner::all();
+    $i =0;
     foreach( $learners as $learner){
+        $i++;
         // GET LEARNER Enrollements
         $request = new DoceboCoursesEnrollements($modulesDoceboIds, $learner->docebo_id);
         $mdenrollsResponses = $doceboConnector->paginate($request);
@@ -60,7 +62,12 @@ Route::get('/test', function(){
         $results = [];
         foreach($mdenrollsResponses as $md){
             $data = $md->dto();
+
             $results = array_merge($results, $data);
+        }
+
+        if($i==3){
+            dd($results);
         }
         // BATCH INSERT LEARNER DATA
        /* if(!empty($results)){

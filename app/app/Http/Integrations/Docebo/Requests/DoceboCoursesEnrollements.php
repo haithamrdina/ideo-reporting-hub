@@ -32,7 +32,6 @@ class DoceboCoursesEnrollements extends Request implements Paginatable
         foreach ($this->courses as $course) {
             $courses .= 'course_id[]=' . $course . "&";
         }
-        dd($courses);
         return '/course/v1/courses/enrollments?'.$courses . 'user_id[]=' .$this->user ;
     }
     protected function defaultQuery(): array
