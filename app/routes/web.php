@@ -41,8 +41,6 @@ Route::get('/test', function(){
    $tenant = Tenant::find('523badfa-3d62-475c-bbe8-4fdf2bcaed1b');
 
     tenancy()->initialize($tenant);
-
-    // Initialize all neccessary Service
     $doceboConnector = new DoceboConnector();
     $moduleEnrollmentsService = new ModuleEnrollmentsService();
 
@@ -50,22 +48,19 @@ Route::get('/test', function(){
     $fields = config('tenantconfigfields.enrollmentfields');
     $enrollFields = $moduleEnrollmentsService->getEnrollmentsFields($fields);
 
-    $modulesDoceboIds = Module::whereIn('category', ['CEGOS','ENI', 'SM'])->where('status',CourseStatusEnum::ACTIVE)->pluck('docebo_id')->toArray();
+    $modulesDoceboIds = Module::whereIn('category', ['CEGOS','ENI', 'SM'])->pluck('docebo_id')->toArray();
     $learners = Learner::all();
-    $i =0;
+    $i=0;
     foreach( $learners as $learner){
         $i++;
         // GET LEARNER Enrollements
         $request = new DoceboCoursesEnrollements($modulesDoceboIds, $learner->docebo_id);
         $mdenrollsResponses = $doceboConnector->paginate($request);
-
         $results = [];
         foreach($mdenrollsResponses as $md){
             $data = $md->dto();
-
             $results = array_merge($results, $data);
         }
-
         if($i==3){
             dd($results);
         }
@@ -82,7 +77,6 @@ Route::get('/test', function(){
             }
         }*/
     }
-    die();
     tenancy()->end();
 });
 

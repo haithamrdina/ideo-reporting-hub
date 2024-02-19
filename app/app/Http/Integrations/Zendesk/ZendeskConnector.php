@@ -51,11 +51,6 @@ class ZendeskConnector extends Connector implements HasPagination
         ];
     }
 
-    protected function resolveRateLimitStore(): RateLimitStore
-    {
-        return new LaravelCacheStore(Cache::store('redis'));
-    }
-
     protected function defaultAuth(): BasicAuthenticator
     {
         return new BasicAuthenticator('midrissi@ideolearning.com/token', 'u3VzAMoFa2JajiFPEoPz9SVaVQFVcHIXpX5sK9OC');
