@@ -72,18 +72,19 @@ Route::get('/test', function(){
 });
 
 Route::get('/speex', function(){
-    $tenant = Tenant::find('85caeca1-a182-424b-a776-7cf5c1e2a5af');
+    $tenant = Tenant::find('7473019a-0a48-4db7-ac7d-7e84a9aef424');
     tenancy()->initialize($tenant);
 
-    // Initialize all neccessary Service
     $doceboConnector = new DoceboConnector();
     $speexEnrollmentsService = new SpeexEnrollmentsService();
+
     //Define Enrollments Fields
     $fields = config('tenantconfigfields.enrollmentfields');
     $enrollFields = $speexEnrollmentsService->getEnrollmentsFields($fields);
 
     $modulesDoceboIds = Module::where(['category'=> 'SPEEX', 'status' => CourseStatusEnum::ACTIVE])->pluck('docebo_id')->toArray();
     $learners = Learner::whereNotNull('speex_id')->get();
+
     foreach( $learners as $learner){
         // GET LEARNER Enrollements
         $request = new DoceboSpeexEnrollements($modulesDoceboIds, $learner->docebo_id);
