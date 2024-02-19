@@ -19,6 +19,7 @@ class UpdateCallJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public $timeout = 0;
+
     /**
      * Create a new job instance.
      */
@@ -26,6 +27,7 @@ class UpdateCallJob implements ShouldQueue
     public function __construct(string $tenantId)
     {
         $this->tenantId = $tenantId;
+        $this->onQueue('reporting');
     }
 
     /**
