@@ -41,8 +41,7 @@ Route::get('/test', function(){
    $tenant = Tenant::find('dbd053f4-2847-40b7-bcda-79f5c76c9c08');
 
     tenancy()->initialize($tenant);
-    $learners = Learner::get();
-    dd($learners);
+
     // Initialize all neccessary Service
     $doceboConnector = new DoceboConnector();
     $moduleEnrollmentsService = new ModuleEnrollmentsService();
@@ -52,7 +51,8 @@ Route::get('/test', function(){
     $enrollFields = $moduleEnrollmentsService->getEnrollmentsFields($fields);
 
     $modulesDoceboIds = Module::whereIn('category', ['CEGOS','ENI', 'SM'])->where('status',CourseStatusEnum::ACTIVE)->pluck('docebo_id')->toArray();
-
+    $learners = Learner::all();
+    dd($learners);
     foreach( $learners as $learner){
         // GET LEARNER Enrollements
         $request = new DoceboCoursesEnrollements($modulesDoceboIds, $learner->docebo_id);
