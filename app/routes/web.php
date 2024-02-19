@@ -6,6 +6,7 @@ use App\Http\Controllers\Central\HomeController;
 use App\Http\Controllers\Central\ProjectController;
 use App\Http\Controllers\Central\TenantController;
 use App\Http\Integrations\Docebo\DoceboConnector;
+use App\Http\Integrations\Docebo\Requests\DoceboCourseLosList;
 use App\Http\Integrations\Docebo\Requests\DoceboCoursesEnrollements;
 use App\Http\Integrations\Docebo\Requests\DoceboGroupeList;
 use App\Http\Integrations\Docebo\Requests\DoceboLpsEnrollements;
@@ -37,7 +38,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 Route::get('/test', function(){
-    $tenant = Tenant::find('dbd053f4-2847-40b7-bcda-79f5c76c9c08');
+   $tenant = Tenant::find('dbd053f4-2847-40b7-bcda-79f5c76c9c08');
+    dd(Learner::all());
     tenancy()->initialize($tenant);
 
     // Initialize all neccessary Service
@@ -49,12 +51,12 @@ Route::get('/test', function(){
     $enrollFields = $moduleEnrollmentsService->getEnrollmentsFields($fields);
 
     $modulesDoceboIds = Module::whereIn('category', ['CEGOS','ENI', 'SM'])->where('status',CourseStatusEnum::ACTIVE)->pluck('docebo_id')->toArray();
-    dump($modulesDoceboIds);
-    $learners = Learner::all();
+    $learners = Learner::get();
+    dd($learners);
     foreach( $learners as $learner){
         // GET LEARNER Enrollements
         $request = new DoceboCoursesEnrollements($modulesDoceboIds, $learner->docebo_id);
-
+        dd($request);
         $mdenrollsResponses = $doceboConnector->paginate($request);
 
         $results = [];
