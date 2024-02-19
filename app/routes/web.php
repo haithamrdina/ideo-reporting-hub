@@ -49,23 +49,19 @@ Route::get('/test', function(){
     $enrollFields = $moduleEnrollmentsService->getEnrollmentsFields($fields);
 
     $modulesDoceboIds = Module::whereIn('category', ['CEGOS','ENI', 'SM'])->pluck('docebo_id')->toArray();
-    dump($modulesDoceboIds);
     $learners = Learner::all();
-    dump($learners);
     foreach( $learners as $learner){
-        dump($learner);
         // GET LEARNER Enrollements
         $request = new DoceboCoursesEnrollements($modulesDoceboIds, $learner->docebo_id);
-        dd($request);
+
         $mdenrollsResponses = $doceboConnector->paginate($request);
 
         $results = [];
         foreach($mdenrollsResponses as $md){
             $data = $md->dto();
-
             $results = array_merge($results, $data);
         }
-
+        dump($results);
         // BATCH INSERT LEARNER DATA
        /* if(!empty($results)){
             if(count($results) > 1000)
