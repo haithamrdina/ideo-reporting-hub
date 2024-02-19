@@ -10,6 +10,7 @@ use Saloon\Traits\Plugins\AcceptsJson;
 class SpeexConnector extends Connector
 {
     use AcceptsJson;
+
     public ?int $tries = 3;
 
     /**
