@@ -71,10 +71,4 @@ RUN chmod 0644 /etc/cron.d/laravel-cron
 # Apply cron job
 RUN crontab /etc/cron.d/laravel-cron
  
-# Create the log file to be able to run tail
-# RUN touch /var/log/cron.log
- 
-# Run the command on container startup
-# CMD ["cron", "-f"]
-
 CMD ["sh", "-c", "apache2-foreground & service supervisor start & cron -f"]

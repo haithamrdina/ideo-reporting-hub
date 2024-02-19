@@ -25,9 +25,6 @@ services:
         volumes:
             - ./docker/php/vhosts:/etc/apache2/sites-enabled
             - ./:/var/www/
-            - ./docker/php/workers/laravel-worker.conf:/etc/supervisor/conf.d/laravel-worker.conf
-            - ./docker/php/tasks/laravel-cron:/etc/cron.d/laravel-cron
-            - ./docker/php/logs:/var/log
         restart: always
         networks:
             - ideo-reporting-hub
