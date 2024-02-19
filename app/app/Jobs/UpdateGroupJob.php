@@ -40,9 +40,11 @@ class UpdateGroupJob implements ShouldQueue
 
         $tenant = Tenant::find($this->tenantId);
         tenancy()->initialize($tenant);
-
-            $initTenantService = new InitTenantService();
-            $initTenantService->syncArchives($tenant);
+            $archive = $tenant->archive;
+            if($archive == true){
+                $initTenantService = new InitTenantService();
+                $initTenantService->syncArchives($tenant);
+            }
 
             $doceboConnector = new DoceboConnector;
             $paginator = $doceboConnector->paginate(new DoceboGroupeList($tenant->docebo_org_id));
