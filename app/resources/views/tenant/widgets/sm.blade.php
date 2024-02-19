@@ -25,7 +25,7 @@
             <div class="container container-slim py-4 d-none" id="loaderSM">
                 <div class="text-center">
                     <div class="mb-3">
-                        <a href="." class="navbar-brand navbar-brand-autodark"><img src="{{ asset('static/logo/logo.svg') }}" height="36" alt=""></a>
+                        <a href="." class="navbar-brand navbar-brand-autodark"><img src="{{ global_asset('static/logo/logo.svg') }}" height="36" alt=""></a>
                     </div>
                     <div class="text-muted mb-3">la préparation de vos données</div>
                     <div class="progress progress-sm mb-3">

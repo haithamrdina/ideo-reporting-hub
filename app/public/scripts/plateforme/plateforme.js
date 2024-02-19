@@ -1281,10 +1281,10 @@ function formatDate(dateString) {
 }
 
 function updateSMModule(selectedSM=null){
-    var loaderDG = document.getElementById('loaderDG');
-    var contentDG = document.getElementById('contentDG');
-    loaderDG.classList.remove('d-none');
-    contentDG.classList.add('d-none');
+    var loaderSM = document.getElementById('loaderSM');
+    var contentSM = document.getElementById('contentSM');
+    loaderSM.classList.remove('d-none');
+    contentSM.classList.add('d-none');
     var xhr = new XMLHttpRequest();
     xhr.open('GET', '/plateforme/getsmdata/'+ selectedSM, true);
     xhr.onreadystatechange = function () {
@@ -1294,8 +1294,8 @@ function updateSMModule(selectedSM=null){
                 if(data){
 
                     updateSMModules(data,selectedSM);
-                    loaderDG.classList.add('d-none');
-                    contentDG.classList.remove('d-none');
+                    loaderSM.classList.add('d-none');
+                    contentSM.classList.remove('d-none');
                 }
 
             } else {
