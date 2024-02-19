@@ -502,6 +502,146 @@ class GroupeReportService{
         ];
     }
 
+    public function getStatSM($enrollfields,$group){
+        $smModules = $group->modules->filter(function ($module) {
+            return $module->category === 'SM' && $module->status === CourseStatusEnum::ACTIVE;
+        })->pluck('docebo_id')->toArray();
+        $moduleSms =  $group->modules->filter(function ($module) {
+            return $module->category === 'SM' && $module->status === CourseStatusEnum::ACTIVE;
+        })->values();
+
+        $smEnrolls = Enrollmodule::whereIn('module_docebo_id', $smModules)->get();
+
+        $archive = config('tenantconfigfields.archive');
+        if($archive != true){
+            $learnersIds = Learner::where('statut', '!=' , 'archive')->where('group_id', $group->id)->pluck('docebo_id')->toArray();
+        }else{
+            $learnersIds = Learner::where('group_id', $group->id)->pluck('docebo_id')->toArray();
+        }
+
+        $smEnrollsInEnrolled = Enrollmodule::whereIn('module_docebo_id', $smModules)->whereIn('learner_docebo_id', $learnersIds)->where('status', 'enrolled')->where('group_id', $group->id)->count();
+        $smEnrollsInProgress = Enrollmodule::whereIn('module_docebo_id', $smModules)->whereIn('learner_docebo_id', $learnersIds)->where('status', 'in_progress')->where('group_id', $group->id)->count();
+        $smEnrollsInCompleted = Enrollmodule::whereIn('module_docebo_id', $smModules)->whereIn('learner_docebo_id', $learnersIds)->where('status', 'completed')->where('group_id', $group->id)->count();
+
+        $statSM = [
+            'enrolled' =>  $smEnrollsInEnrolled,
+            'in_progress' => $smEnrollsInProgress,
+            'completed' => $smEnrollsInCompleted,
+        ];
+
+        $timeConversionService = new TimeConversionService();
+        $total_session_time =  $timeConversionService->convertSecondsToTime($smEnrolls->sum('session_time'));
+
+        if($enrollfields['cmi_time'] == true)
+        {
+            $total_cmi_time =  $timeConversionService->convertSecondsToTime($smEnrolls->sum('cmi_time'));
+        }else{
+            $total_cmi_time = "**h **min **s";
+        }
+
+        if($enrollfields['calculated_time'] == true)
+        {
+            $total_calculated_time =  $timeConversionService->convertSecondsToTime($smEnrolls->sum('calculated_time'));
+        }else{
+            $total_calculated_time = "**h **min **s";
+        }
+
+        if($enrollfields['recommended_time'] == true)
+        {
+            $total_recommended_time =  $timeConversionService->convertSecondsToTime($smEnrolls->sum('recommended_time'));
+        }else{
+            $total_recommended_time = "**h **min **s";
+        }
+
+        $statSMTimes =[
+            'total_session_time' => $total_session_time,
+            'total_cmi_time' => $total_cmi_time,
+            'total_calculated_time' => $total_calculated_time,
+            'total_recommended_time' => $total_recommended_time,
+        ];
+
+        $smCharts = [
+            'labels' => ['Non démarré', 'En cours', 'Terminé'],
+            'data' =>  [$smEnrollsInEnrolled, $smEnrollsInProgress, $smEnrollsInCompleted]
+        ];
+
+        return [
+            'statSM' => $statSM,
+            'statSMTimes' => $statSMTimes,
+            'smCharts' => $smCharts,
+            'modulesSms' => $moduleSms
+        ];
+    }
+
+    public function getStatSMPerModule($enrollfields, $selectedSm, $groupId){
+        $group = group::find($groupId);
+        $moduleSms = $group->modules->filter(function ($module) {
+            return $module->category === 'SM' && $module->status === CourseStatusEnum::ACTIVE;
+        })->values();
+
+        $smEnrolls = Enrollmodule::where('module_docebo_id', $selectedSm)->where('group_id', $group->id)->get();
+
+        $archive = config('tenantconfigfields.archive');
+        if($archive != true){
+            $learnersIds = Learner::where('statut', '!=' , 'archive')->where('group_id', $group->id)->pluck('docebo_id')->toArray();
+        }else{
+            $learnersIds = Learner::where('group_id', $group->id)->pluck('docebo_id')->toArray();
+        }
+
+        $smEnrollsInEnrolled = Enrollmodule::where('module_docebo_id', $selectedSm)->whereIn('learner_docebo_id', $learnersIds)->where('status', 'enrolled')->where('group_id', $group->id)->count();
+        $smEnrollsInProgress = Enrollmodule::where('module_docebo_id', $selectedSm)->whereIn('learner_docebo_id', $learnersIds)->where('status', 'in_progress')->where('group_id', $group->id)->count();
+        $smEnrollsInCompleted = Enrollmodule::where('module_docebo_id', $selectedSm)->whereIn('learner_docebo_id', $learnersIds)->where('status', 'completed')->where('group_id', $group->id)->count();
+
+        $statSM = [
+            'enrolled' =>  $smEnrollsInEnrolled,
+            'in_progress' => $smEnrollsInProgress,
+            'completed' => $smEnrollsInCompleted,
+        ];
+
+        $timeConversionService = new TimeConversionService();
+        $total_session_time =  $timeConversionService->convertSecondsToTime($smEnrolls->sum('session_time'));
+
+        if($enrollfields['cmi_time'] == true)
+        {
+            $total_cmi_time =  $timeConversionService->convertSecondsToTime($smEnrolls->sum('cmi_time'));
+        }else{
+            $total_cmi_time = "**h **min **s";
+        }
+
+        if($enrollfields['calculated_time'] == true)
+        {
+            $total_calculated_time =  $timeConversionService->convertSecondsToTime($smEnrolls->sum('calculated_time'));
+        }else{
+            $total_calculated_time = "**h **min **s";
+        }
+
+        if($enrollfields['recommended_time'] == true)
+        {
+            $total_recommended_time =  $timeConversionService->convertSecondsToTime($smEnrolls->sum('recommended_time'));
+        }else{
+            $total_recommended_time = "**h **min **s";
+        }
+
+        $statSMTimes =[
+            'total_session_time' => $total_session_time,
+            'total_cmi_time' => $total_cmi_time,
+            'total_calculated_time' => $total_calculated_time,
+            'total_recommended_time' => $total_recommended_time,
+        ];
+
+        $smCharts = [
+            'labels' => ['Non démarré', 'En cours', 'Terminé'],
+            'data' =>  [$smEnrollsInEnrolled, $smEnrollsInProgress, $smEnrollsInCompleted]
+        ];
+
+        return [
+            'statSM' => $statSM,
+            'statSMTimes' => $statSMTimes,
+            'smCharts' => $smCharts,
+            'modulesSms' => $moduleSms
+        ];
+    }
+
     public function getStatSpeex($enrollfields,$groupe){
         $archive = config('tenantconfigfields.archive');
         if($archive != true){

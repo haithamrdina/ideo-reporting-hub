@@ -41,6 +41,7 @@ class HomeController extends Controller
 
         $softStats = $plateformeReportService->getStatSoftskills($enrollfields);
         $digitalStats = $plateformeReportService->getStatDigital($enrollfields);
+        $smStats = $plateformeReportService->getStatSM($enrollfields);
         $speexStats = $plateformeReportService->getStatSpeex($enrollfields);
         $moocStats = $plateformeReportService->getStatMooc($enrollfields);
         $timingChart = $plateformeReportService->getTimingStats($enrollfields);
@@ -55,6 +56,7 @@ class HomeController extends Controller
             'learnersCharts' => $learnersCharts,
             'softStats' => $softStats,
             'digitalStats' => $digitalStats,
+            'smStats' => $smStats,
             'speexStats' => $speexStats,
             'moocStats' => $moocStats,
             'timingChart' => $timingChart,
@@ -78,6 +80,17 @@ class HomeController extends Controller
             $digitalStats = $plateformeReportService->getStatDigital($enrollfields);
         }
         return response()->json($digitalStats);
+    }
+
+    public function getSMData($selectedSM){
+        $enrollfields = config('tenantconfigfields.enrollmentfields');
+        $plateformeReportService = new PlateformeReportService();
+        if($selectedSM != "null"){
+            $smStats = $plateformeReportService->getStatSMPerModule($enrollfields, $selectedSM);
+        }else{
+            $smStats = $plateformeReportService->getStatSM($enrollfields);
+        }
+        return response()->json($smStats);
     }
 
     public function getLpData($selectedLp){

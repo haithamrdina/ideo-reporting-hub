@@ -40,6 +40,7 @@ Route::middleware([
             Route::get('/getdata',[PlateformeHomeController::class , 'getData']);
             Route::get('/getlanguagedata/{selectedLanguage}',[PlateformeHomeController::class , 'getLanguageData']);
             Route::get('/getdigitaldata/{selectedDigital}',[PlateformeHomeController::class , 'getDigitalData']);
+            Route::get('/getsmdata/{selectedSM}',[PlateformeHomeController::class , 'getSMData']);
             Route::get('/getlpdata/{selectedLp}',[PlateformeHomeController::class , 'getLpData']);
             Route::get('/getinscritsdata/filter',[PlateformeHomeController::class , 'getInscritsPerDate']);
             Route::get('/getlscdata/filter',[PlateformeHomeController::class , 'getLscPerDate']);
@@ -53,6 +54,7 @@ Route::middleware([
             Route::get('/projects/{projectId}/getdata',[PlateformeProjectController::class , 'getData']);
             Route::get('/projects/{projectId}/getlanguagedata/{selectedLanguage}',[PlateformeProjectController::class , 'getLanguageData']);
             Route::get('/projects/{projectId}/getdigitaldata/{selectedDigital}',[PlateformeProjectController::class , 'getDigitalData']);
+            Route::get('/projects/{projectId}/getsmdata/{selectedSM}',[PlateformeProjectController::class , 'getSMData']);
             Route::get('/projects/{projectId}/getlpdata/{selectedLp}',[PlateformeProjectController::class , 'getLpData']);
             Route::get('/projects/{projectId}/getinscritsdata/filter',[PlateformeProjectController::class , 'getInscritsPerDate']);
             Route::get('/projects/{projectId}/getlscdata/filter',[PlateformeProjectController::class , 'getLscPerDate']);
@@ -62,6 +64,7 @@ Route::middleware([
             Route::get('/groups/{groupId}/getdata',[PlateformeGroupController::class , 'getData']);
             Route::get('/groups/{groupId}/getlanguagedata/{selectedLanguage}',[PlateformeGroupController::class , 'getLanguageData']);
             Route::get('/groups/{groupId}/getdigitaldata/{selectedDigital}',[PlateformeGroupController::class , 'getDigitalData']);
+            Route::get('/groups/{groupId}/getsmdata/{selectedSM}',[PlateformeGroupController::class , 'getSMData']);
             Route::get('/groups/{groupId}/getlpdata/{selectedLp}',[PlateformeGroupController::class , 'getLpData']);
             Route::get('/groups/{groupId}/getinscritsdata/filter',[PlateformeGroupController::class , 'getInscritsPerDate']);
             Route::get('/groups/{groupId}/getlscdata/filter',[PlateformeGroupController::class , 'getLscPerDate']);
@@ -72,6 +75,7 @@ Route::middleware([
             Route::get('/{projectId}/getdata',[ProjectHomeController::class , 'getData']);
             Route::get('/{projectId}/getlanguagedata/{selectedLanguage}',[ProjectHomeController::class , 'getLanguageData']);
             Route::get('/{projectId}/getdigitaldata/{selectedDigital}',[ProjectHomeController::class , 'getDigitalData']);
+            Route::get('/{projectId}/getsmdata/{selectedSM}',[ProjectHomeController::class , 'getSMData']);
             Route::get('/{projectId}/getlpdata/{selectedLp}',[ProjectHomeController::class , 'getLpData']);
             Route::get('/{projectId}/getinscritsdata/filter',[ProjectHomeController::class , 'getInscritsPerDate']);
             Route::get('/{projectId}/getlscdata/filter',[ProjectHomeController::class , 'getLscPerDate']);
@@ -84,6 +88,7 @@ Route::middleware([
             Route::get('/groups/{groupId}/getdata',[ProjectGroupController::class , 'getData']);
             Route::get('/groups/{groupId}/getlanguagedata/{selectedLanguage}',[ProjectGroupController::class , 'getLanguageData']);
             Route::get('/groups/{groupId}/getdigitaldata/{selectedDigital}',[ProjectGroupController::class , 'getDigitalData']);
+            Route::get('/groups/{groupId}/getsmdata/{selectedSM}',[ProjectGroupController::class , 'getSMData']);
             Route::get('/groups/{groupId}/getlpdata/{selectedLp}',[ProjectGroupController::class , 'getLpData']);
             Route::get('/groups/{groupId}/getinscritsdata/filter',[ProjectGroupController::class , 'getInscritsPerDate']);
             Route::get('/groups/{groupId}/getlscdata/filter',[ProjectGroupController::class , 'getLscPerDate']);
@@ -94,6 +99,7 @@ Route::middleware([
             Route::get('/{groupId}/getdata',[GroupHomeController::class , 'getData']);
             Route::get('/{groupId}/getlanguagedata/{selectedLanguage}',[GroupHomeController::class , 'getLanguageData']);
             Route::get('/{groupId}/getdigitaldata/{selectedDigital}',[GroupHomeController::class , 'getDigitalData']);
+            Route::get('/{groupId}/getsmdata/{selectedSM}',[GroupHomeController::class , 'getSMData']);
             Route::get('/{groupId}/getlpdata/{selectedLp}',[GroupHomeController::class , 'getLpData']);
             Route::get('/{groupId}/getinscritsdata/filter',[GroupHomeController::class , 'getInscritsPerDate']);
             Route::get('/{groupId}/getlscdata/filter',[GroupHomeController::class , 'getLscPerDate']);

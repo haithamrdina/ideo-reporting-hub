@@ -1,3 +1,6 @@
+@php
+    $sur_mesure = config('tenantconfigfields.sur_mesure');
+@endphp
 <div class="col-md-12">
     <div class="card">
         <div class="card-header {{ request()->routeIs('tenant.plateforme.home') || request()->routeIs('tenant.project.home') || request()->routeIs('tenant.group.home') ? '' : 'my-4' }}">
@@ -31,6 +34,9 @@
         </div>
         <div class="card-body p-2">
             <div class="row row-cards">
+                @if ($sur_mesure == true)
+                    @include('tenant.widgets.sm')
+                @endif
                 <div class="col-lg-6">
                     <div class="card h-100">
                         <div class="card-body">

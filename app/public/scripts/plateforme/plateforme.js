@@ -52,6 +52,19 @@ document.getElementById('btnEniReload').addEventListener('click', function () {
 });
 
 
+$smsSelect = document.getElementById('select-sms');
+if($smsSelect != null){
+
+    document.getElementById('select-sms').addEventListener('change', function () {
+        var selectedSM = document.getElementById('select-sms').value;
+        updateSMModule(selectedSM);
+    });
+    document.getElementById('btnSMReload').addEventListener('click', function () {
+        updateSMModule(null);
+    });
+}
+
+
 document.getElementById('select-lps').addEventListener('change', function () {
     var selectedLp = document.getElementById('select-lps').value;
     updateLpData(selectedLp);
@@ -1259,11 +1272,143 @@ function updateLpData(selectedLp=null){
     xhr.send();
 }
 
-
 function formatDate(dateString) {
     var date = new Date(dateString);
     var year = date.getFullYear();
     var month = String(date.getMonth() + 1).padStart(2, '0');
     var day = String(date.getDate()).padStart(2, '0');
     return year + '-' + month + '-' + day;
+}
+
+function updateSMModule(selectedSM=null){
+    var loaderDG = document.getElementById('loaderDG');
+    var contentDG = document.getElementById('contentDG');
+    loaderDG.classList.remove('d-none');
+    contentDG.classList.add('d-none');
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', '/plateforme/getsmdata/'+ selectedSM, true);
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+            if (xhr.status === 200) {
+                var data = JSON.parse(xhr.responseText);
+                if(data){
+
+                    updateSMModules(data,selectedSM);
+                    loaderDG.classList.add('d-none');
+                    contentDG.classList.remove('d-none');
+                }
+
+            } else {
+                console.error('Request failed with status:', xhr.status);
+            }
+        }
+    };
+    xhr.send();
+}
+
+function updateSMModules(smStats, selectedSM=null){
+    var sessionSM = document.getElementById('sessionSm');
+    var cmiSM = document.getElementById('cmiSm');
+    var tcSM = document.getElementById('tcSm');
+    var trSM = document.getElementById('trSm');
+    var insSMT = document.getElementById('insSmT');
+    var insSMND = document.getElementById('insSmND');
+    var insSMP = document.getElementById('insSmP');
+
+    sessionSM.textContent = smStats.statSMTimes.total_session_time;
+    cmiSM.textContent = smStats.statSMTimes.total_cmi_time;
+    tcSM.textContent = smStats.statSMTimes.total_calculated_time;
+    trSM.textContent = smStats.statSMTimes.total_recommended_time;
+    insSMT.textContent = smStats.statSM.completed;
+    insSMND.textContent = smStats.statSM.enrolled;
+    insSMP.textContent= smStats.statSM.in_progress;
+
+    document.getElementById('select-sms').innerHTML="";
+    document.getElementById('select-sms').insertAdjacentHTML('beforeend', '<option value="" class="text-gray-600">Séléctionner un module</option>');
+    smStats.modulesSms.forEach(function(v) {
+        var selected = v.docebo_id == selectedSM ? 'selected' : '';
+        var content = '<option value="' + v.docebo_id + '"' + selected + '>' + v.name + '</option>';
+        document.getElementById('select-sms').insertAdjacentHTML('beforeend', content);
+    });
+
+    window.ApexCharts && (new ApexCharts(document.getElementById('chart-sm'), {
+        chart: {
+            type: "bar",
+            fontFamily: 'inherit',
+            height: 240,
+            parentHeightOffset: 0,
+            toolbar: {
+                show: false,
+            },
+            animations: {
+                enabled: false
+            },
+        },
+        plotOptions: {
+            bar: {
+                barHeight: '50%',
+                horizontal: true,
+                dataLabels: {
+                    position: 'bottom'
+                },
+            }
+        },
+        dataLabels: {
+            enabled: true,
+            textAnchor: 'start',
+            style: {
+                colors: ['#000']
+            },
+            formatter: function (val, opt) {
+                return opt.w.globals.labels[opt.dataPointIndex] + ":  " + val + " inscriptions."
+            },
+            offsetX: 0,
+            dropShadow: {
+                enabled: false
+            }
+        },
+        stroke: {
+            width: 1,
+            colors: ['#fff']
+        },
+        series: [{
+            name: "Total d'inscriptions",
+            data: smStats.smCharts.data
+        }],
+        tooltip: {
+            theme: 'dark',
+            x: {
+                show: true
+            },
+            y: {
+                title: {
+                    formatter: function () {
+                    return ''
+                    }
+                }
+            }
+        },
+        grid: {
+            padding: {
+                top: -20,
+                right: 0,
+                left: -4,
+                bottom: -4
+            },
+            strokeDashArray: 4,
+        },
+        xaxis: {
+            categories: smStats.smCharts.labels,
+        },
+        yaxis: {
+            labels: {
+                padding: 4,
+                show: false
+            },
+        },
+        colors: ["#f4AAA4"],
+        legend: {
+            show: true,
+        },
+    })).render();
 }

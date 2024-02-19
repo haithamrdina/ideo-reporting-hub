@@ -39,6 +39,7 @@ class GroupController extends Controller
 
         $softStats = $groupReportService->getStatSoftskills($enrollfields,$group);
         $digitalStats = $groupReportService->getStatDigital($enrollfields,$group);
+        $smStats = $groupReportService->getStatSM($enrollfields,$group);
         $speexStats = $groupReportService->getStatSpeex($enrollfields,$group);
         $moocStats = $groupReportService->getStatMooc($enrollfields,$group);
         $timingChart = $groupReportService->getTimingStats($enrollfields,$group);
@@ -57,7 +58,8 @@ class GroupController extends Controller
             'moocStats' => $moocStats,
             'timingChart' => $timingChart,
             'lpStats' => $lpStats,
-            'lscStats' => $lscStats
+            'lscStats' => $lscStats,
+            'smStats' => $smStats
         ]);
     }
 
@@ -78,6 +80,18 @@ class GroupController extends Controller
             $digitalStats = $groupReportService->getStatDigital($enrollfields,$group);
         }
         return response()->json($digitalStats);
+    }
+
+    public function getSMData($groupId,$selectedSM){
+        $enrollfields = config('tenantconfigfields.enrollmentfields');
+        $groupReportService = new GroupeReportService();
+        if($selectedSM != "null"){
+            $smStats = $groupReportService->getStatSMPerModule($enrollfields, $selectedSM, $groupId);
+        }else{
+            $group = Group::find($groupId);
+            $smStats = $groupReportService->getStatSM($enrollfields, $group);
+        }
+        return response()->json($smStats);
     }
 
     public function getLpData($groupId, $selectedLp){

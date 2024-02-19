@@ -42,6 +42,7 @@ class HomeController extends Controller
 
         $softStats = $projectReportService->getStatSoftskills($enrollfields,$project);
         $digitalStats = $projectReportService->getStatDigital($enrollfields,$project);
+        $smStats = $projectReportService->getStatSM($enrollfields,$project);
         $speexStats = $projectReportService->getStatSpeex($enrollfields,$project);
         $moocStats = $projectReportService->getStatMooc($enrollfields,$project);
         $timingChart = $projectReportService->getTimingStats($enrollfields,$project);
@@ -60,7 +61,8 @@ class HomeController extends Controller
             'moocStats' => $moocStats,
             'timingChart' => $timingChart,
             'lpStats' => $lpStats,
-            'lscStats' => $lscStats
+            'lscStats' => $lscStats,
+            'smStats' => $smStats
         ]);
     }
 
@@ -81,6 +83,18 @@ class HomeController extends Controller
             $digitalStats = $projectReportService->getStatDigital($enrollfields,$project);
         }
         return response()->json($digitalStats);
+    }
+
+    public function getSMData($projectId,$selectedSM){
+        $enrollfields = config('tenantconfigfields.enrollmentfields');
+        $projectReportService = new ProjectReportService();
+        if($selectedSM != "null"){
+            $smStats = $projectReportService->getStatSMPerModule($enrollfields, $selectedSM, $projectId);
+        }else{
+            $project = Project::find($projectId);
+            $smStats = $projectReportService->getStatSM($enrollfields, $project);
+        }
+        return response()->json($smStats);
     }
 
     public function getLpData($projectId, $selectedLp){

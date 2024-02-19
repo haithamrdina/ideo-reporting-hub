@@ -7,18 +7,22 @@ use App\Http\Controllers\Central\ProjectController;
 use App\Http\Controllers\Central\TenantController;
 use App\Http\Integrations\Docebo\DoceboConnector;
 use App\Http\Integrations\Docebo\Requests\DoceboCoursesEnrollements;
+use App\Http\Integrations\Docebo\Requests\DoceboGroupeList;
 use App\Http\Integrations\Docebo\Requests\DoceboLpsEnrollements;
 use App\Http\Integrations\Docebo\Requests\DoceboMoocsEnrollements;
 use App\Http\Integrations\Docebo\Requests\DoceboSpeexEnrollements;
+use App\Models\Group;
 use App\Models\Learner;
 use App\Models\Lp;
 use App\Models\Module;
 use App\Models\Mooc;
 use App\Models\Tenant;
+use App\Services\InitTenantService;
 use App\Services\LpEnrollmentsService;
 use App\Services\ModuleEnrollmentsService;
 use App\Services\MoocEnrollmentsService;
 use App\Services\SpeexEnrollmentsService;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
 
@@ -164,6 +168,35 @@ Route::get('/lp', function(){
             }
         }
     tenancy()->end();
+});
+
+Route::get('groups', function(){
+    $tenant = Tenant::find('fbca1f6b-83cd-44cd-92ec-1c3528f7b928');
+    tenancy()->initialize($tenant);
+        $archive = $tenant->archive;
+        if($archive == true){
+            $initTenantService = new InitTenantService();
+            $initTenantService->syncArchives($tenant);
+        }
+
+        $doceboConnector = new DoceboConnector;
+        $paginator = $doceboConnector->paginate(new DoceboGroupeList($tenant->docebo_org_id));
+        $result = [];
+        foreach($paginator as $pg){
+            $data = $pg->dto();
+            $result = array_merge($result, $data);
+        }
+        DB::transaction(function () use ($result) {
+            Group::upsert(
+                $result,
+                ['docebo_id'],
+                [
+                    'code',
+                    'name'
+                ]
+            );
+        });
+        tenancy()->end();
 });
 
 Route::name('admin.')->group(function () {

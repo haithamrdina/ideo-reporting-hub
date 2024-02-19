@@ -22,6 +22,11 @@ class ModuleExport implements WithMultipleSheets, ShouldQueue
             new SpeexExport($this->groupId),
             new MoocExport($this->groupId),
         ];
+
+        $sur_mesure = config('tenantconfigfields.sur_mesure');
+        if($sur_mesure == true){
+            $sheets []= new SmExport($this->groupId);
+        }
         return $sheets;
     }
 
