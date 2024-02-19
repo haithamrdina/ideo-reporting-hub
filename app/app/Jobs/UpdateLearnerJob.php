@@ -36,7 +36,6 @@ class UpdateLearnerJob implements ShouldQueue
         $this->tenantId = $tenantId;
         $this->userfields = $userfields;
         $this->userFieldsService = $userFieldsService;
-        $this->onQueue('reporting');
     }
 
     /**

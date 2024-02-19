@@ -28,7 +28,6 @@ class UpdateEnrollementModuleJob implements ShouldQueue
     public function __construct(string $tenantId)
     {
         $this->tenantId = $tenantId;
-        $this->onQueue('reporting');
     }
 
     /**
