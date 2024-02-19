@@ -52,11 +52,9 @@ Route::get('/test', function(){
 
     $modulesDoceboIds = Module::whereIn('category', ['CEGOS','ENI', 'SM'])->where('status',CourseStatusEnum::ACTIVE)->pluck('docebo_id')->toArray();
     $learners = Learner::all();
-    dd($learners);
     foreach( $learners as $learner){
         // GET LEARNER Enrollements
         $request = new DoceboCoursesEnrollements($modulesDoceboIds, $learner->docebo_id);
-        dd($request);
         $mdenrollsResponses = $doceboConnector->paginate($request);
 
         $results = [];
@@ -64,7 +62,6 @@ Route::get('/test', function(){
             $data = $md->dto();
             $results = array_merge($results, $data);
         }
-        dump($results);
         // BATCH INSERT LEARNER DATA
        /* if(!empty($results)){
             if(count($results) > 1000)
