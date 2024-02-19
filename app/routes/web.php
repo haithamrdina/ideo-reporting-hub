@@ -37,7 +37,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 Route::get('/test', function(){
-    $tenant = Tenant::find('85caeca1-a182-424b-a776-7cf5c1e2a5af');
+    $tenant = Tenant::find('dbd053f4-2847-40b7-bcda-79f5c76c9c08');
     tenancy()->initialize($tenant);
 
     // Initialize all neccessary Service
@@ -49,18 +49,25 @@ Route::get('/test', function(){
     $enrollFields = $moduleEnrollmentsService->getEnrollmentsFields($fields);
 
     $modulesDoceboIds = Module::whereIn('category', ['CEGOS','ENI', 'SM'])->pluck('docebo_id')->toArray();
+    dump($modulesDoceboIds);
     $learners = Learner::all();
+    dump($learners);
     foreach( $learners as $learner){
+        dump($learner);
         // GET LEARNER Enrollements
         $request = new DoceboCoursesEnrollements($modulesDoceboIds, $learner->docebo_id);
+        dd($request);
         $mdenrollsResponses = $doceboConnector->paginate($request);
+
         $results = [];
         foreach($mdenrollsResponses as $md){
             $data = $md->dto();
+
             $results = array_merge($results, $data);
         }
+
         // BATCH INSERT LEARNER DATA
-        if(!empty($results)){
+       /* if(!empty($results)){
             if(count($results) > 1000)
             {
                 $batchData = array_chunk(array_filter($results), 1000);
@@ -70,8 +77,9 @@ Route::get('/test', function(){
             }else{
                 $moduleEnrollmentsService->batchInsert($results, $enrollFields);
             }
-        }
+        }*/
     }
+    die();
     tenancy()->end();
 });
 

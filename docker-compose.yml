@@ -64,8 +64,6 @@ services:
         ports:
             - 1773:5672
             - 1774:15672
-        volumes:
-            - ./docker/rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
         networks:
             - ideo-reporting-hub 
              
