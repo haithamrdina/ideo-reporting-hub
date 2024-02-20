@@ -41,6 +41,12 @@ class ZendeskConnector extends Connector implements HasPagination
         ];
     }
 
+
+    protected function resolveRateLimitStore(): RateLimitStore
+    {
+        return new LaravelCacheStore(Cache::store('redis'));
+    }
+
     /**
      * Default HTTP client options
      */

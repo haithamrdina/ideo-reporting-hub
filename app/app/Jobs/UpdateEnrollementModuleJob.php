@@ -52,8 +52,7 @@ class UpdateEnrollementModuleJob implements ShouldQueue
                 $mdenrollsResponses = $doceboConnector->paginate($request);
                 $results = [];
                 foreach($mdenrollsResponses as $md){
-                    $data = $md->dto();
-                    $results = array_merge($results, $data);
+                    $results = array_merge($results, $md->dto());
                 }
                 if(!empty($results)){
                     $moduleEnrollmentsService->batchInsert(array_filter($results), $enrollFields);
@@ -62,6 +61,6 @@ class UpdateEnrollementModuleJob implements ShouldQueue
         tenancy()->end();
 
         $end_datetime = date('Y-m-d H:i:s');
-        Log::info("['end'][$end_datetime]: UpdateEnrollementMoocJob for tenant {$this->tenantId} has finished.");
+        Log::info("['end'][$end_datetime]: UpdateEnrollementModuleJob for tenant {$this->tenantId} has finished.");
     }
 }

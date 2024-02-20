@@ -54,20 +54,35 @@ WORKDIR /var/www/app
 
 #install supervisor 
 RUN apt-get install -y supervisor
-# copy laravel-worker file to the conf.d directory
-COPY ./workers/laravel-worker.conf /etc/supervisor/conf.d/laravel-worker.conf
-# give execution rights on the cron job
-RUN chown www-data:www-data /etc/supervisor/conf.d/laravel-worker.conf
-RUN chmod 0644 /etc/supervisor/conf.d/laravel-worker.conf
 
-#install cron
+# install cron 
 RUN apt-get update && apt-get -y install cron && apt-get install nano
-# copy laravel-cron file to the cron.d directory
+
+# copy Laravel worker configuration
+COPY ./workers/laravel-worker.conf /etc/supervisor/conf.d/laravel-worker.conf
+
+# copy Laravel cron job configuration
 COPY ./schedulers/laravel-cron /etc/cron.d/laravel-cron
-# give execution rights on the cron job
-RUN chown www-data:www-data /etc/cron.d/laravel-cron
-RUN chmod 0644 /etc/cron.d/laravel-cron
-# Apply cron job
+
+# Set permissions for configuration files
+RUN chown www-data:www-data /etc/supervisor/conf.d/laravel-worker.conf \
+    && chmod 644 /etc/supervisor/conf.d/laravel-worker.conf \
+    && chown www-data:www-data /etc/cron.d/laravel-cron \
+    && chmod 644 /etc/cron.d/laravel-cron
+
+# apply cron job
 RUN crontab /etc/cron.d/laravel-cron
 
-CMD ["sh", "-c", "apache2-foreground && supervisorctl reread && supervisorctl update && supervisorctl start laravel-worker:* && service cron start && cron -f"]
+# create log directories and set permissions
+RUN mkdir -p /var/www/app/storage/logs \
+    && touch /var/www/app/storage/logs/worker.log \
+    && touch /var/www/app/storage/logs/cron.log \
+    && chown -R www-data:www-data /var/www/app/storage/logs \
+    && chmod 664 /var/www/app/storage/logs/worker.log \
+    && chmod 664 /var/www/app/storage/logs/cron.log
+
+# set working directory
+WORKDIR /var/www/app
+
+# start Supervisor and Cron
+CMD ["sh", "-c", "apache2-foreground & service supervisor start & cron -f"]

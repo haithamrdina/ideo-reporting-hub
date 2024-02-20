@@ -38,25 +38,27 @@ class UpdateEnrollementsLpsJob implements ShouldQueue
 
         $tenant = Tenant::find($this->tenantId);
         tenancy()->initialize($tenant);
+            // Initialize all neccessary Service
+            $doceboConnector = new DoceboConnector();
+            $LpEnrollmentsService = new LpEnrollmentsService();
 
-             // Initialize all neccessary Service
-        $doceboConnector = new DoceboConnector();
-        $LpEnrollmentsService = new LpEnrollmentsService();
+            //Define Enrollments Fields
+            $fields = config('tenantconfigfields.enrollmentfields');
+            $enrollFields = $LpEnrollmentsService->getEnrollmentsFields($fields);
 
-        //Define Enrollments Fields
-        $fields = config('tenantconfigfields.enrollmentfields');
-        $enrollFields = $LpEnrollmentsService->getEnrollmentsFields($fields);
-
-        // GET Enrollements List DATA
-        $lpsDoceboIds = Lp::pluck('docebo_id')->toArray();
-        $request = new DoceboLpsEnrollements($lpsDoceboIds);
-        $lpenrollsResponses = $doceboConnector->paginate($request);
-        foreach($lpenrollsResponses as $md){
-            $results = $md->dto();
-            if(!empty($results)){
-                $LpEnrollmentsService->batchInsert($results, $enrollFields);
+            // GET Enrollements List DATA
+            $lpsDoceboIds = Lp::pluck('docebo_id')->toArray();
+            foreach($lpsDoceboIds as $lpDoceboId){
+                $request = new DoceboLpsEnrollements($lpDoceboId);
+                $lpenrollsResponses = $doceboConnector->paginate($request);
+                $results = [];
+                foreach($lpenrollsResponses as $lp){
+                    $results = array_merge($results, $lp->dto());
+                }
+                if(!empty($results)){
+                    $LpEnrollmentsService->batchInsert(array_filter($results), $enrollFields);
+                }
             }
-        }
         tenancy()->end();
 
         $end_datetime = date('Y-m-d H:i:s');

@@ -8,6 +8,7 @@ use App\Http\Controllers\Central\TenantController;
 use App\Http\Integrations\Docebo\DoceboConnector;
 use App\Http\Integrations\Docebo\Requests\DoceboCourseLosList;
 use App\Http\Integrations\Docebo\Requests\DoceboCoursesEnrollements;
+use App\Http\Integrations\Docebo\Requests\DoceboGetLoCmiData;
 use App\Http\Integrations\Docebo\Requests\DoceboGroupeList;
 use App\Http\Integrations\Docebo\Requests\DoceboLpsEnrollements;
 use App\Http\Integrations\Docebo\Requests\DoceboMoocsEnrollements;
@@ -25,7 +26,7 @@ use App\Services\MoocEnrollmentsService;
 use App\Services\SpeexEnrollmentsService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
-
+use Saloon\Exceptions\Request\Statuses\InternalServerErrorException;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,8 +38,34 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
-Route::get('/test', function(){
-    $tenant = Tenant::find('85caeca1-a182-424b-a776-7cf5c1e2a5af');
+
+
+/**
+ *  start TEST FUNCTION
+ */
+Route::get('test-cmi', function(){
+    $cmi_time = 0;
+    try {
+        $doceboConnector = new DoceboConnector();
+        $cmiRequest = new DoceboGetLoCmiData('6656', '13067', '67951');
+        $cmiResponse = $doceboConnector->send($cmiRequest);
+        if($cmiResponse->status() === 200){
+            $cmi_time += $cmiResponse->dto();
+        }else{
+            $cmi_time += 0;
+        }
+        // Process $cmiResponse
+    } catch (InternalServerErrorException $e) {
+        $cmi_time = 0;
+    } catch (Exception $e) {
+        $cmi_time = 0;
+    }
+
+    return $cmi_time;
+
+});
+Route::get('/test-module', function(){
+    $tenant = Tenant::find('54923e49-d845-4a7a-a595-ff704b1f88e2');
     tenancy()->initialize($tenant);
 
     $doceboConnector = new DoceboConnector();
@@ -62,9 +89,7 @@ Route::get('/test', function(){
     }
     tenancy()->end();
 });
-
-
-Route::get('/speex', function(){
+Route::get('/test-speex', function(){
     $tenant = Tenant::find('85caeca1-a182-424b-a776-7cf5c1e2a5af');
     tenancy()->initialize($tenant);
 
@@ -91,10 +116,9 @@ Route::get('/speex', function(){
     }
     tenancy()->end();
 });
+Route::get('/test-mooc', function(){
 
-Route::get('/mooc', function(){
-
-    $tenant = Tenant::find('85caeca1-a182-424b-a776-7cf5c1e2a5af');
+    $tenant = Tenant::find('54923e49-d845-4a7a-a595-ff704b1f88e2');
     tenancy()->initialize($tenant);
     // Initialize all neccessary Service
     $doceboConnector = new DoceboConnector();
@@ -106,9 +130,8 @@ Route::get('/mooc', function(){
 
     // GET Enrollements List DATA
     $moocsDoceboIds = Mooc::pluck('docebo_id')->toArray();
-    $moocsDoceboIds = array_chunk($moocsDoceboIds , 100);
-    foreach($moocsDoceboIds as $moocsDoceboId){
-        $request = new DoceboMoocsEnrollements($moocsDoceboId);
+    foreach($moocsDoceboIds as $moocDoceboId){
+        $request = new DoceboMoocsEnrollements($moocDoceboId);
         $mdenrollsResponses = $doceboConnector->paginate($request);
         $results = [];
         foreach($mdenrollsResponses as $md){
@@ -116,24 +139,15 @@ Route::get('/mooc', function(){
             $results = array_merge($results, $data);
         }
         if(!empty($results)){
-            if(count($results) > 1000)
-            {
-                $batchData = array_chunk(array_filter($results), 1000);
-                foreach($batchData as $data){
-                    $moocEnrollmentsService->batchInsert($data, $enrollFields);
-                }
-            }else{
-                $moocEnrollmentsService->batchInsert($results, $enrollFields);
-            }
+            $moocEnrollmentsService->batchInsert(array_filter($results), $enrollFields);
         }
     }
     tenancy()->end();
 
 
 });
-
-Route::get('/lp', function(){
-    $tenant = Tenant::find('85caeca1-a182-424b-a776-7cf5c1e2a5af');
+Route::get('/test-lp', function(){
+    $tenant = Tenant::find('54923e49-d845-4a7a-a595-ff704b1f88e2');
     tenancy()->initialize($tenant);
         // Initialize all neccessary Service
         $doceboConnector = new DoceboConnector();
@@ -145,46 +159,24 @@ Route::get('/lp', function(){
 
         // GET Enrollements List DATA
         $lpsDoceboIds = Lp::pluck('docebo_id')->toArray();
-        $request = new DoceboLpsEnrollements($lpsDoceboIds);
-        $lpenrollsResponses = $doceboConnector->paginate($request);
-        foreach($lpenrollsResponses as $md){
-            $results = $md->dto();
-            if(!empty($results)){
-                $LpEnrollmentsService->batchInsert($results, $enrollFields);
+        foreach($lpsDoceboIds as $lpDoceboId){
+            $request = new DoceboLpsEnrollements($lpDoceboId);
+            $lpenrollsResponses = $doceboConnector->paginate($request);
+            $results = [];
+            foreach($lpenrollsResponses as $lp){
+                $results = array_merge($results, $lp->dto());
             }
+            dd($results);
+            /*if(!empty($results)){
+                $LpEnrollmentsService->batchInsert(array_filter($results), $enrollFields);
+            }*/
         }
     tenancy()->end();
 });
 
-Route::get('groups', function(){
-    $tenant = Tenant::find('fbca1f6b-83cd-44cd-92ec-1c3528f7b928');
-    tenancy()->initialize($tenant);
-        $archive = $tenant->archive;
-        if($archive == true){
-            $initTenantService = new InitTenantService();
-            $initTenantService->syncArchives($tenant);
-        }
-
-        $doceboConnector = new DoceboConnector;
-        $paginator = $doceboConnector->paginate(new DoceboGroupeList($tenant->docebo_org_id));
-        $result = [];
-        foreach($paginator as $pg){
-            $data = $pg->dto();
-            $result = array_merge($result, $data);
-        }
-        DB::transaction(function () use ($result) {
-            Group::upsert(
-                $result,
-                ['docebo_id'],
-                [
-                    'code',
-                    'name'
-                ]
-            );
-        });
-        tenancy()->end();
-});
-
+/**
+ *  END TEST FUNCTION
+ */
 Route::name('admin.')->group(function () {
     require __DIR__.'/central-auth.php';
 

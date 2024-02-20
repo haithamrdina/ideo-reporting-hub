@@ -63,7 +63,7 @@ services:
             - 1773:5672
             - 1774:15672
         environment:
-            - RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS="-rabbit delivery_acknowledgments_timeout 3600000" # 60 seconds timeout
+            RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: "-rabbit delivery_acknowledgments_timeout 3600000"
         networks:
             - ideo-reporting-hub 
              

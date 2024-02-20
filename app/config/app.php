@@ -175,6 +175,7 @@ return [
         App\Providers\TenancyServiceProvider::class,
         IcehouseVentures\LaravelChartjs\Providers\ChartjsServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
+        iamfarhad\LaravelRabbitMQ\LaravelRabbitQueueServiceProvider::class,
     ])->toArray(),
 
     /*

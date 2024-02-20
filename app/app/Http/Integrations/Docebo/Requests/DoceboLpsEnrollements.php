@@ -15,22 +15,18 @@ class DoceboLpsEnrollements extends Request implements Paginatable
     /**
      * The HTTP method of the request
      */
-    protected $lps;
+    protected $lp;
     // protected $users;
     protected Method $method = Method::GET;
-    public function __construct(Array $lps) {
-        $this->lps = $lps;
+    public function __construct(string $lp) {
+        $this->lp = $lp;
     }
     /**
      * The endpoint for the request
      */
     public function resolveEndpoint(): string
     {
-        $lps = '';
-        foreach ($this->lps as $lp) {
-            $lps .= 'learning_plan_id[]=' . $lp . "&";
-        }
-        return '/learningplan/v1/learningplans/enrollments?' . $lps;
+        return '/learningplan/v1/learningplans/enrollments?learning_plan_id[]=' . $this->lp;
     }
 
     protected function defaultQuery(): array

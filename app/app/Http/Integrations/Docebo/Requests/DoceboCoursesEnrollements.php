@@ -7,7 +7,9 @@ use App\Http\Integrations\Docebo\DoceboConnector;
 use App\Models\Learner;
 use App\Models\Module;
 use App\Services\TimeConversionService;
+use Exception;
 use Saloon\Enums\Method;
+use Saloon\Exceptions\Request\Statuses\InternalServerErrorException;
 use Saloon\Http\Request;
 use Saloon\Http\Response;
 use Saloon\PaginationPlugin\Contracts\Paginatable;
@@ -64,22 +66,29 @@ class DoceboCoursesEnrollements extends Request implements Paginatable
                 ];
             }
         }, $items);
-
         return $filteredItems;
     }
 
-    public function getCmiTime($module,$learner): string
+    public function getCmiTime($module,$learner, $status): string
     {
-        $doceboConnector = new DoceboConnector();
-        $timeConverisonService = new TimeConversionService();
         $cmi_time = 0;
-        foreach($module->los as $lo){
-            $cmiRequest = new DoceboGetLoCmiData($lo,$module->docebo_id,$learner->docebo_id);
-            $cmiResponse = $doceboConnector->send($cmiRequest);
-            if($cmiResponse->status() === 200){
-                $cmi_time += $timeConverisonService->getDoceboCmiTime($cmiResponse->body());
-            }else{
-                $cmi_time += 0;
+        if($status != 'enrolled' && $status != "waiting"){
+            foreach($module->los as $lo){
+                try {
+                    $doceboConnector = new DoceboConnector();
+                    $cmiRequest = new DoceboGetLoCmiData($lo,$module->docebo_id,$learner->docebo_id);
+                    $cmiResponse = $doceboConnector->send($cmiRequest);
+                    if($cmiResponse->status() === 200){
+                        $cmi_time += $cmiResponse->dto();
+                    }else{
+                        $cmi_time += 0;
+                    }
+                    // Process $cmiResponse
+                } catch (InternalServerErrorException $e) {
+                    $cmi_time = 0;
+                } catch (Exception $e) {
+                    $cmi_time = 0;
+                }
             }
         }
         return $cmi_time;
@@ -95,36 +104,13 @@ class DoceboCoursesEnrollements extends Request implements Paginatable
         return $calculated_time;
     }
 
-    public function getRecommendedTime($item, $speexData): string
-    {
-        $recommended_time = 32400;
-        if($item['status'] != 'enrolled' || $item['status'] != 'waiting' ){
-
-            $multipliers = [
-                'A1' => 1,
-                'A2' => 2,
-                'B1.1' => 3,
-                'B1.2' => 4,
-                'B2.1' => 5,
-                'B2.2' => 6,
-                'C1.1' => 7,
-                'C1.2' => 8
-            ];
-
-            if($speexData['niveau'] != null){
-                $recommended_time = 32400 * $multipliers[$item['niveau']];
-            }
-        }
-        return $recommended_time;
-    }
-
     public function getTimingData($item, $module, $learner, $status)
     {
         $fields = config('tenantconfigfields.enrollmentfields');
         if((($status != 'enrolled') && ($status !== 'waiting'))){
             $session_time = $item['enrollment_time_spent'];
             $recommended_time = !empty($fields['recommended_time']) ? $module->recommended_time : null;
-            $cmi_time = !empty($fields['cmi_time']) ? $this->getCmiTime($module, $learner) : null;
+            $cmi_time = !empty($fields['cmi_time']) ? $this->getCmiTime($module, $learner,$status) : null;
             $calculated_time = !empty($fields['calculated_time']) ? $this->getCalculatedTime($module->recommended_time, $cmi_time, $status) : null;
         }else{
             $session_time = "0";

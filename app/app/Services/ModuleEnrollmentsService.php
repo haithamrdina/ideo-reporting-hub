@@ -59,6 +59,7 @@ class ModuleEnrollmentsService implements EnrollmentInterface
             $cmi_time = 0;
             foreach($module->los as $lo){
                 $cmiRequest = new DoceboGetLoCmiData($lo,$item['module_docebo_id'],$item['learner_docebo_id']);
+                dd($cmiRequest);
                 $cmiResponse = $doceboConnector->send($cmiRequest);
                 if($cmiResponse->status() === 200){
                     $cmi_time += $timeConverisonService->getDoceboCmiTime($cmiResponse->body());

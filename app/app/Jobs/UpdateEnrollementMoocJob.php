@@ -41,7 +41,6 @@ class UpdateEnrollementMoocJob implements ShouldQueue
 
         $tenant = Tenant::find($this->tenantId);
         tenancy()->initialize($tenant);
-
             // Initialize all neccessary Service
             $doceboConnector = new DoceboConnector();
             $moocEnrollmentsService = new MoocEnrollmentsService();
@@ -52,31 +51,21 @@ class UpdateEnrollementMoocJob implements ShouldQueue
 
             // GET Enrollements List DATA
             $moocsDoceboIds = Mooc::pluck('docebo_id')->toArray();
-            $moocsDoceboIds = array_chunk($moocsDoceboIds , 100);
-            foreach($moocsDoceboIds as $moocsDoceboId){
-                $request = new DoceboMoocsEnrollements($moocsDoceboId);
+            foreach($moocsDoceboIds as $moocDoceboId){
+                $request = new DoceboMoocsEnrollements($moocDoceboId);
                 $mdenrollsResponses = $doceboConnector->paginate($request);
                 $results = [];
                 foreach($mdenrollsResponses as $md){
-                    $data = $md->dto();
-                    $results = array_merge($results, $data);
+                    $results = array_merge($results, $md->dto());
                 }
                 if(!empty($results)){
-                    if(count($results) > 1000)
-                    {
-                        $batchData = array_chunk(array_filter($results), 1000);
-                        foreach($batchData as $data){
-                            $moocEnrollmentsService->batchInsert($data, $enrollFields);
-                        }
-                    }else{
-                        $moocEnrollmentsService->batchInsert($results, $enrollFields);
-                    }
+                    $moocEnrollmentsService->batchInsert(array_filter($results), $enrollFields);
                 }
             }
 
         tenancy()->end();
 
         $end_datetime = date('Y-m-d H:i:s');
-        Log::info("['end'][$end_datetime]: UpdateEnrollementsLpsJob for tenant {$this->tenantId} has finished.");
+        Log::info("['end'][$end_datetime]: UpdateEnrollementMoocJob for tenant {$this->tenantId} has finished.");
     }
 }

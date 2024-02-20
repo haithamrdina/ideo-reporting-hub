@@ -14,27 +14,23 @@ class DoceboMoocsEnrollements extends Request implements Paginatable
     /**
      * The HTTP method of the request
      */
-    protected $courses;
-    protected $user;
+    protected $course;
     protected Method $method = Method::GET;
-    public function __construct(Array $courses) {
-        $this->courses = $courses;
+    public function __construct(string $course) {
+        $this->course = $course;
     }
     /**
      * The endpoint for the request
      */
     public function resolveEndpoint(): string
     {
-        $courses = '';
-        foreach ($this->courses as $course) {
-            $courses .= 'course_id[]=' . $course . "&";
-        }
-        return '/course/v1/courses/enrollments?'.$courses.'get_cursor=1';
+        return '/course/v1/courses/enrollments?course_id[]='.$this->course;
     }
     protected function defaultQuery(): array
     {
         return [
-            'extra_fields[]' => 'enrollment_time_spent'
+            'extra_fields[]' => 'enrollment_time_spent',
+            'get_cursor' => '1'
         ];
     }
 
