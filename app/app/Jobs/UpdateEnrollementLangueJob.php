@@ -40,20 +40,16 @@ class UpdateEnrollementLangueJob implements ShouldQueue
 
         $tenant = Tenant::find($this->tenantId);
         tenancy()->initialize($tenant);
-            // Initialize all neccessary Service
             $doceboConnector = new DoceboConnector();
             $speexEnrollmentsService = new SpeexEnrollmentsService();
 
             //Define Enrollments Fields
             $fields = config('tenantconfigfields.enrollmentfields');
             $enrollFields = $speexEnrollmentsService->getEnrollmentsFields($fields);
-
-            $modulesDoceboIds = Module::where(['category'=> 'SPEEX', 'status' => CourseStatusEnum::ACTIVE])->pluck('docebo_id')->toArray();
             $learners = Learner::whereNotNull('speex_id')->get();
-
             foreach( $learners as $learner){
                 // GET LEARNER Enrollements
-                $request = new DoceboSpeexEnrollements($modulesDoceboIds, $learner->docebo_id);
+                $request = new DoceboSpeexEnrollements($learner->docebo_id);
                 $mdenrollsResponses = $doceboConnector->paginate($request);
                 $results = [];
                 foreach($mdenrollsResponses as $md){
@@ -62,7 +58,7 @@ class UpdateEnrollementLangueJob implements ShouldQueue
                 }
                 // BATCH INSERT LEARNER DATA
                 if(!empty($results)){
-                    $speexEnrollmentsService->batchInsert($results, $enrollFields);
+                    $speexEnrollmentsService->batchInsert(array_filter($results), $enrollFields);
                 }
             }
         tenancy()->end();

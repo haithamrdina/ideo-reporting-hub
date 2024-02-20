@@ -41,13 +41,15 @@ class DailyUpdateData extends Command
      */
     public function handle()
     {
+        $start_datetime = date('Y-m-d H:i:s');
+        Log::info("[$start_datetime]: Update Data for all tenants has finished.");
+
         Tenant::all()->runForEach(function () {
+            $id = tenant('id');
             $userFieldsService = new UserFieldsService();
             $userfields = config('tenantconfigfields.userfields');
-            $id = tenant('id');
 
-            $start_datetime = date('Y-m-d H:i:s');
-            Log::info("[$start_datetime]: UpdateTicketJob for tenant {$id} has started.");
+            Log::info("Update process started for tenant {$id}");
 
             UpdateLearnerJob::withChain([
                 new UpdateCallJob($id),
@@ -61,8 +63,6 @@ class DailyUpdateData extends Command
                 new UpdateEnrollementsLpsJob($id),
             ])->dispatch($userFieldsService, $id, $userfields);
 
-            $end_datetime = date('Y-m-d H:i:s');
-            Log::info("[$end_datetime]: UpdateTicketJob for tenant {$id} has started.");
         });
 
         $end_datetime = date('Y-m-d H:i:s');

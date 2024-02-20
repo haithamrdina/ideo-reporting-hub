@@ -54,21 +54,20 @@ WORKDIR /var/www/app
 
 #install supervisor 
 RUN apt-get install -y supervisor
+# copy laravel-worker file to the conf.d directory
 COPY ./workers/laravel-worker.conf /etc/supervisor/conf.d/laravel-worker.conf
-RUN service supervisor start && supervisorctl reread && supervisorctl update && supervisorctl start laravel-worker:*
-RUN service supervisor start
+# give execution rights on the cron job
+RUN chown www-data:www-data /etc/supervisor/conf.d/laravel-worker.conf
+RUN chmod 0644 /etc/supervisor/conf.d/laravel-worker.conf
 
-# Cron config
+#install cron
 RUN apt-get update && apt-get -y install cron && apt-get install nano
-
-# Copy laravel-cron file to the cron.d directory
+# copy laravel-cron file to the cron.d directory
 COPY ./tasks/laravel-cron /etc/cron.d/laravel-cron
- 
-# Give execution rights on the cron job
-RUN chown root:root /etc/cron.d/laravel-cron
+# give execution rights on the cron job
+RUN chown www-data:www-data /etc/cron.d/laravel-cron
 RUN chmod 0644 /etc/cron.d/laravel-cron
-
 # Apply cron job
 RUN crontab /etc/cron.d/laravel-cron
- 
-CMD ["sh", "-c", "apache2-foreground & service supervisor start & cron -f"]
+
+CMD ["sh", "-c", "apache2-foreground && supervisorctl reread && supervisorctl update && supervisorctl start laravel-worker:* && service cron start && cron -f"]

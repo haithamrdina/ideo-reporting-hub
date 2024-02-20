@@ -36,60 +36,7 @@ class EventServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        $this->app->bind(
-            UpdateGroupJob::class .'@handle',
-            fn($job) => $job->handle()
-        );
 
-        $this->app->bind(
-            UpdateLearnerJob::class .'@handle',
-            fn($job) => $job->handle()
-        );
-
-        $this->app->bind(
-            UpdateLpJob::class .'@handle',
-            fn($job) => $job->handle()
-        );
-
-        $this->app->bind(
-            UpdateModuleJob::class .'@handle',
-            fn($job) => $job->handle()
-        );
-
-        $this->app->bind(
-            UpdateMoocJob::class .'@handle',
-            fn($job) => $job->handle()
-        );
-
-        $this->app->bind(
-            UpdateTicketJob::class .'@handle',
-            fn($job) => $job->handle()
-        );
-
-        $this->app->bind(
-            UpdateCallJob::class .'@handle',
-            fn($job) => $job->handle()
-        );
-
-        $this->app->bind(
-            UpdateEnrollementModuleJob::class .'@handle',
-            fn($job) => $job->handle()
-        );
-
-        $this->app->bind(
-            UpdateEnrollementLangueJob::class .'@handle',
-            fn($job) => $job->handle()
-        );
-
-        $this->app->bind(
-            UpdateEnrollementMoocJob::class .'@handle',
-            fn($job) => $job->handle()
-        );
-
-        $this->app->bind(
-            UpdateEnrollementsLpsJob::class .'@handle',
-            fn($job) => $job->handle()
-        );
     }
 
     /**

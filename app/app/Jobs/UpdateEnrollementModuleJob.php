@@ -40,36 +40,23 @@ class UpdateEnrollementModuleJob implements ShouldQueue
 
         $tenant = Tenant::find($this->tenantId);
         tenancy()->initialize($tenant);
-             // Initialize all neccessary Service
             $doceboConnector = new DoceboConnector();
             $moduleEnrollmentsService = new ModuleEnrollmentsService();
 
-            //Define Enrollments Fields
             $fields = config('tenantconfigfields.enrollmentfields');
             $enrollFields = $moduleEnrollmentsService->getEnrollmentsFields($fields);
-
-            $modulesDoceboIds = Module::whereIn('category', ['CEGOS','ENI', 'SM'])->pluck('docebo_id')->toArray();
             $learners = Learner::all();
             foreach( $learners as $learner){
-                // GET LEARNER Enrollements
-                $request = new DoceboCoursesEnrollements($modulesDoceboIds, $learner->docebo_id);
+                $request = new DoceboCoursesEnrollements($learner->docebo_id);
+                $mdenrollsResponses = $doceboConnector->send($request);
                 $mdenrollsResponses = $doceboConnector->paginate($request);
                 $results = [];
                 foreach($mdenrollsResponses as $md){
                     $data = $md->dto();
                     $results = array_merge($results, $data);
                 }
-                // BATCH INSERT LEARNER DATA
                 if(!empty($results)){
-                    if(count($results) > 1000)
-                    {
-                        $batchData = array_chunk(array_filter($results), 1000);
-                        foreach($batchData as $data){
-                            $moduleEnrollmentsService->batchInsert($data, $enrollFields);
-                        }
-                    }else{
-                        $moduleEnrollmentsService->batchInsert($results, $enrollFields);
-                    }
+                    $moduleEnrollmentsService->batchInsert(array_filter($results), $enrollFields);
                 }
             }
         tenancy()->end();

@@ -2,6 +2,7 @@
 
 namespace App\Http\Integrations\Docebo\Requests;
 
+use App\Enums\CourseStatusEnum;
 use App\Http\Integrations\Docebo\DoceboConnector;
 use App\Http\Integrations\Speex\Requests\SpeexUserArticleResult;
 use App\Http\Integrations\Speex\SpeexConnector;
@@ -18,11 +19,9 @@ class DoceboSpeexEnrollements extends Request implements Paginatable
     /**
      * The HTTP method of the request
      */
-    protected $courses;
     protected $user;
     protected Method $method = Method::GET;
-    public function __construct(Array $courses, string $user) {
-        $this->courses = $courses;
+    public function __construct(string $user) {
         $this->user = $user;
     }
     /**
@@ -30,11 +29,7 @@ class DoceboSpeexEnrollements extends Request implements Paginatable
      */
     public function resolveEndpoint(): string
     {
-        $courses = '';
-        foreach ($this->courses as $course) {
-            $courses .= 'course_id[]=' . $course . "&";
-        }
-        return '/course/v1/courses/enrollments?'.$courses . 'user_id[]=' .$this->user ;
+        return '/course/v1/courses/enrollments?user_id[]=' .$this->user ;
     }
     protected function defaultQuery(): array
     {
@@ -49,27 +44,29 @@ class DoceboSpeexEnrollements extends Request implements Paginatable
         $items = $response->json('data.items');
         $filteredItems = array_map(function ($item){
             $learner = Learner::where('docebo_id' ,  $item['user_id'])->first();
-            $module = Module::where('docebo_id' , $item['course_id'])->first();
-            $status = $item['enrollment_status'];
-            $speexData = $this->getSpeexData($module, $learner);
-            $dataTiming = $this->getTimingData($item, $status, $speexData);
-            return [
-                'learner_docebo_id' => $learner->docebo_id,
-                'module_docebo_id' => $module->docebo_id,
-                'status' => $status,
-                'enrollment_created_at' => $item['enrollment_created_at'],
-                'enrollment_updated_at' => $item['enrollment_date_last_updated'],
-                'enrollment_completed_at' => $item['enrollment_completion_date'],
-                'niveau' => $speexData['niveau'],
-                'language' => $module->language,
-                'session_time' => $dataTiming->session_time,
-                'cmi_time' => $dataTiming->cmi_time,
-                'calculated_time' => $dataTiming->calculated_time,
-                'recommended_time' => $dataTiming->recommended_time,
-                'project_id' => $learner->project->id,
-                'group_id' => $learner->group->id,
+            $module = Module::where('docebo_id' , $item['course_id'])->where('status' , CourseStatusEnum::ACTIVE)->where('category', 'SPEEX')->first();
+            if($module){
+                $status = $item['enrollment_status'];
+                $speexData = $this->getSpeexData($module, $learner);
+                $dataTiming = $this->getTimingData($item, $status, $speexData);
+                return [
+                    'learner_docebo_id' => $learner->docebo_id,
+                    'module_docebo_id' => $module->docebo_id,
+                    'status' => $status,
+                    'enrollment_created_at' => $item['enrollment_created_at'],
+                    'enrollment_updated_at' => $item['enrollment_date_last_updated'],
+                    'enrollment_completed_at' => $item['enrollment_completion_date'],
+                    'niveau' => $speexData['niveau'],
+                    'language' => $module->language,
+                    'session_time' => $dataTiming->session_time,
+                    'cmi_time' => $dataTiming->cmi_time,
+                    'calculated_time' => $dataTiming->calculated_time,
+                    'recommended_time' => $dataTiming->recommended_time,
+                    'project_id' => $learner->project->id,
+                    'group_id' => $learner->group->id,
 
-            ];
+                ];
+            }
         }, $items);
 
         return $filteredItems;

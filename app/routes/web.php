@@ -38,50 +38,34 @@ use Illuminate\Support\Facades\Route;
 |
 */
 Route::get('/test', function(){
-   $tenant = Tenant::find('523badfa-3d62-475c-bbe8-4fdf2bcaed1b');
-
+    $tenant = Tenant::find('85caeca1-a182-424b-a776-7cf5c1e2a5af');
     tenancy()->initialize($tenant);
+
     $doceboConnector = new DoceboConnector();
     $moduleEnrollmentsService = new ModuleEnrollmentsService();
 
-    //Define Enrollments Fields
     $fields = config('tenantconfigfields.enrollmentfields');
     $enrollFields = $moduleEnrollmentsService->getEnrollmentsFields($fields);
-
-    $modulesDoceboIds = Module::whereIn('category', ['CEGOS','ENI', 'SM'])->pluck('docebo_id')->toArray();
     $learners = Learner::all();
-    $i=0;
     foreach( $learners as $learner){
-        $i++;
-        // GET LEARNER Enrollements
-        $request = new DoceboCoursesEnrollements($modulesDoceboIds, $learner->docebo_id);
+        $request = new DoceboCoursesEnrollements($learner->docebo_id);
+        $mdenrollsResponses = $doceboConnector->send($request);
         $mdenrollsResponses = $doceboConnector->paginate($request);
         $results = [];
         foreach($mdenrollsResponses as $md){
             $data = $md->dto();
             $results = array_merge($results, $data);
         }
-        if($i==3){
-            dd($results);
+        if(!empty($results)){
+            $moduleEnrollmentsService->batchInsert(array_filter($results), $enrollFields);
         }
-        // BATCH INSERT LEARNER DATA
-       /* if(!empty($results)){
-            if(count($results) > 1000)
-            {
-                $batchData = array_chunk(array_filter($results), 1000);
-                foreach($batchData as $data){
-                    $moduleEnrollmentsService->batchInsert($data, $enrollFields);
-                }
-            }else{
-                $moduleEnrollmentsService->batchInsert($results, $enrollFields);
-            }
-        }*/
     }
     tenancy()->end();
 });
 
+
 Route::get('/speex', function(){
-    $tenant = Tenant::find('7473019a-0a48-4db7-ac7d-7e84a9aef424');
+    $tenant = Tenant::find('85caeca1-a182-424b-a776-7cf5c1e2a5af');
     tenancy()->initialize($tenant);
 
     $doceboConnector = new DoceboConnector();
@@ -90,13 +74,10 @@ Route::get('/speex', function(){
     //Define Enrollments Fields
     $fields = config('tenantconfigfields.enrollmentfields');
     $enrollFields = $speexEnrollmentsService->getEnrollmentsFields($fields);
-
-    $modulesDoceboIds = Module::where(['category'=> 'SPEEX', 'status' => CourseStatusEnum::ACTIVE])->pluck('docebo_id')->toArray();
     $learners = Learner::whereNotNull('speex_id')->get();
-
     foreach( $learners as $learner){
         // GET LEARNER Enrollements
-        $request = new DoceboSpeexEnrollements($modulesDoceboIds, $learner->docebo_id);
+        $request = new DoceboSpeexEnrollements($learner->docebo_id);
         $mdenrollsResponses = $doceboConnector->paginate($request);
         $results = [];
         foreach($mdenrollsResponses as $md){
@@ -105,7 +86,7 @@ Route::get('/speex', function(){
         }
         // BATCH INSERT LEARNER DATA
         if(!empty($results)){
-            $speexEnrollmentsService->batchInsert($results, $enrollFields);
+            $speexEnrollmentsService->batchInsert(array_filter($results), $enrollFields);
         }
     }
     tenancy()->end();
@@ -258,4 +239,3 @@ Route::name('admin.')->group(function () {
 
     });
 });
-
