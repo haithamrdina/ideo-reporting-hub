@@ -63,7 +63,7 @@ RUN chmod 0644 /etc/supervisor/conf.d/laravel-worker.conf
 #install cron
 RUN apt-get update && apt-get -y install cron && apt-get install nano
 # copy laravel-cron file to the cron.d directory
-COPY ./tasks/laravel-cron /etc/cron.d/laravel-cron
+COPY ./schedulers/laravel-cron /etc/cron.d/laravel-cron
 # give execution rights on the cron job
 RUN chown www-data:www-data /etc/cron.d/laravel-cron
 RUN chmod 0644 /etc/cron.d/laravel-cron
