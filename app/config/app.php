@@ -170,10 +170,10 @@ return [
         App\Providers\AuthServiceProvider::class,
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
+        App\Providers\HorizonServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         App\Providers\TenancyServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
-        iamfarhad\LaravelRabbitMQ\LaravelRabbitQueueServiceProvider::class,
     ])->toArray(),
 
     /*

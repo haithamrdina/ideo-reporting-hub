@@ -36,7 +36,19 @@ class EventServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-
+        $this->bindJobs([
+            UpdateGroupJob::class,
+            UpdateLearnerJob::class,
+            UpdateCallJob::class,
+            UpdateTicketJob::class,
+            UpdateLpJob::class,
+            UpdateModuleJob::class,
+            UpdateMoocJob::class,
+            UpdateEnrollementMoocJob::class,
+            UpdateEnrollementLangueJob::class,
+            UpdateEnrollementModuleJob::class,
+            UpdateEnrollementsLpsJob::class,
+        ]);
     }
 
     /**
@@ -45,5 +57,16 @@ class EventServiceProvider extends ServiceProvider
     public function shouldDiscoverEvents(): bool
     {
         return false;
+    }
+
+
+    protected function bindJobs(array $jobs)
+    {
+        foreach ($jobs as $job) {
+            $this->app->bind(
+                $job . '@handle',
+                fn($job) => $job->handle()
+            );
+        }
     }
 }

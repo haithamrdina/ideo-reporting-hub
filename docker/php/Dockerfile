@@ -60,15 +60,17 @@ RUN apt-get update && apt-get -y install cron && apt-get install nano
 
 # copy Laravel worker configuration
 COPY ./workers/laravel-worker.conf /etc/supervisor/conf.d/laravel-worker.conf
-
+COPY ./workers/laravel-horizon.conf /etc/supervisor/conf.d/laravel-horizon.conf
 # copy Laravel cron job configuration
 COPY ./schedulers/laravel-cron /etc/cron.d/laravel-cron
 
 # Set permissions for configuration files
 RUN chown www-data:www-data /etc/supervisor/conf.d/laravel-worker.conf \
     && chmod 644 /etc/supervisor/conf.d/laravel-worker.conf \
+    && chown www-data:www-data /etc/supervisor/conf.d/laravel-horizon.conf  \
+    && chmod 644 /etc/supervisor/conf.d/laravel-horizon.conf  \
     && chown www-data:www-data /etc/cron.d/laravel-cron \
-    && chmod 644 /etc/cron.d/laravel-cron
+    && chmod 644 /etc/cron.d/laravel-cron 
 
 # apply cron job
 RUN crontab /etc/cron.d/laravel-cron
@@ -76,9 +78,11 @@ RUN crontab /etc/cron.d/laravel-cron
 # create log directories and set permissions
 RUN mkdir -p /var/www/app/storage/logs \
     && touch /var/www/app/storage/logs/worker.log \
+    && touch /var/www/app/storage/logs/horizon.log \
     && touch /var/www/app/storage/logs/cron.log \
     && chown -R www-data:www-data /var/www/app/storage/logs \
     && chmod 664 /var/www/app/storage/logs/worker.log \
+    && chmod 664 /var/www/app/storage/logs/horizon.log \
     && chmod 664 /var/www/app/storage/logs/cron.log
 
 # set working directory
