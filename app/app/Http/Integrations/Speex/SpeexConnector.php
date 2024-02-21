@@ -29,17 +29,6 @@ class SpeexConnector extends Connector
         ];
     }
 
-
-    /**
-     * Default HTTP client options
-     */
-    protected function defaultConfig(): array
-    {
-        return [
-            'timeout' => 15,
-        ];
-    }
-
     protected function defaultAuth(): QueryAuthenticator
     {
         return new QueryAuthenticator('apiKey', 'c170979b0d8786ef3d4b5510b9814913');
