@@ -11,6 +11,8 @@ class SpeexConnector extends Connector
 {
     use AcceptsJson;
 
+    public ?int $tries = 3;
+    public ?int $retryInterval = 1000;
     /**
      * The Base URL of the API
      */
