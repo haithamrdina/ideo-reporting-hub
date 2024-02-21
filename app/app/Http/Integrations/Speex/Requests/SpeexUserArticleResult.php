@@ -14,9 +14,9 @@ class SpeexUserArticleResult extends Request implements HasBody
     use HasJsonBody;
     use HasTimeout;
 
-    protected int $connectTimeout = 10;
+    protected int $connectTimeout = 60;
 
-    protected int $requestTimeout = 30;
+    protected int $requestTimeout = 120;
     /**
      * The HTTP method of the request
      */
