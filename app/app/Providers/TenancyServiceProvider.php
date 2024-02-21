@@ -7,7 +7,6 @@ namespace App\Providers;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
-use Livewire\Livewire;
 use Stancl\JobPipeline\JobPipeline;
 use Stancl\Tenancy\Controllers\TenantAssetsController;
 use Stancl\Tenancy\Events;
@@ -128,15 +127,6 @@ class TenancyServiceProvider extends ServiceProvider
             'cin' => 'tenantconfigfields.userfields.cin',
 
         ];
-
-        Livewire::setUpdateRoute(function ($handle) {
-            return Route::post('/livewire/update', $handle)
-                ->middleware(
-                    'web',
-                    'universal',
-                    InitializeTenancyByDomainOrSubdomain::class, // or whatever tenancy middleware you use
-                );
-        });
     }
 
     protected function bootEvents()

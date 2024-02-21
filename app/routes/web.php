@@ -27,7 +27,7 @@ use App\Services\SpeexEnrollmentsService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Saloon\Exceptions\Request\Statuses\InternalServerErrorException;
-
+use OpenAI\Laravel\Facades\OpenAI;
 /*
 |--------------------------------------------------------------------------
 | Web Routes

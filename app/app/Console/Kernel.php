@@ -17,7 +17,7 @@ class Kernel extends ConsoleKernel
         $schedule
             ->command('app:daily-update-data')
             ->dailyAt('00:00')
-            ->appendOutputTo("daily-update-data.log");
+            ->appendOutputTo(storage_path('logs/daily-update-data.log'));
     }
 
     /**
