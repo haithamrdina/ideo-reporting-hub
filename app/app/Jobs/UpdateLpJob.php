@@ -27,6 +27,7 @@ class UpdateLpJob implements ShouldQueue
     public function __construct(string $tenantId)
     {
         $this->tenantId = $tenantId;
+        $this->onQueue('default');
     }
 
 
