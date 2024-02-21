@@ -7,10 +7,16 @@ use Saloon\Enums\Method;
 use Saloon\Http\Request;
 use Saloon\Http\Response;
 use Saloon\Traits\Body\HasJsonBody;
+use Saloon\Traits\Plugins\HasTimeout;
 
 class SpeexUserArticleResult extends Request implements HasBody
 {
     use HasJsonBody;
+    use HasTimeout;
+
+    protected int $connectTimeout = 60;
+
+    protected int $requestTimeout = 120;
     /**
      * The HTTP method of the request
      */
