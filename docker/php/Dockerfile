@@ -18,12 +18,14 @@ RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf \
     &&  docker-php-ext-configure \
     intl \
     &&  docker-php-ext-install \
-    pdo pdo_mysql opcache intl zip calendar dom mbstring gd xsl exif \
-    \
-    &&  pecl install apcu && docker-php-ext-enable apcu 
+    pdo pdo_mysql opcache intl zip calendar dom mbstring gd xsl exif; 
 
-RUN docker-php-ext-configure pcntl --enable-pcntl \
-    && docker-php-ext-install pcntl;
+RUN pecl install apcu \
+    && docker-php-ext-enable apcu \
+    && echo "apc.enabled=1" >> /usr/local/etc/php/conf.d/apcu.ini \
+    && echo "apc.enable_cli=1" >> /usr/local/etc/php/conf.d/apcu.ini;
+
+RUN docker-php-ext-install pcntl && docker-php-ext-enable pcntl;
 RUN docker-php-ext-install sockets;
 RUN pecl install redis && docker-php-ext-enable redis;
 # Install node    
@@ -59,15 +61,15 @@ RUN apt-get install -y supervisor
 RUN apt-get update && apt-get -y install cron && apt-get install nano
 
 # copy Laravel worker configuration
-COPY ./workers/laravel-worker.conf /etc/supervisor/conf.d/laravel-worker.conf
+# COPY ./workers/laravel-worker.conf /etc/supervisor/conf.d/laravel-worker.conf
 COPY ./workers/laravel-horizon.conf /etc/supervisor/conf.d/laravel-horizon.conf
 # copy Laravel cron job configuration
 COPY ./schedulers/laravel-cron /etc/cron.d/laravel-cron
 
 # Set permissions for configuration files
-RUN chown www-data:www-data /etc/supervisor/conf.d/laravel-worker.conf \
-    && chmod 644 /etc/supervisor/conf.d/laravel-worker.conf \
-    && chown www-data:www-data /etc/supervisor/conf.d/laravel-horizon.conf  \
+# RUN chown www-data:www-data /etc/supervisor/conf.d/laravel-worker.conf \
+#   && chmod 644 /etc/supervisor/conf.d/laravel-worker.conf \
+RUN chown www-data:www-data /etc/supervisor/conf.d/laravel-horizon.conf  \
     && chmod 644 /etc/supervisor/conf.d/laravel-horizon.conf  \
     && chown www-data:www-data /etc/cron.d/laravel-cron \
     && chmod 644 /etc/cron.d/laravel-cron 
