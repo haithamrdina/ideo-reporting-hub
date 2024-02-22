@@ -20,11 +20,10 @@ RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf \
     &&  docker-php-ext-install \
     pdo pdo_mysql opcache intl zip calendar dom mbstring gd xsl exif; 
 
-RUN mkdir -p /usr/src/php/ext/apcu && curl -fsSL https://pecl.php.net/get/apcu | tar xvz -C "/usr/src/php/ext/apcu" --strip 1 && docker-php-ext-install apcu
-RUN pecl install apcu \
+RUN pecl install APCu \
     && docker-php-ext-enable apcu \
     && echo "apc.enabled=1" >> /usr/local/etc/php/conf.d/apcu.ini \
-   && echo "apc.enable_cli=1" >> /usr/local/etc/php/conf.d/apcu.ini;
+    && echo "apc.enable_cli=1" >> /usr/local/etc/php/conf.d/apcu.ini;
 
 
 RUN docker-php-ext-install pcntl && docker-php-ext-enable pcntl;
