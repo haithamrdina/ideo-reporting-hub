@@ -22,6 +22,10 @@ RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf \
 
 # Install required PHP extensions
 
+# Update PEAR and PECL channels
+RUN pear update-channels \
+    && pecl update-channels
+
 RUN pecl install -o -f apcu \
     && rm -rf /tmp/pear \ 
     && docker-php-ext-enable apcu
