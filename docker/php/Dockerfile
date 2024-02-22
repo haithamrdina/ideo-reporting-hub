@@ -25,7 +25,7 @@ RUN pear update-channels \
     && pecl update-channels
 
 # Install required PHP extensions
-RUN pecl install APCu \
+RUN pecl install apcu \
     && docker-php-ext-enable apcu \
     && echo "apc.enabled=1" >> /usr/local/etc/php/conf.d/apcu.ini \
     && echo "apc.enable_cli=1" >> /usr/local/etc/php/conf.d/apcu.ini \

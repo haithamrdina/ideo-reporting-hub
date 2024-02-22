@@ -43,35 +43,34 @@ class DoceboSpeexEnrollements extends Request implements Paginatable
     {
         $items = $response->json('data.items');
         $filteredItems = array_map(function ($item){
-           if($item){
-               $learner = Learner::where('docebo_id' ,  $item['user_id'])->first();
-               $module = Module::where('docebo_id' , $item['course_id'])->where('status' , CourseStatusEnum::ACTIVE)->where('category', 'SPEEX')->first();
-               if($module){
-                   $status = $item['enrollment_status'];
-                   $speexData = $this->getSpeexData($module, $learner);
-                   $dataTiming = $this->getTimingData($item, $status, $speexData);
-                   return [
-                       'learner_docebo_id' => $learner->docebo_id,
-                       'module_docebo_id' => $module->docebo_id,
-                       'status' => $status,
-                       'enrollment_created_at' => $item['enrollment_created_at'],
-                       'enrollment_updated_at' => $item['enrollment_date_last_updated'],
-                       'enrollment_completed_at' => $item['enrollment_completion_date'],
-                       'niveau' => $speexData['niveau'],
-                       'language' => $module->language,
-                       'session_time' => $dataTiming->session_time,
-                       'cmi_time' => $dataTiming->cmi_time,
-                       'calculated_time' => $dataTiming->calculated_time,
-                       'recommended_time' => $dataTiming->recommended_time,
-                       'project_id' => $learner->project->id,
-                       'group_id' => $learner->group->id,
-
-                   ];
-               }
-           }
+            if(!empty($item)){
+                $learner = Learner::where('docebo_id' ,  $item['user_id'])->first();
+                $module = Module::where('docebo_id' , $item['course_id'])->where('status' , CourseStatusEnum::ACTIVE)->where('category', 'SPEEX')->first();
+                if($module){
+                    dump($module);
+                    /*$status = $item['enrollment_status'];
+                    $speexData = $this->getSpeexData($module, $learner);
+                    $dataTiming = $this->getTimingData($item, $status, $speexData);
+                    return [
+                        'learner_docebo_id' => $learner->docebo_id,
+                        'module_docebo_id' => $module->docebo_id,
+                        'status' => $status,
+                        'enrollment_created_at' => $item['enrollment_created_at'],
+                        'enrollment_updated_at' => $item['enrollment_date_last_updated'],
+                        'enrollment_completed_at' => $item['enrollment_completion_date'],
+                        'niveau' => $speexData['niveau'],
+                        'language' => $module->language,
+                        'session_time' => $dataTiming->session_time,
+                        'cmi_time' => $dataTiming->cmi_time,
+                        'calculated_time' => $dataTiming->calculated_time,
+                        'recommended_time' => $dataTiming->recommended_time,
+                        'project_id' => $learner->project->id,
+                        'group_id' => $learner->group->id,
+                    ];*/
+                }
+            }
         }, $items);
-
-        return array_filter($filteredItems);
+        return $filteredItems;
     }
 
     public function getSpeexData($module, $learner){

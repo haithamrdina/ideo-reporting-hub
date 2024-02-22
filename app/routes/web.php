@@ -13,6 +13,8 @@ use App\Http\Integrations\Docebo\Requests\DoceboGroupeList;
 use App\Http\Integrations\Docebo\Requests\DoceboLpsEnrollements;
 use App\Http\Integrations\Docebo\Requests\DoceboMoocsEnrollements;
 use App\Http\Integrations\Docebo\Requests\DoceboSpeexEnrollements;
+use App\Http\Integrations\Speex\Requests\SpeexUserArticleResult;
+use App\Http\Integrations\Speex\SpeexConnector;
 use App\Models\Group;
 use App\Models\Learner;
 use App\Models\Lp;
@@ -43,6 +45,12 @@ use OpenAI\Laravel\Facades\OpenAI;
 /**
  *  start TEST FUNCTION
  */
+Route::get('test-speex-data' , function(){
+    $speexConnector = new SpeexConnector();
+    $speexResponse = $speexConnector->send(new SpeexUserArticleResult('3889260', '388661'));
+    dd($speexResponse);
+    return $speexResponse->dto();
+});
 Route::get('test-cmi', function(){
     $cmi_time = 0;
     try {
@@ -100,9 +108,9 @@ Route::get('/test-speex', function(){
     $fields = config('tenantconfigfields.enrollmentfields');
     $enrollFields = $speexEnrollmentsService->getEnrollmentsFields($fields);
     $learners = Learner::whereNotNull('speex_id')->get();
-    foreach( $learners as $learner){
+    //foreach( $learners as $learner){
         // GET LEARNER Enrollements
-        $request = new DoceboSpeexEnrollements('3889260');
+        $request = new DoceboSpeexEnrollements('65357');
         $mdenrollsResponses = $doceboConnector->paginate($request);
         $results = [];
         foreach($mdenrollsResponses as $md){
@@ -114,7 +122,7 @@ Route::get('/test-speex', function(){
         /*if(!empty($results)){
             $speexEnrollmentsService->batchInsert(array_filter($results), $enrollFields);
         }*/
-    }
+    //}
     die();
     tenancy()->end();
 });
