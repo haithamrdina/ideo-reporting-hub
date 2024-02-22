@@ -183,7 +183,7 @@ return [
         'supervisor-1' => [
             'connection' => 'rabbitmq',
             'queue' => ['default'],
-            'balance' => 'auto',
+            'balance' => 'simple',
             'autoScalingStrategy' => 'time',
             'maxProcesses' => 3,
             'memory' => 128,
@@ -195,15 +195,21 @@ return [
     'environments' => [
         'production' => [
             'supervisor-1' => [
-                'maxProcesses' => 10,
-                'balanceMaxShift' => 1,
-                'balanceCooldown' => 3,
+                'connection' => 'rabbitmq',
+                'queue' => ['default'],
+                'balance' => 'simple',
+                'processes' => 10,
+                'tries' => 3,
             ],
         ],
 
         'local' => [
             'supervisor-1' => [
-                'maxProcesses' => 3,
+                'connection' => 'rabbitmq',
+                'queue' => ['default'],
+                'balance' => 'simple',
+                'processes' => 3,
+                'tries' => 3,
             ],
         ],
     ],
