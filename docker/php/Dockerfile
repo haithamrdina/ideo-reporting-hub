@@ -26,10 +26,13 @@ RUN pecl install -o -f apcu \
     && rm -rf /tmp/pear \ 
     && docker-php-ext-enable apcu
 
+RUN docker-php-ext-install pcntl   \
+    && docker-php-ext-enable pcntl 
+
 RUN pecl install -o -f redis \
     && rm -rf /tmp/pear \ 
     && docker-php-ext-enable redis
-    
+
 # Install node    
 RUN set -uex; \
     apt-get update; \
