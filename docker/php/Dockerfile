@@ -20,15 +20,21 @@ RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf \
     &&  docker-php-ext-install \
     pdo pdo_mysql opcache intl zip calendar dom mbstring gd xsl exif; 
 
+# Update PEAR and PECL channels
+RUN pear update-channels \
+    && pecl update-channels
+
+# Install required PHP extensions
 RUN pecl install APCu \
     && docker-php-ext-enable apcu \
     && echo "apc.enabled=1" >> /usr/local/etc/php/conf.d/apcu.ini \
-    && echo "apc.enable_cli=1" >> /usr/local/etc/php/conf.d/apcu.ini;
+    && echo "apc.enable_cli=1" >> /usr/local/etc/php/conf.d/apcu.ini \
+    && docker-php-ext-install pcntl \
+    && docker-php-ext-enable pcntl \
+    && docker-php-ext-install sockets \
+    && pecl install redis \
+    && docker-php-ext-enable redis
 
-
-RUN docker-php-ext-install pcntl && docker-php-ext-enable pcntl;
-RUN docker-php-ext-install sockets;
-RUN pecl install redis && docker-php-ext-enable redis;
 # Install node    
 RUN set -uex; \
     apt-get update; \
@@ -46,7 +52,7 @@ RUN set -uex; \
 RUN apt update && apt install tzdata -y
 ENV TZ="Africa/Casablanca"
 
-#setup dependencies in php.ini
+# Setup dependencies in php.ini
 RUN cd /usr/local/etc/php/conf.d/ && echo 'memory_limit = -1' >> /usr/local/etc/php/conf.d/docker-php-ram-limit.ini
 RUN cd /usr/local/etc/php/conf.d/ && echo 'max_input_vars = 10000' >> /usr/local/etc/php/conf.d/docker-php-ram-limit.ini
 RUN cd /usr/local/etc/php/conf.d/ && echo 'upload_max_filesize = 250M' >> /usr/local/etc/php/conf.d/docker-php-ram-limit.ini
@@ -55,21 +61,20 @@ RUN cd /usr/local/etc/php/conf.d/ && echo 'max_execution_time = -1' >> /usr/loca
 
 WORKDIR /var/www/app
 
-#install supervisor 
+# Install supervisor 
 RUN apt-get install -y supervisor
 
-# install cron 
+# Install cron 
 RUN apt-get update && apt-get -y install cron && apt-get install nano
 
-# copy Laravel worker configuration
-# COPY ./workers/laravel-worker.conf /etc/supervisor/conf.d/laravel-worker.conf
+# Copy Laravel worker configuration
 COPY ./workers/laravel-horizon.conf /etc/supervisor/conf.d/laravel-horizon.conf
-# copy Laravel cron job configuration
+
+# Copy Laravel cron job configuration
 COPY ./schedulers/laravel-cron /etc/cron.d/laravel-cron
 
 # Set permissions for configuration files
-# RUN chown www-data:www-data /etc/supervisor/conf.d/laravel-worker.conf \
-#   && chmod 644 /etc/supervisor/conf.d/laravel-worker.conf \
+
 RUN chown www-data:www-data /etc/supervisor/conf.d/laravel-horizon.conf  \
     && chmod 644 /etc/supervisor/conf.d/laravel-horizon.conf  \
     && chown www-data:www-data /etc/cron.d/laravel-cron \
@@ -80,11 +85,9 @@ RUN crontab /etc/cron.d/laravel-cron
 
 # create log directories and set permissions
 RUN mkdir -p /var/www/app/storage/logs \
-    && touch /var/www/app/storage/logs/worker.log \
     && touch /var/www/app/storage/logs/horizon.log \
     && touch /var/www/app/storage/logs/cron.log \
     && chown -R www-data:www-data /var/www/app/storage/logs \
-    && chmod 664 /var/www/app/storage/logs/worker.log \
     && chmod 664 /var/www/app/storage/logs/horizon.log \
     && chmod 664 /var/www/app/storage/logs/cron.log
 

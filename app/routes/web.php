@@ -90,7 +90,7 @@ Route::get('/test-module', function(){
     tenancy()->end();
 });
 Route::get('/test-speex', function(){
-    $tenant = Tenant::find('85caeca1-a182-424b-a776-7cf5c1e2a5af');
+    $tenant = Tenant::find('54923e49-d845-4a7a-a595-ff704b1f88e2');
     tenancy()->initialize($tenant);
 
     $doceboConnector = new DoceboConnector();
@@ -102,18 +102,20 @@ Route::get('/test-speex', function(){
     $learners = Learner::whereNotNull('speex_id')->get();
     foreach( $learners as $learner){
         // GET LEARNER Enrollements
-        $request = new DoceboSpeexEnrollements($learner->docebo_id);
+        $request = new DoceboSpeexEnrollements('3889260');
         $mdenrollsResponses = $doceboConnector->paginate($request);
         $results = [];
         foreach($mdenrollsResponses as $md){
             $data = $md->dto();
             $results = array_merge($results, $data);
         }
+        dump($results);
         // BATCH INSERT LEARNER DATA
-        if(!empty($results)){
+        /*if(!empty($results)){
             $speexEnrollmentsService->batchInsert(array_filter($results), $enrollFields);
-        }
+        }*/
     }
+    die();
     tenancy()->end();
 });
 Route::get('/test-mooc', function(){

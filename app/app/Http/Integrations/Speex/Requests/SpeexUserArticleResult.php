@@ -12,11 +12,6 @@ use Saloon\Traits\Plugins\HasTimeout;
 class SpeexUserArticleResult extends Request implements HasBody
 {
     use HasJsonBody;
-    use HasTimeout;
-
-    protected int $connectTimeout = 120;
-
-    protected int $requestTimeout = 120;
     /**
      * The HTTP method of the request
      */
