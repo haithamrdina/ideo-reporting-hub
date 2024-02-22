@@ -20,21 +20,16 @@ RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf \
     &&  docker-php-ext-install \
     pdo pdo_mysql opcache intl zip calendar dom mbstring gd xsl exif; 
 
-# Update PEAR and PECL channels
-RUN pear update-channels \
-    && pecl update-channels
-
 # Install required PHP extensions
-RUN pecl install apcu \
-    && docker-php-ext-enable apcu \
-    && echo "apc.enabled=1" >> /usr/local/etc/php/conf.d/apcu.ini \
-    && echo "apc.enable_cli=1" >> /usr/local/etc/php/conf.d/apcu.ini \
-    && docker-php-ext-install pcntl \
-    && docker-php-ext-enable pcntl \
-    && docker-php-ext-install sockets \
-    && pecl install redis \
-    && docker-php-ext-enable redis
 
+RUN pecl install -o -f apcu \
+    && rm -rf /tmp/pear \ 
+    && docker-php-ext-enable apcu
+
+RUN pecl install -o -f redis \
+    && rm -rf /tmp/pear \ 
+    && docker-php-ext-enable redis
+    
 # Install node    
 RUN set -uex; \
     apt-get update; \

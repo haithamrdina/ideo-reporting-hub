@@ -47,8 +47,7 @@ class DoceboSpeexEnrollements extends Request implements Paginatable
                 $learner = Learner::where('docebo_id' ,  $item['user_id'])->first();
                 $module = Module::where('docebo_id' , $item['course_id'])->where('status' , CourseStatusEnum::ACTIVE)->where('category', 'SPEEX')->first();
                 if($module){
-                    dump($module);
-                    /*$status = $item['enrollment_status'];
+                    $status = $item['enrollment_status'];
                     $speexData = $this->getSpeexData($module, $learner);
                     $dataTiming = $this->getTimingData($item, $status, $speexData);
                     return [
@@ -66,7 +65,7 @@ class DoceboSpeexEnrollements extends Request implements Paginatable
                         'recommended_time' => $dataTiming->recommended_time,
                         'project_id' => $learner->project->id,
                         'group_id' => $learner->group->id,
-                    ];*/
+                    ];
                 }
             }
         }, $items);
@@ -74,9 +73,23 @@ class DoceboSpeexEnrollements extends Request implements Paginatable
     }
 
     public function getSpeexData($module, $learner){
-        $speexConnector = new SpeexConnector();
-        $speexResponse = $speexConnector->send(new SpeexUserArticleResult($learner->speex_id, $module->article_id));
-        return $speexResponse->dto();
+        try {
+            $speexConnector = new SpeexConnector();
+            $speexResponse = $speexConnector->send(new SpeexUserArticleResult($learner->speex_id, $module->article_id));
+            if ($speexResponse->status() == 200) {
+                return $speexResponse->dto();
+            } else {
+                return [
+                    'time' => 0,
+                    'niveau' => NULL
+                ];
+            }
+        } catch (\Exception $e) {
+            return [
+                'time' => 0,
+                'niveau' => NULL
+            ];
+        }
 
     }
 

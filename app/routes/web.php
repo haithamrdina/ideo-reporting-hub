@@ -46,10 +46,26 @@ use OpenAI\Laravel\Facades\OpenAI;
  *  start TEST FUNCTION
  */
 Route::get('test-speex-data' , function(){
-    $speexConnector = new SpeexConnector();
-    $speexResponse = $speexConnector->send(new SpeexUserArticleResult('3889260', '388661'));
-    dd($speexResponse);
-    return $speexResponse->dto();
+    try {
+        $speexConnector = new SpeexConnector();
+        $speexResponse = $speexConnector->send(new SpeexUserArticleResult('3889260', '388661'));
+
+        // Check if the request was successful before accessing response
+        if ($speexResponse->status() == 200) {
+            return $speexResponse->dto();
+        } else {
+            // Handle error response
+            return [
+                'time' => 0,
+                'niveau' => NULL
+            ];
+        }
+    } catch (\Exception $e) {
+        return [
+            'time' => 0,
+            'niveau' => NULL
+        ];
+    }
 });
 Route::get('test-cmi', function(){
     $cmi_time = 0;
@@ -108,21 +124,20 @@ Route::get('/test-speex', function(){
     $fields = config('tenantconfigfields.enrollmentfields');
     $enrollFields = $speexEnrollmentsService->getEnrollmentsFields($fields);
     $learners = Learner::whereNotNull('speex_id')->get();
-    //foreach( $learners as $learner){
+    foreach( $learners as $learner){
         // GET LEARNER Enrollements
-        $request = new DoceboSpeexEnrollements('65357');
+        $request = new DoceboSpeexEnrollements($learner->docebo_id);
         $mdenrollsResponses = $doceboConnector->paginate($request);
         $results = [];
         foreach($mdenrollsResponses as $md){
             $data = $md->dto();
             $results = array_merge($results, $data);
         }
-        dump($results);
         // BATCH INSERT LEARNER DATA
-        /*if(!empty($results)){
+        if(!empty($results)){
             $speexEnrollmentsService->batchInsert(array_filter($results), $enrollFields);
-        }*/
-    //}
+        }
+    }
     die();
     tenancy()->end();
 });
