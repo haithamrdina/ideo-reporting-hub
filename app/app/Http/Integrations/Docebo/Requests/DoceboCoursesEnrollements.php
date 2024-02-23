@@ -53,7 +53,7 @@ class DoceboCoursesEnrollements extends Request implements Paginatable
                     'learner_docebo_id' => $learner->docebo_id,
                     'module_docebo_id' => $module->docebo_id,
                     'status' => $status,
-                    'enrollment_created_at' => $item['enrollment_created_at'],
+                    'enrollment_created_at' => $item['enrollment_created_at'] != "0000-00-00 00:00:00" ? $item['enrollment_created_at'] : null,
                     'enrollment_updated_at' => $item['enrollment_date_last_updated'],
                     'enrollment_completed_at' => $item['enrollment_completion_date'],
                     'session_time' => $dataTiming->session_time,
