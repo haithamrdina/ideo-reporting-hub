@@ -28,12 +28,10 @@ RUN pear update-channels \
 RUN pecl install -o -f apcu \
     && rm -rf /tmp/pear \ 
     && docker-php-ext-enable apcu
-
 RUN docker-php-ext-install pcntl   \
     && docker-php-ext-enable pcntl 
-    
-RUN docker-php-ext-install sockets;
 
+RUN docker-php-ext-install sockets;
 RUN pecl install -o -f redis \
     && rm -rf /tmp/pear \ 
     && docker-php-ext-enable redis
