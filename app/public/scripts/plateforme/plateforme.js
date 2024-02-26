@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', function() {
             updateSoftModules(data.softStats);
             updateDigitalModules(data.digitalStats);
             updateMoocModules(data.moocStats);
+            updateSMModules(data.smStats);
             updateLanguageTiming(data.speexStats)
             updateChartTiming(data.timingChart)
             updateLps(data.lpStats)
@@ -758,6 +759,9 @@ function updateLanguageTiming(speexStats){
     });
 
     var selectedLangue = document.getElementById('select-langues').value;
+    if(!selectedLangue){
+        selectedLangue = "null";
+    }
     updateLanguageChart(selectedLangue);
 }
 
@@ -1314,101 +1318,120 @@ function updateSMModules(smStats, selectedSM=null){
     var insSMT = document.getElementById('insSmT');
     var insSMND = document.getElementById('insSmND');
     var insSMP = document.getElementById('insSmP');
+    if(sessionSM != null){
+        sessionSM.textContent = smStats.statSMTimes.total_session_time;
+    }
+    if(cmiSM != null){
+        cmiSM.textContent = smStats.statSMTimes.total_cmi_time;
+    }
+    if(tcSM != null){
+        tcSM.textContent = smStats.statSMTimes.total_calculated_time;
+    }
+    if(trSM != null){
+        trSM.textContent = smStats.statSMTimes.total_recommended_time;
+    }
+    if(insSMT != null){
+        insSMT.textContent = smStats.statSM.completed;
+    }
+    if(insSMND != null){
+        insSMND.textContent = smStats.statSM.enrolled;;
+    }
+    if(insSMP != null){
+        insSMP.textContent= smStats.statSM.in_progress;
 
-    sessionSM.textContent = smStats.statSMTimes.total_session_time;
-    cmiSM.textContent = smStats.statSMTimes.total_cmi_time;
-    tcSM.textContent = smStats.statSMTimes.total_calculated_time;
-    trSM.textContent = smStats.statSMTimes.total_recommended_time;
-    insSMT.textContent = smStats.statSM.completed;
-    insSMND.textContent = smStats.statSM.enrolled;
-    insSMP.textContent= smStats.statSM.in_progress;
+    }
 
-    document.getElementById('select-sms').innerHTML="";
-    document.getElementById('select-sms').insertAdjacentHTML('beforeend', '<option value="" class="text-gray-600">Séléctionner un module</option>');
-    smStats.modulesSms.forEach(function(v) {
-        var selected = v.docebo_id == selectedSM ? 'selected' : '';
-        var content = '<option value="' + v.docebo_id + '"' + selected + '>' + v.name + '</option>';
-        document.getElementById('select-sms').insertAdjacentHTML('beforeend', content);
-    });
+    $smsSelect = document.getElementById('select-sms');
+    if($smsSelect != null){
+        document.getElementById('select-sms').innerHTML="";
+        document.getElementById('select-sms').insertAdjacentHTML('beforeend', '<option value="" class="text-gray-600">Séléctionner un module</option>');
+        smStats.modulesSms.forEach(function(v) {
+            var selected = v.docebo_id == selectedSM ? 'selected' : '';
+            var content = '<option value="' + v.docebo_id + '"' + selected + '>' + v.name + '</option>';
+            document.getElementById('select-sms').insertAdjacentHTML('beforeend', content);
+        });
+    }
 
-    window.ApexCharts && (new ApexCharts(document.getElementById('chart-sm'), {
-        chart: {
-            type: "bar",
-            fontFamily: 'inherit',
-            height: 240,
-            parentHeightOffset: 0,
-            toolbar: {
-                show: false,
-            },
-            animations: {
-                enabled: false
-            },
-        },
-        plotOptions: {
-            bar: {
-                barHeight: '50%',
-                horizontal: true,
-                dataLabels: {
-                    position: 'bottom'
+    if(document.getElementById('chart-sm') != null){
+        window.ApexCharts && (new ApexCharts(document.getElementById('chart-sm'), {
+            chart: {
+                type: "bar",
+                fontFamily: 'inherit',
+                height: 240,
+                parentHeightOffset: 0,
+                toolbar: {
+                    show: false,
                 },
-            }
-        },
-        dataLabels: {
-            enabled: true,
-            textAnchor: 'start',
-            style: {
-                colors: ['#000']
+                animations: {
+                    enabled: false
+                },
             },
-            formatter: function (val, opt) {
-                return opt.w.globals.labels[opt.dataPointIndex] + ":  " + val + " inscriptions."
+            plotOptions: {
+                bar: {
+                    barHeight: '50%',
+                    horizontal: true,
+                    dataLabels: {
+                        position: 'bottom'
+                    },
+                }
             },
-            offsetX: 0,
-            dropShadow: {
-                enabled: false
-            }
-        },
-        stroke: {
-            width: 1,
-            colors: ['#fff']
-        },
-        series: [{
-            name: "Total d'inscriptions",
-            data: smStats.smCharts.data
-        }],
-        tooltip: {
-            theme: 'dark',
-            x: {
-                show: true
+            dataLabels: {
+                enabled: true,
+                textAnchor: 'start',
+                style: {
+                    colors: ['#000']
+                },
+                formatter: function (val, opt) {
+                    return opt.w.globals.labels[opt.dataPointIndex] + ":  " + val + " inscriptions."
+                },
+                offsetX: 0,
+                dropShadow: {
+                    enabled: false
+                }
             },
-            y: {
-                title: {
-                    formatter: function () {
-                    return ''
+            stroke: {
+                width: 1,
+                colors: ['#fff']
+            },
+            series: [{
+                name: "Total d'inscriptions",
+                data: smStats.smCharts.data
+            }],
+            tooltip: {
+                theme: 'dark',
+                x: {
+                    show: true
+                },
+                y: {
+                    title: {
+                        formatter: function () {
+                        return ''
+                        }
                     }
                 }
-            }
-        },
-        grid: {
-            padding: {
-                top: -20,
-                right: 0,
-                left: -4,
-                bottom: -4
             },
-            strokeDashArray: 4,
-        },
-        xaxis: {
-            categories: smStats.smCharts.labels,
-        },
-        yaxis: {
-            labels: {
-                padding: 4,
-                show: false
+            grid: {
+                padding: {
+                    top: -20,
+                    right: 0,
+                    left: -4,
+                    bottom: -4
+                },
+                strokeDashArray: 4,
             },
-        },
-        colors: ["#f4AAA4"],
-        legend: {
-            show: true,
-        },
-    })).render();
+            xaxis: {
+                categories: smStats.smCharts.labels,
+            },
+            yaxis: {
+                labels: {
+                    padding: 4,
+                    show: false
+                },
+            },
+            colors: ["#f4AAA4"],
+            legend: {
+                show: true,
+            },
+        })).render();
+    }
 }

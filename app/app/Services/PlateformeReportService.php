@@ -559,7 +559,7 @@ class PlateformeReportService{
     }
 
     public function getStatSMPerModule($enrollfields, $selectedSm){
-        $moduleSms = Module::where(['category' => 'ENI', 'status' => CourseStatusEnum::ACTIVE])->get();
+        $moduleSms = Module::where(['category' => 'SM', 'status' => CourseStatusEnum::ACTIVE])->get();
 
         $smEnrolls = Enrollmodule::where('module_docebo_id', $selectedSm)->get();
 
