@@ -15,6 +15,16 @@ use App\Http\Integrations\Docebo\Requests\DoceboMoocsEnrollements;
 use App\Http\Integrations\Docebo\Requests\DoceboSpeexEnrollements;
 use App\Http\Integrations\Speex\Requests\SpeexUserArticleResult;
 use App\Http\Integrations\Speex\SpeexConnector;
+use App\Jobs\UpdateCallJob;
+use App\Jobs\UpdateEnrollementLangueJob;
+use App\Jobs\UpdateEnrollementModuleJob;
+use App\Jobs\UpdateEnrollementMoocJob;
+use App\Jobs\UpdateEnrollementsLpsJob;
+use App\Jobs\UpdateLearnerJob;
+use App\Jobs\UpdateLpJob;
+use App\Jobs\UpdateModuleJob;
+use App\Jobs\UpdateMoocJob;
+use App\Jobs\UpdateTicketJob;
 use App\Models\Group;
 use App\Models\Learner;
 use App\Models\Lp;
@@ -26,7 +36,9 @@ use App\Services\LpEnrollmentsService;
 use App\Services\ModuleEnrollmentsService;
 use App\Services\MoocEnrollmentsService;
 use App\Services\SpeexEnrollmentsService;
+use App\Services\UserFieldsService;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Saloon\Exceptions\Request\Statuses\InternalServerErrorException;
 use OpenAI\Laravel\Facades\OpenAI;
@@ -45,6 +57,34 @@ use OpenAI\Laravel\Facades\OpenAI;
 /**
  *  start TEST FUNCTION
  */
+Route::get('/all-test' , function(){
+    $start_datetime = date('Y-m-d H:i:s');
+    Log::info("[$start_datetime]: Update Data for all tenants has finished.");
+
+    Tenant::all()->runForEach(function () {
+        $id = tenant('id');
+        $userFieldsService = new UserFieldsService();
+        $userfields = config('tenantconfigfields.userfields');
+
+        Log::info("Update process started for tenant {$id}");
+
+        UpdateLearnerJob::withChain([
+            new UpdateCallJob($id),
+            new UpdateTicketJob($id),
+            new UpdateMoocJob($id),
+            new UpdateLpJob($id),
+            new UpdateModuleJob($id),
+            new UpdateEnrollementMoocJob($id),
+            new UpdateEnrollementLangueJob($id),
+            new UpdateEnrollementModuleJob($id),
+            new UpdateEnrollementsLpsJob($id),
+        ])->dispatch($userFieldsService, $id, $userfields);
+
+    });
+
+    $end_datetime = date('Y-m-d H:i:s');
+    Log::info("[$end_datetime]: Update Data for all tenants has finished.");
+});
 Route::get('test-speex-data' , function(){
     try {
         $speexConnector = new SpeexConnector();
