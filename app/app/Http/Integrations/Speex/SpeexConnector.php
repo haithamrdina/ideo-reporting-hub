@@ -2,19 +2,13 @@
 
 namespace App\Http\Integrations\Speex;
 
-use Illuminate\Support\Facades\Cache;
 use Saloon\Http\Auth\QueryAuthenticator;
 use Saloon\Http\Connector;
-use Saloon\RateLimitPlugin\Contracts\RateLimitStore;
 use Saloon\Traits\Plugins\AcceptsJson;
-use Saloon\RateLimitPlugin\Limit;
-use Saloon\RateLimitPlugin\Stores\LaravelCacheStore;
-use Saloon\RateLimitPlugin\Traits\HasRateLimits;
 
 class SpeexConnector extends Connector
 {
     use AcceptsJson;
-    use HasRateLimits;
 
     public ?int $tries = 3;
     public ?int $retryInterval = 1000;
@@ -24,18 +18,6 @@ class SpeexConnector extends Connector
     public function resolveBaseUrl(): string
     {
         return 'https://portal.speexx.com/api';
-    }
-
-    protected function resolveLimits(): array
-    {
-        return [
-            Limit::allow(100)->everyMinute()
-        ];
-    }
-
-    protected function resolveRateLimitStore(): RateLimitStore
-    {
-        return new LaravelCacheStore(Cache::store('redis'));
     }
     /**
      * Default headers for every request

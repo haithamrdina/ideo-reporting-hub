@@ -22,10 +22,6 @@ class ZendeskConnector extends Connector implements HasPagination
     use HasRateLimits;
 
     public ?int $tries = 3;
-    public function __construct()
-    {
-        $this->detectTooManyAttempts = false;
-    }
     /**
      * The Base URL of the API
      */
@@ -37,7 +33,7 @@ class ZendeskConnector extends Connector implements HasPagination
     protected function resolveLimits(): array
     {
         return [
-            Limit::allow(100000)->everyMinute(),
+            Limit::allow(1000000)->everyMinute(),
         ];
     }
 
