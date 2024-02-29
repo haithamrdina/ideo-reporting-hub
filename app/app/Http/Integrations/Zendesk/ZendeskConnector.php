@@ -47,7 +47,7 @@ class ZendeskConnector extends Connector implements HasPagination
     {
         return new LaravelCacheStore(Cache::store('redis'));
 
-
+    }
     /**
      * Default HTTP client options
      */
