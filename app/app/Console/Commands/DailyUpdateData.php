@@ -53,7 +53,6 @@ class DailyUpdateData extends Command
 
             UpdateLearnerJob::withChain([
                 new UpdateCallJob($id),
-                new UpdateTicketJob($id),
                 new UpdateMoocJob($id),
                 new UpdateLpJob($id),
                 new UpdateModuleJob($id),
@@ -61,6 +60,7 @@ class DailyUpdateData extends Command
                 new UpdateEnrollementLangueJob($id),
                 new UpdateEnrollementModuleJob($id),
                 new UpdateEnrollementsLpsJob($id),
+                new UpdateTicketJob($id),
             ])->dispatch($userFieldsService, $id, $userfields);
 
         });
