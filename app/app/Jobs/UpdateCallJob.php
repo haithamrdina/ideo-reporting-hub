@@ -44,27 +44,29 @@ class UpdateCallJob implements ShouldQueue
         $ideoDashConnector = new IdeoDashConnector();
         $clientResponse = $ideoDashConnector->send(new IdeoDashCallsList($tenant->docebo_org_id));
         $result = $clientResponse->dto();
-        $result = array_chunk(array_filter($result), 1000);
-        $upsertFunction = function ($chunk) {
-            DB::transaction(function () use ($chunk) {
-                Call::upsert(
-                    $chunk,
-                    [
-                        'learner_docebo_id',
-                        'date_call',
-                    ],
-                    [
-                        'type',
-                        'status',
-                        'subject',
-                        'group_id',
-                        'project_id',
-                    ]
-                );
-            });
-        };
-        // Use array_map to apply the upsert function to each chunk
-        array_map($upsertFunction, $result);
+        if(!empty($result)){
+            $result = array_chunk(array_filter($result), 1000);
+            $upsertFunction = function ($chunk) {
+                DB::transaction(function () use ($chunk) {
+                    Call::upsert(
+                        $chunk,
+                        [
+                            'learner_docebo_id',
+                            'date_call',
+                        ],
+                        [
+                            'type',
+                            'status',
+                            'subject',
+                            'group_id',
+                            'project_id',
+                        ]
+                    );
+                });
+            };
+            // Use array_map to apply the upsert function to each chunk
+            array_map($upsertFunction, $result);
+        }
         tenancy()->end();
 
         $end_datetime = date('Y-m-d H:i:s');

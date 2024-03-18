@@ -38,7 +38,7 @@ class ZendeskConnector extends Connector implements HasPagination
     protected function resolveLimits(): array
     {
         return [
-            Limit::allow(1000000)->everyMinute(),
+            Limit::allow(10000000)->everyMinute(),
         ];
     }
 

@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use App\Notifications\Admin\Auth\ResetPassword;
-use App\Notifications\Admin\Auth\VerifyEmail;
+use App\Notifications\Central\Auth\ResetPassword;
+use App\Notifications\Central\Auth\VerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
