@@ -44,7 +44,7 @@ class UpdateCallJob implements ShouldQueue
         $ideoDashConnector = new IdeoDashConnector();
         $clientResponse = $ideoDashConnector->send(new IdeoDashCallsList($tenant->docebo_org_id));
         $result = $clientResponse->dto();
-        if(!empty($result)){
+        if($result){
             $result = array_chunk(array_filter($result), 1000);
             $upsertFunction = function ($chunk) {
                 DB::transaction(function () use ($chunk) {

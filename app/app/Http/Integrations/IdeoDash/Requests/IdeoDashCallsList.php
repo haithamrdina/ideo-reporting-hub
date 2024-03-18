@@ -32,20 +32,23 @@ class IdeoDashCallsList extends Request
     public function createDtoFromResponse(Response $response): mixed
     {
         $items = $response->json('Data');
-        $filteredItems = array_map(function ($item) {
-            $learner = Learner::where('docebo_id' , $item['idDocebo'])->first();
-            if($learner){
-                return [
-                    'learner_docebo_id' => $item['idDocebo'],
-                    'group_id' => $learner->group_id,
-                    'project_id' =>$learner->project_id,
-                    'date_call' => (new DateTime($item['date']))->format("Y-m-d H:i:s"),
-                    'type' => $item['type'] == 1 ? 'sortante' : 'entrante',
-                    'status' => $this->getstatut($item['statut']),
-                    'subject' => $item['sujet']
-                ];
-            }
-        }, $items);
+        $filteredItems = null;
+        if(!empty($items)){
+            $filteredItems = array_map(function ($item) {
+                $learner = Learner::where('docebo_id' , $item['idDocebo'])->first();
+                if($learner){
+                    return [
+                        'learner_docebo_id' => $item['idDocebo'],
+                        'group_id' => $learner->group_id,
+                        'project_id' =>$learner->project_id,
+                        'date_call' => (new DateTime($item['date']))->format("Y-m-d H:i:s"),
+                        'type' => $item['type'] == 1 ? 'sortante' : 'entrante',
+                        'status' => $this->getstatut($item['statut']),
+                        'subject' => $item['sujet']
+                    ];
+                }
+            }, $items);
+        }
 
         return $filteredItems;
     }
