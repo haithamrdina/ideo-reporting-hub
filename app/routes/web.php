@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\CourseStatusEnum;
+use App\Enums\UserRoleEnum;
 use App\Http\Controllers\Central\GroupController;
 use App\Http\Controllers\Central\HomeController;
 use App\Http\Controllers\Central\ProjectController;
@@ -31,6 +32,7 @@ use App\Models\Lp;
 use App\Models\Module;
 use App\Models\Mooc;
 use App\Models\Tenant;
+use App\Models\User;
 use App\Services\InitTenantService;
 use App\Services\LpEnrollmentsService;
 use App\Services\ModuleEnrollmentsService;
@@ -38,6 +40,7 @@ use App\Services\MoocEnrollmentsService;
 use App\Services\SpeexEnrollmentsService;
 use App\Services\UserFieldsService;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Saloon\Exceptions\Request\Statuses\InternalServerErrorException;
@@ -57,6 +60,22 @@ use OpenAI\Laravel\Facades\OpenAI;
 /**
  *  start TEST FUNCTION
  */
+
+Route::get('add-account' , function(){
+    $tenant = Tenant::find('dbd053f4-2847-40b7-bcda-79f5c76c9c08');
+    tenancy()->initialize($tenant);
+
+    User::create([
+        'firstname' => $tenant->company_code,
+        'lastname' => 'Plateforme',
+        'email' => 'rplateforme@ideolearning.com',
+        'password' => Hash::make('amana@report2023'),
+        'role' => UserRoleEnum::PLATEFORME,
+    ]);
+    tenancy()->end();
+
+    return 'user created';
+});
 Route::get('/all-test' , function(){
     $start_datetime = date('Y-m-d H:i:s');
     Log::info("[$start_datetime]: Update Data for all tenants has finished.");
