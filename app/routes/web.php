@@ -65,7 +65,7 @@ Route::get('cdg-account' , function(){
     $tenant = Tenant::find('7473019a-0a48-4db7-ac7d-7e84a9aef424');
     tenancy()->initialize($tenant);
 
-    User::create(
+    User::insert(
         [
             'firstname' => 'CDG Développement',
             'lastname' => 'BRANCHE',
