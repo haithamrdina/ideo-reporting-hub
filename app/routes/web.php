@@ -65,248 +65,246 @@ Route::get('cdg-account' , function(){
     $tenant = Tenant::find('7473019a-0a48-4db7-ac7d-7e84a9aef424');
     tenancy()->initialize($tenant);
 
-    User::insert(
-        [
-            'firstname' => 'CDG Développement',
-            'lastname' => 'BRANCHE',
-            'email' => 'rbranche@cdg-developpment.com',
-            'password' => Hash::make('CDGDev@2024'),
-            'role' => UserRoleEnum::GROUP,
-            'group_id' => '9',
-        ],
-        [
+    User::insert([
+        'firstname' => 'CDG Développement',
+        'lastname' => 'BRANCHE',
+        'email' => 'rbranche@cdg-developpment.com',
+        'password' => Hash::make('CDGDev@2024'),
+        'role' => UserRoleEnum::GROUP,
+        'group_id' => '9',
+    ]);
+    User::insert([
             'firstname' => 'CDG Invest',
             'lastname' => 'BRANCHE',
             'email' => 'rbranche@cdg-invest.com',
             'password' => Hash::make('CDGInvest@2024'),
             'role' => UserRoleEnum::GROUP,
             'group_id' => '10',
-        ],
-        [
+        ]);
+    User::insert([
             'firstname' => 'Prévoyance',
             'lastname' => 'BRANCHE',
             'email' => 'rbranche@cdg-prevoyance.com',
             'password' => Hash::make('CDGPREV@2024'),
             'role' => UserRoleEnum::GROUP,
             'group_id' => '13',
-        ],
-        [
+        ]);
+    User::insert([
             'firstname' => 'CDG corporate',
             'lastname' => 'BRANCHE',
             'email' => 'rbranche@cdg-corporate.com',
             'password' => Hash::make('CDGCORPO@2024'),
             'role' => UserRoleEnum::GROUP,
             'group_id' => '21',
-        ],
-        [
+        ]);
+    User::insert([
             'firstname' => 'Ajar Invest',
             'lastname' => 'Filiale',
             'email' => 'rbranche@cdg-ajar-invest.com',
             'password' => Hash::make('AJARINVEST@2024'),
             'role' => UserRoleEnum::GROUP,
             'group_id' => '26',
-        ],
-        [
+        ]);
+    User::insert([
             'firstname' => 'Auda',
             'lastname' => 'Filiale',
             'email' => 'rbranche@cdg-auda.com',
             'password' => Hash::make('AUDA@2024'),
             'role' => UserRoleEnum::GROUP,
             'group_id' => '27',
-        ],
-        [
+        ]);
+    User::insert([
             'firstname' => 'CDG Capital',
             'lastname' => 'Filiale',
             'email' => 'rbranche@cdg-capital.com',
             'password' => Hash::make('CapMaisonMere@2024'),
             'role' => UserRoleEnum::GROUP,
             'group_id' => '28',
-        ],
-        [
+        ]);
+    User::insert([
             'firstname' => 'CDG Capital Gestion',
             'lastname' => 'Filiale',
             'email' => 'rbranche@cdg-capital-gestion.com',
             'password' => Hash::make('CapGestion@2024'),
             'role' => UserRoleEnum::GROUP,
             'group_id' => '29',
-        ],
-        [
+        ]);
+    User::insert([
             'firstname' => 'CDG Invest Growth',
             'lastname' => 'Filiale',
             'email' => 'rbranche@cdg-invest-growth.com',
             'password' => Hash::make('CapInvGrowth@2024'),
             'role' => UserRoleEnum::GROUP,
             'group_id' => '30',
-        ],
-        [
+        ]);
+    User::insert([
             'firstname' => 'CDG Invest Infrastructures',
             'lastname' => 'Filiale',
             'email' => 'rbranche@cdg-invest-infra.com',
             'password' => Hash::make('CapInvInfra@2024'),
             'role' => UserRoleEnum::GROUP,
             'group_id' => '31',
-        ],
-        [
+        ]);
+    User::insert([
             "firstname" => "Cellulose du Maroc Eucaforest",
             "lastname" => "Filiale",
             "email" => "rbranche@cdg-cellulose.com",
             "password" => Hash::make("CelluloseME@2024"),
             "role" => UserRoleEnum::GROUP,
             "group_id" => '32',
-          ],
-          [
+          ]);
+    User::insert([
             "firstname" => "CGI",
             "lastname" => "Filiale",
             "email" => "rbranche@cdg-cgi.com",
             "password" => Hash::make("CGI@2024"),
             "role" => UserRoleEnum::GROUP,
             "group_id" => '33',
-          ],
-          [
+          ]);
+    User::insert([
             "firstname" => "Dyar AL Madina",
             "lastname" => "Filiale",
             "email" => "rbranche@cdg-dyar-madina.com",
             "password" => Hash::make("DyarElMadina@2024"),
             "role" => UserRoleEnum::GROUP,
             "group_id" => '34',
-          ],
-          [
+          ]);
+    User::insert([
             "firstname" => "Finea",
             "lastname" => "Filiale",
             "email" => "rbranche@cdg-finea.com",
             "password" => Hash::make("Finea@2024"),
             "role" => UserRoleEnum::GROUP,
             "group_id" => '36',
-          ],
-          [
+          ]);
+    User::insert([
             "firstname" => "Fonciere Chellah",
             "lastname" => "Filiale",
             "email" => "rbranche@cdg-fonciere-chellah.com",
             "password" => Hash::make("FonciereChellah@2024"),
             "role" => UserRoleEnum::GROUP,
             "group_id" => '37',
-          ],
-          [
+          ]);
+    User::insert([
             "firstname" => "Loterie Nationnale",
             "lastname" => "Filiale",
             "email" => "rbranche@cdg-loterie-nationale.com",
             "password" => Hash::make("LoterieNationnale@2024"),
             "role" => UserRoleEnum::GROUP,
             "group_id" => '40',
-          ],
-          [
+          ]);
+    User::insert([
             "firstname" => "MedZ",
             "lastname" => "Filiale",
             "email" => "rbranche@cdg-medz.com",
             "password" => Hash::make("MedZ@2024"),
             "role" => UserRoleEnum::GROUP,
             "group_id" => '41',
-          ],
-          [
+          ]);
+    User::insert([
             "firstname" => "Novec",
             "lastname" => "Filiale",
             "email" => "rbranche@cdg-novec.com",
             "password" => Hash::make("Novec@2024"),
             "role" => UserRoleEnum::GROUP,
             "group_id" => '42',
-          ],
-          [
+          ]);
+    User::insert([
             "firstname" => "SAPST",
             "lastname" => "Filiale",
             "email" => "rbranche@cdg-sapst.com",
             "password" => Hash::make("SAPST@2024"),
             "role" => UserRoleEnum::GROUP,
             "group_id" => '43',
-          ],
-          [
+          ]);
+    User::insert([
             "firstname" => "SAZ",
             "lastname" => "Filiale",
             "email" => "rbranche@cdg-saz.com",
             "password" => Hash::make("SAZ@2024"),
             "role" => UserRoleEnum::GROUP,
             "group_id" => '44',
-          ],
-          [
+          ]);
+    User::insert([
             "firstname" => "SCR",
             "lastname" => "Filiale",
             "email" => "rbranche@cdg-scr.com",
             "password" => Hash::make("SCR@2024"),
             "role" => UserRoleEnum::GROUP,
             "group_id" => '45',
-          ],
-          [
+          ]);
+    User::insert([
             "firstname" => "SDS",
             "lastname" => "Filiale",
             "email" => "rbranche@cdg-sds.com",
             "password" => Hash::make("SDS@2024"),
             "role" => UserRoleEnum::GROUP,
             "group_id" => '46',
-          ],
-          [
+          ]);
+    User::insert([
             "firstname" => "SHRA",
             "lastname" => "Filiale",
             "email" => "rbranche@cdg-shra.com",
             "password" => Hash::make("SHRA@2024"),
             "role" => UserRoleEnum::GROUP,
             "group_id" => '47',
-          ],
-          [
+          ]);
+    User::insert([
             "firstname" => "XPERIS",
             "lastname" => "Filiale",
             "email" => "rbranche@cdg-xperis.com",
             "password" => Hash::make("XPERIS@2024"),
             "role" => UserRoleEnum::GROUP,
             "group_id" => '48',
-          ],
-          [
+          ]);
+    User::insert([
             "firstname" => "MADAEF",
             "lastname" => "CDG",
             "email" => "rbranche@cdg-madaef.com",
             "password" => Hash::make("MADAEF@2024"),
             "role" => UserRoleEnum::GROUP,
             "group_id" => '49',
-          ],
-          [
+          ]);
+    User::insert([
             "firstname" => "Ewane",
             "lastname" => "CDG",
             "email" => "rbranche@cdg-ewane.com",
             "password" => Hash::make("EWANE@2024"),
             "role" => UserRoleEnum::GROUP,
             "group_id" => '35',
-          ],
-          [
+          ]);
+    User::insert([
             "firstname" => "Jaida",
             "lastname" => "CDG",
             "email" => "rbranche@cdg-jaida.com",
             "password" => Hash::make("JAIDA@2024"),
             "role" => UserRoleEnum::GROUP,
             "group_id" => '39',
-          ],
-          [
+          ]);
+    User::insert([
             "firstname" => "Madaef Golf",
             "lastname" => "CDG",
             "email" => "rbranche@cdg-madaef-golf.com",
             "password" => Hash::make("MADAEFGOLF@2024"),
             "role" => UserRoleEnum::GROUP,
             "group_id" => '50',
-          ],
-          [
+          ]);
+    User::insert([
             "firstname" => "HRM",
             "lastname" => "CDG",
             "email" => "rbranche@cdg-hrm.com",
             "password" => Hash::make("HRM@2024"),
             "role" => UserRoleEnum::GROUP,
             "group_id" => '38',
-          ]
-          ,
-          [
+    ]);
+
+    User::insert([
             "firstname" => "Plateforme",
             "lastname" => "CDG",
             "email" => "rplateforme@groupe-cdg.com",
             "password" => Hash::make("CDG@report2024"),
             "role" => UserRoleEnum::PLATEFORME,
-          ]
-    );
+    ]);
     tenancy()->end();
 
     return 'user created';
