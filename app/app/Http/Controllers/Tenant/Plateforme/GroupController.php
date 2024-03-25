@@ -40,6 +40,7 @@ class GroupController extends Controller
         $speexStats = $groupReportService->getStatSpeex($enrollfields,$group);
         $moocStats = $groupReportService->getStatMooc($enrollfields,$group);
         $timingChart = $groupReportService->getTimingStats($enrollfields,$group);
+        $timingCalculatedChart = $groupReportService->getCalculatedTimingStats($enrollfields,$group);
         $lpStats = $groupReportService->getLpStats($enrollfields,$group);
         $lscStats = $groupReportService->getLscStats($group);
 
@@ -53,6 +54,7 @@ class GroupController extends Controller
             'digitalStats' => $digitalStats,
             'speexStats' => $speexStats,
             'moocStats' => $moocStats,
+            'timingCalculatedChart' => $timingCalculatedChart,
             'timingChart' => $timingChart,
             'lpStats' => $lpStats,
             'lscStats' => $lscStats,

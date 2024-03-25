@@ -509,7 +509,35 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-7">
+                <div class="col-lg-6">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <div class="d-flex">
+                                <h3 class="card-title">Répartition des heures de formations par domaine :</h3>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <div id="chart-formation" style="min-height:300px!important;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <div class="d-flex">
+                                <h3 class="card-title">Répartition de temps de session,temps d'engagement, temps calculé et le temps pédagogique recommandé par domaine :</h3>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <div id="chart-combination"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-12">
                     <div class="card h-100">
                         <div class="card-body">
                             <div class="d-flex">
@@ -606,20 +634,6 @@
                                 </div>
                                 <div class="col-lg-7">
                                     <div id="chart-moocs"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-5">
-                    <div class="card h-100">
-                        <div class="card-body">
-                            <div class="d-flex">
-                                <h3 class="card-title">Répartition de temps de session,temps d'engagement, temps calculé et le temps pédagogique recommandé par catégorie :</h3>
-                            </div>
-                            <div class="row">
-                                <div class="col-lg-12">
-                                    <div id="chart-combination"></div>
                                 </div>
                             </div>
                         </div>

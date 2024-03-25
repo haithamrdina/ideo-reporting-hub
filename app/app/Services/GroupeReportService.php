@@ -888,6 +888,67 @@ class GroupeReportService{
         return $timingChart;
     }
 
+    public function getCalculatedTimingStats($enrollfields,$groupe){
+
+        $archive = config('tenantconfigfields.archive');
+        if($archive != true){
+            $learnersIds = Learner::where('statut', '!=' , 'archive')->where('group_id', $groupe->id)->pluck('docebo_id')->toArray();
+        }else{
+            $learnersIds = Learner::where('group_id', $groupe->id)->pluck('docebo_id')->toArray();
+        }
+
+        $digitalModules = $groupe->modules->filter(function ($module) {
+            return $module->category === 'ENI' && $module->status === CourseStatusEnum::ACTIVE;
+        })->pluck('docebo_id')->toArray();
+        $softModules = $groupe->modules->filter(function ($module) {
+            return $module->category === 'CEGOS' && $module->status === CourseStatusEnum::ACTIVE;
+        })->pluck('docebo_id')->toArray();
+
+        $softEnrolls = Enrollmodule::whereIn('module_docebo_id', $softModules)->whereIn('learner_docebo_id', $learnersIds)->where('group_id', $groupe->id)->get();
+        $digitalEnrolls = Enrollmodule::whereIn('module_docebo_id', $digitalModules)->whereIn('learner_docebo_id', $learnersIds)->where('group_id', $groupe->id)->get();
+        $langEnrolls = Langenroll::where('group_id', $groupe->id)->whereIn('learner_docebo_id', $learnersIds)->get();
+        $moocEnrolls = Enrollmooc::where('group_id', $groupe->id)->whereIn('learner_docebo_id', $learnersIds)->get();
+
+        $timeConversionService = new TimeConversionService();
+
+
+
+        if($enrollfields['calculated_time'] == true)
+        {
+            $total_calculated_time_mooc =  $timeConversionService->convertSecondsToHours($moocEnrolls->sum('calculated_time'));
+            $total_calculated_time_speex =  $timeConversionService->convertSecondsToHours($langEnrolls->sum('calculated_time'));
+            $total_calculated_time_cegos =  $timeConversionService->convertSecondsToHours($softEnrolls->sum('calculated_time'));
+            $total_calculated_time_eni =  $timeConversionService->convertSecondsToHours($digitalEnrolls->sum('calculated_time'));
+            $total_calculated_time_total = $total_calculated_time_cegos + $total_calculated_time_eni + $total_calculated_time_speex + $total_calculated_time_mooc;
+
+            $pr_calculated_time_mooc = ($total_calculated_time_mooc / $total_calculated_time_total) * 100;;
+            $pr_calculated_time_speex = ($total_calculated_time_speex / $total_calculated_time_total) * 100;;
+            $pr_calculated_time_cegos = ($total_calculated_time_cegos / $total_calculated_time_total) * 100;
+            $pr_calculated_time_eni = ($total_calculated_time_eni / $total_calculated_time_total) * 100;;
+        }else{
+            $total_calculated_time_mooc =null;
+            $total_calculated_time_speex =null;
+            $total_calculated_time_cegos =null;
+            $total_calculated_time_eni =null;
+            $total_calculated_time_total = 0;
+            $pr_calculated_time_mooc = 0;
+            $pr_calculated_time_speex = 0;
+            $pr_calculated_time_cegos = 0;
+            $pr_calculated_time_eni = 0;
+        }
+
+        $softLabel = 'Modules softskills ( '.$total_calculated_time_cegos. ' heures - ' . round($pr_calculated_time_cegos, 2).' %)';
+        $eniLabel = 'Modules digitals ( '.$total_calculated_time_eni. ' heures - ' . round($pr_calculated_time_eni, 2).' %)';
+        $speexLabel =  'Modules langue ( '.$total_calculated_time_speex. ' heures - ' . round($pr_calculated_time_speex, 2).' %)';
+        $moocLabel = 'Mooc ( '.$total_calculated_time_mooc. ' heures - ' . round($pr_calculated_time_mooc, 2).' %)';
+
+        $timingChart = [
+            'labels' => [$softLabel,$eniLabel ,$speexLabel , $moocLabel],
+            'data' => [round($pr_calculated_time_cegos, 2),round($pr_calculated_time_eni, 2) ,round($pr_calculated_time_speex, 2),round($pr_calculated_time_mooc, 2)]
+        ];
+
+        return $timingChart;
+    }
     public function getLpStats($enrollfields , $groupe){
         $lps = $groupe->lps;
         $archive = config('tenantconfigfields.archive');

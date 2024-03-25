@@ -46,6 +46,7 @@ class HomeController extends Controller
         $speexStats = $projectReportService->getStatSpeex($enrollfields,$project);
         $moocStats = $projectReportService->getStatMooc($enrollfields,$project);
         $timingChart = $projectReportService->getTimingStats($enrollfields,$project);
+        $timingCalculatedChart = $projectReportService->getCalculatedTimingStats($enrollfields,$project);
         $lpStats = $projectReportService->getLpStats($enrollfields,$project);
         $lscStats = $projectReportService->getLscStats($project);
 
@@ -60,6 +61,7 @@ class HomeController extends Controller
             'speexStats' => $speexStats,
             'moocStats' => $moocStats,
             'timingChart' => $timingChart,
+            'timingCalculatedChart' => $timingCalculatedChart,
             'lpStats' => $lpStats,
             'lscStats' => $lscStats,
             'smStats' => $smStats

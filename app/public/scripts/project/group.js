@@ -19,6 +19,7 @@ document.addEventListener('DOMContentLoaded', function() {
             updateMoocModules(data.moocStats);
             updateLanguageTiming(selectedGroup, data.speexStats)
             updateChartTiming(data.timingChart)
+            updateChartCalculatedTiming(data.timingCalculatedChart)
             updateLps(data.lpStats)
             updateLsc(data.lscStats)
             // Hide the loader and display the content
@@ -57,6 +58,7 @@ document.getElementById('select-groups').addEventListener('change', function () 
             updateMoocModules(data.moocStats);
             updateLanguageTiming(selectedGroup, data.speexStats)
             updateChartTiming(data.timingChart)
+            updateChartCalculatedTiming(data.timingCalculatedChart)
             updateLps(data.lpStats)
             updateLsc(data.lscStats)
             // Hide the loader and display the content
@@ -868,6 +870,51 @@ function updateChartTiming(timingChart){
         legend: {
             show: true,
         },
+    })).render();
+}
+
+function updateChartCalculatedTiming(timingCalculatedChart){
+    window.ApexCharts && (new ApexCharts(document.getElementById('chart-formation'), {
+        chart: {
+            type: "donut",
+            fontFamily: 'inherit',
+            height: 300,
+            sparkline: {
+                enabled: true
+            },
+            animations: {
+                enabled: true
+            }
+        },
+        fill: {
+            opacity: 1
+        },
+        series: timingCalculatedChart.data,
+        labels: timingCalculatedChart.labels,
+        tooltip: {
+            theme: 'dark'
+        },
+        grid: {
+            strokeDashArray: 4
+        },
+        colors: ["#FFC000", "#4472C4", "#ED7D31", "#A5A5A5", "#f9db7b", "#1EE0AC", "#ffa9ce"],
+        legend: {
+            show: true,
+            position: 'bottom',
+            offsetY: 12,
+            markers: {
+                width: 10,
+                height: 10,
+                radius: 100
+            },
+            itemMargin: {
+                horizontal: 8,
+                vertical: 8
+            }
+        },
+        tooltip: {
+            fillSeriesColor: false
+        }
     })).render();
 }
 

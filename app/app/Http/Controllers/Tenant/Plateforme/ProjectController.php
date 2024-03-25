@@ -40,6 +40,7 @@ class ProjectController extends Controller
         $speexStats = $projectReportService->getStatSpeex($enrollfields,$project);
         $moocStats = $projectReportService->getStatMooc($enrollfields,$project);
         $timingChart = $projectReportService->getTimingStats($enrollfields,$project);
+        $timingCalculatedChart = $projectReportService->getCalculatedTimingStats($enrollfields,$project);
         $lpStats = $projectReportService->getLpStats($enrollfields,$project);
         $lscStats = $projectReportService->getLscStats($project);
 
@@ -53,6 +54,7 @@ class ProjectController extends Controller
             'digitalStats' => $digitalStats,
             'speexStats' => $speexStats,
             'moocStats' => $moocStats,
+            'timingCalculatedChart' => $timingCalculatedChart,
             'timingChart' => $timingChart,
             'lpStats' => $lpStats,
             'lscStats' => $lscStats,
