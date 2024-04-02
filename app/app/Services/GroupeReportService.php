@@ -960,7 +960,7 @@ class GroupeReportService{
 
         $lpEnrolls = Lpenroll::where('group_id', $groupe->id)->whereIn('learner_docebo_id', $learnersIds)->get();
 
-        $lpEnrollsInEnrolled = Lpenroll::where('status', 'enrolled')->whereIn('learner_docebo_id', $learnersIds)->where('group_id', $groupe->id)->count();
+        $lpEnrollsInEnrolled = Lpenroll::where('status', 'not_started')->whereIn('learner_docebo_id', $learnersIds)->where('group_id', $groupe->id)->count();
         $lpEnrollsInProgress = Lpenroll::where('status', 'in_progress')->whereIn('learner_docebo_id', $learnersIds)->where('group_id', $groupe->id)->count();
         $lpEnrollsInProgressMax = Lpenroll::where('status', 'in_progress')->whereIn('learner_docebo_id', $learnersIds)->where('enrollment_completion_percentage','>=','50')->where('group_id', $groupe->id)->count();
         $lpEnrollsInProgressMin = Lpenroll::where('status', 'in_progress')->whereIn('learner_docebo_id', $learnersIds)->where('enrollment_completion_percentage','<','50')->where('group_id', $groupe->id)->count();

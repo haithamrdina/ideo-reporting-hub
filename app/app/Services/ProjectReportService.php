@@ -962,7 +962,7 @@ class ProjectReportService{
 
         $lpEnrolls = Lpenroll::where('project_id', $project->id)->whereIn('learner_docebo_id', $learnersIds)->get();
 
-        $lpEnrollsInEnrolled = Lpenroll::where('status', 'enrolled')->whereIn('learner_docebo_id', $learnersIds)->where('project_id', $project->id)->count();
+        $lpEnrollsInEnrolled = Lpenroll::where('status', 'not_started')->whereIn('learner_docebo_id', $learnersIds)->where('project_id', $project->id)->count();
         $lpEnrollsInProgress = Lpenroll::where('status', 'in_progress')->whereIn('learner_docebo_id', $learnersIds)->where('project_id', $project->id)->count();
         $lpEnrollsInProgressMax = Lpenroll::where('status', 'in_progress')->whereIn('learner_docebo_id', $learnersIds)->where('enrollment_completion_percentage','>=','50')->where('project_id', $project->id)->count();
         $lpEnrollsInProgressMin = Lpenroll::where('status', 'in_progress')->whereIn('learner_docebo_id', $learnersIds)->where('enrollment_completion_percentage','<','50')->where('project_id', $project->id)->count();

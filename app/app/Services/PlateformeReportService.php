@@ -928,7 +928,7 @@ class PlateformeReportService{
         }
         $lpEnrolls = Lpenroll::whereIn('learner_docebo_id' , $learnersIds)->get();
 
-        $lpEnrollsInEnrolled = Lpenroll::where('status', 'enrolled')->whereIn('learner_docebo_id' , $learnersIds)->count();
+        $lpEnrollsInEnrolled = Lpenroll::where('status', 'not_started')->whereIn('learner_docebo_id' , $learnersIds)->count();
         $lpEnrollsInProgress = Lpenroll::where('status', 'in_progress')->whereIn('learner_docebo_id' , $learnersIds)->count();
         $lpEnrollsInProgressMax = Lpenroll::where('status', 'in_progress')->whereIn('learner_docebo_id' , $learnersIds)->where('enrollment_completion_percentage','>=','50')->count();
         $lpEnrollsInProgressMin = Lpenroll::where('status', 'in_progress')->whereIn('learner_docebo_id' , $learnersIds)->where('enrollment_completion_percentage','<','50')->count();
