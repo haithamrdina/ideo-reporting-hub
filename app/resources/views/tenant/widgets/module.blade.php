@@ -382,7 +382,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-4">
+                <div class="col-lg-5">
                     <div class="card h-100">
                         <div class="card-body">
                             <div class="d-flex">
@@ -475,7 +475,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-8">
+                <div class="col-lg-7">
                     <div class="card h-100">
                         <div class="card-header">
                             <h3 class="card-title">Statistique du formation langue par niveau et temps de formation</h3>

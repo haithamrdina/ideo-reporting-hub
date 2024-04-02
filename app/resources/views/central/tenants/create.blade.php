@@ -206,7 +206,18 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="col-lg-6">
+                                            <div class="col-lg-3">
+                                                <div class="mb-3">
+                                                    <div class="form-label">Gamification :</div>
+                                                    <div>
+                                                        <label class="form-check form-check-inline">
+                                                            <input class="form-check-input" type="checkbox"  id="gamification" name="gamification">
+                                                            <span class="form-check-label">Inclure la gamification</span>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-3">
                                                 <div class="mb-3">
                                                     <label class="form-label">Date début contrat :</label>
                                                     <div class="input-icon mb-2">

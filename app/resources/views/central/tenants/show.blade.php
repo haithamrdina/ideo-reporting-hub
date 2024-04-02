@@ -249,7 +249,7 @@
                                                                 <div class="col-md-12 col-lg-12 mt-3 mb-3">
                                                                     <div class="card">
                                                                         <div class="card-header">
-                                                                            <h3 class="card-title">Mise à jour des groupes et des apprenants</h3>
+                                                                            <h3 class="card-title">Groupes et Apprenants</h3>
                                                                         </div>
                                                                         <div class="card-table table-responsive">
                                                                             <table class="table table-vcenter">
@@ -296,7 +296,7 @@
                                                                 <div class="col-md-12 col-lg-12 mb-3">
                                                                     <div class="card">
                                                                         <div class="card-header">
-                                                                            <h3 class="card-title">Mise à jour des inscriptions</h3>
+                                                                            <h3 class="card-title">Inscriptions</h3>
                                                                         </div>
                                                                         <div class="card-table table-responsive">
                                                                             <table class="table table-vcenter">
@@ -377,7 +377,7 @@
                                                                 <div class="col-md-12 col-lg-12 mb-3">
                                                                     <div class="card">
                                                                         <div class="card-header">
-                                                                            <h3 class="card-title">Mise à jour des tickets et des appels</h3>
+                                                                            <h3 class="card-title">Tickets et Appels</h3>
                                                                         </div>
                                                                         <div class="card-table table-responsive">
                                                                             <table class="table table-vcenter">
@@ -424,7 +424,7 @@
                                                                 <div class="col-md-12 col-lg-12 mb-3">
                                                                     <div class="card">
                                                                         <div class="card-header">
-                                                                            <h3 class="card-title">Mise à jour des plans de formation, des modules et des moocs</h3>
+                                                                            <h3 class="card-title">Plans de formation, modules et moocs</h3>
                                                                         </div>
                                                                         <div class="card-table table-responsive">
                                                                             <table class="table table-vcenter">
@@ -482,6 +482,53 @@
                                                                             </table>
                                                                         </div>
                                                                     </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-12 col-lg-12 mt-3 mb-3">
+                                                            <div class="card">
+                                                                <div class="card-header">
+                                                                    <h3 class="card-title">Gamification</h3>
+                                                                </div>
+                                                                <div class="card-table table-responsive">
+                                                                    <table class="table table-vcenter">
+                                                                        <thead>
+                                                                            <tr>
+                                                                                <th>Libellé</th>
+                                                                                <th>Action</th>
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tr>
+                                                                            <td>
+                                                                                Mise à jour des badges
+                                                                            </td>
+                                                                            <td>
+                                                                                <a href="{{ route('admin.tenants.badges.maj', ['tenant' => $tenant->id]) }}" class="ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Lancer la mise à jour des tickets">
+                                                                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewbox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                                                                        <path d="M9 15l6 -6"/>
+                                                                                        <path d="M11 6l.463 -.536a5 5 0 0 1 7.071 7.072l-.534 .464"/>
+                                                                                        <path d="M13 18l-.397 .534a5.068 5.068 0 0 1 -7.127 0a4.972 4.972 0 0 1 0 -7.071l.524 -.463"/>
+                                                                                    </svg>
+                                                                                </a>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td>
+                                                                                *******
+                                                                            </td>
+                                                                            <td>
+                                                                                <a href="#" class="ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Lancer la mise à jour des appels téléphoniques">
+                                                                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewbox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                                                                        <path d="M9 15l6 -6"/>
+                                                                                        <path d="M11 6l.463 -.536a5 5 0 0 1 7.071 7.072l-.534 .464"/>
+                                                                                        <path d="M13 18l-.397 .534a5.068 5.068 0 0 1 -7.127 0a4.972 4.972 0 0 1 0 -7.071l.524 -.463"/>
+                                                                                    </svg>
+                                                                                </a>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </table>
                                                                 </div>
                                                             </div>
                                                         </div>

@@ -5,11 +5,16 @@ namespace App\Http\Controllers\Tenant\Plateforme;
 use App\Charts\InscritPerCategory;
 use App\Charts\InscritPerCategoryAndStatus;
 use App\Exports\ActiveLearnerExport;
+use App\Exports\GamificationExport;
 use App\Exports\LearnerExport;
 use App\Exports\LpExport;
 use App\Exports\LscExport;
 use App\Exports\ModuleExport;
 use App\Http\Controllers\Controller;
+use App\Http\Integrations\Docebo\DoceboConnector;
+use App\Http\Integrations\Docebo\Requests\getBadgeData;
+use App\Http\Integrations\Docebo\Requests\getLeaderboardsData;
+use App\Models\Badge;
 use App\Services\PlateformeReportService;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
@@ -22,7 +27,24 @@ class HomeController extends Controller
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function index() {
-        return view('tenant.plateforme.home');
+        $doceboConnector =  new DoceboConnector;
+        $leaderbordDataResponse = $doceboConnector->send(new getLeaderboardsData(tenant('leaderboard_id')));
+        $leaderboard = $leaderbordDataResponse->dto();
+        $badges = Badge::all();
+
+        $badgeData = [];
+        foreach($badges as $badge){
+            $badgeDataResponse = $doceboConnector->send(new getBadgeData($badge->docebo_id));
+
+            $badgeData[] = [
+                'name' => $badge->name,
+                'code' => $badge->code,
+                'points' => $badge->points,
+                'total' => $badgeDataResponse->json('data.total_count')
+            ];
+        }
+
+        return view('tenant.plateforme.home', compact('leaderboard', 'badgeData'));
     }
 
     public function getData(){
@@ -158,6 +180,11 @@ class HomeController extends Controller
 
     public function exportLsc(){
         return Excel::download(new LscExport, 'rapport_learner_success_center.xlsx');
+    }
+
+    public function exportGamification(){
+        $badgesIDs = Badge::pluck('id')->toArray();
+        return Excel::download(new GamificationExport($badgesIDs), 'rapport_gamification.xlsx');
     }
 }
 

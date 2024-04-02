@@ -8,6 +8,10 @@ return [
 
     'sur_mesure' => null,
 
+    'gamification' => null,
+
+    'leaderboard_id' => null,
+
     'userfields' => [
         'matricule' => null,
         'fonction' => null,

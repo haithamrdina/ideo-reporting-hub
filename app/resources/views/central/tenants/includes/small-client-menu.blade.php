@@ -26,16 +26,18 @@
         <h6 class="dropdown-header text-blue">E-LEARNING</h6>
         <a href="{{ route('admin.tenants.lps',['tenant' => $tenant->id]) }}" class="dropdown-item">Plans de formation</a>
         <a href="#" class="dropdown-item">Modules</a>
-        <a href="#" class="dropdown-item">Mooc</a>
+        <a href="{{ route('admin.tenants.moocs',['tenant' => $tenant->id]) }}" class="dropdown-item">Mooc</a>
         <h6 class="dropdown-header text-blue">INSCRIPTIONS</h6>
-        <a href="#" class="dropdown-item">Plan de formation</a>
-        <a href="#" class="dropdown-item">Softskills</a>
-        <a href="#" class="dropdown-item">Digital</a>
-        <a href="#" class="dropdown-item">Langue</a>
-        <a href="#" class="dropdown-item">Mooc</a>
+        <a href="{{ route('admin.tenants.softskills.enroll',['tenant' => $tenant->id]) }}" class="dropdown-item">Softskills</a>
+        <a href="{{ route('admin.tenants.digitals.enroll',['tenant' => $tenant->id]) }}" class="dropdown-item">Digital</a>
+        <a href="{{ route('admin.tenants.langues.enroll',['tenant' => $tenant->id]) }}" class="dropdown-item">Langue</a>
+        <a href="{{ route('admin.tenants.moocs.enroll',['tenant' => $tenant->id]) }}" class="dropdown-item">Mooc</a>
+        <a href="{{ route('admin.tenants.lps.enroll',['tenant' => $tenant->id]) }}" class="dropdown-item">Plan de formation</a>
         <h6 class="dropdown-header text-blue">LEARNER SUCCESS CENTER</h6>
-        <a href="#" class="dropdown-item">Appels téléphoniques</a>
-        <a href="#" class="dropdown-item">Tickets</a>
+        <a href="{{ route('admin.tenants.calls',['tenant' => $tenant->id]) }}" class="dropdown-item">Appels téléphoniques</a>
+        <a href="{{ route('admin.tenants.tickets',['tenant' => $tenant->id]) }}" class="dropdown-item">Tickets</a>
+        <h6 class="dropdown-header text-blue">GAMIFICATION</h6>
+        <a href="{{ route('admin.tenants.badges',['tenant' => $tenant->id]) }}" class="dropdown-item">Badges</a>
     </div>
 </div>
 <a href="{{ route('admin.tenants.index') }}" class="btn text-dark d-none d-sm-inline-block">

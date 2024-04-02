@@ -11,6 +11,7 @@ use App\Http\Integrations\Zendesk\Requests\ZendeskOrganizations;
 use App\Http\Integrations\Zendesk\ZendeskConnector;
 use App\Http\Requests\Central\Tenant\StoreRequest;
 use App\Http\Requests\Central\Tenant\UpdateRequest;
+use App\Jobs\UpdateBadgeJob;
 use App\Jobs\UpdateCallJob;
 use App\Jobs\UpdateEnrollementLangueJob;
 use App\Jobs\UpdateEnrollementModuleJob;
@@ -22,6 +23,7 @@ use App\Jobs\UpdateLpJob;
 use App\Jobs\UpdateModuleJob;
 use App\Jobs\UpdateMoocJob;
 use App\Jobs\UpdateTicketJob;
+use App\Models\Badge;
 use App\Models\Call;
 use App\Models\Enrollmodule;
 use App\Models\Enrollmooc;
@@ -93,6 +95,7 @@ class TenantController extends Controller
         $cin = $request->has('cin') ? true : false;
         $archive = $request->has('archive') ? true : false;
         $sur_mesure = $request->has('sur_mesure') ? true : false;
+        $gamification = $request->has('gamification') ? true : false;
 
         $cmi_time = $request->has('cmi_time') ? true : false;
         $recommended_time = $request->has('recommended_time') ? true : false;
@@ -116,6 +119,7 @@ class TenantController extends Controller
 
             'archive'=> $archive,
             'sur_mesure'=> $sur_mesure,
+            'gamification'=> $gamification,
 
             'matricule' => $matricule,
             'fonction'=> $fonction ,
@@ -471,5 +475,28 @@ class TenantController extends Controller
             $enrollLps = Lpenroll::with('project', 'group', 'learner', 'lp')->get();
         tenancy()->end();
         return view('central.lps.enrollment', compact('tenant','enrollLps'));
+    }
+
+
+    /**
+     * GET Badges for the specified resource.
+     */
+    public function getBadges(string $id)
+    {
+        $tenant = Tenant::findOrFail($id);
+        tenancy()->initialize($tenant);
+            $badges = Badge::all();
+        tenancy()->end();
+        return view('central.badges.index', compact('tenant', 'badges'));
+    }
+
+    /**
+     * Update Courses for the specified resource.
+     */
+    public function majBadges(string $id)
+    {
+        $tenant = Tenant::findOrFail($id);
+        UpdateBadgeJob::dispatch($id);
+        return redirect()->route('admin.tenants.show' , ['tenant' => $tenant]);
     }
 }

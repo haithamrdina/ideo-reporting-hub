@@ -16,7 +16,7 @@
                        Gestion des tenants
                     </div>
                     <h2 class="page-title">
-                        Plans de formation
+                        Badges
                     </h2>
                 </div>
                 <div class="col-auto ms-auto d-print-none">
@@ -43,7 +43,7 @@
                         <div>
                             <div class="row align-items-center p-2 m-2">
                                 <div class="col-auto">
-                                    <h2>Liste des plans de formation</h2>
+                                    <h2>Liste des badges</h2>
                                 </div>
                             </div>
                             <div>
@@ -78,29 +78,33 @@
                                                 <tr>
                                                     <th><button class="table-sort" data-sort="sort-doceboid">ID docebo</button></th>
                                                     <th><button class="table-sort" data-sort="sort-code">Code</button></th>
-                                                    <th><button class="table-sort" data-sort="sort-name">intitulé</button></th>
+                                                    <th><button class="table-sort" data-sort="sort-name">Name</button></th>
+                                                    <th><button class="table-sort" data-sort="sort-points">Points</button></th>
                                                 </tr>
                                             </thead>
                                             <tbody class="table-tbody">
                                                 @php
                                                     use Carbon\Carbon;
                                                 @endphp
-                                                @if (count($lps) > 0)
-                                                    @foreach ($lps as $lp)
+                                                @if (count($badges) > 0)
+                                                    @foreach ($badges as $badge)
                                                             <td class="sort-doceboid">
-                                                                {{ $lp->docebo_id}}
+                                                                {{ $badge->docebo_id}}
                                                             </td>
                                                             <td class="sort-code">
-                                                                {{ $lp->code}}
+                                                                {{ $badge->code}}
                                                             </td>
                                                             <td class="sort-name">
-                                                                {{ $lp->name}}
+                                                                {{ $badge->name}}
+                                                            </td>
+                                                            <td class="sort-points">
+                                                                {{ $badge->points}}
                                                             </td>
                                                         </tr>
                                                     @endforeach
                                                 @else
                                                     <tr>
-                                                        <td colspan="3">
+                                                        <td colspan="4">
                                                             <div class="empty-img">
                                                                 <img src="{{ global_asset('static/illustrations/no-data-found.svg') }}"
                                                                     class="w-100" height="128" alt="">
@@ -140,6 +144,7 @@
                 'sort-doceboid',
                 'sort-code',
                 'sort-name',
+                'sort-points',
             ],
             page: 17,
             pagination: [{

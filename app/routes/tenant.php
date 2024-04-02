@@ -9,6 +9,9 @@ use App\Http\Controllers\Tenant\Project\HomeController as ProjectHomeController;
 use App\Http\Controllers\Tenant\Project\GroupController as ProjectGroupController;
 
 use App\Http\Controllers\Tenant\Group\HomeController as GroupHomeController;
+use App\Http\Integrations\Docebo\DoceboConnector;
+use App\Http\Integrations\Docebo\Requests\getLeaderboardsData;
+use App\Models\Tenant;
 use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Middleware\InitializeTenancyByDomainOrSubdomain;
 use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
@@ -32,6 +35,12 @@ Route::middleware([
     PreventAccessFromCentralDomains::class,
     ScopeSessions::class
 ])->group(function () {
+
+    Route::get('gamif' , function(){
+        $doceboConnector = new DoceboConnector();
+        $leaderbordDataResponse = $doceboConnector->send(new getLeaderboardsData(tenant('leaderboard_id')));
+        dd($leaderbordDataResponse->dto());
+    });
     Route::name('tenant.')->group(function () {
         require __DIR__.'/tenant-auth.php';
 
@@ -48,6 +57,7 @@ Route::middleware([
             Route::get('/modules/export',[PlateformeHomeController::class , 'exportModules'])->name('modules.export');
             Route::get('/lps/export',[PlateformeHomeController::class , 'exportLps'])->name('lps.export');
             Route::get('/lsc/export',[PlateformeHomeController::class , 'exportLsc'])->name('lsc.export');
+            Route::get('/gamification/export',[PlateformeHomeController::class , 'exportGamification'])->name('gamification.export');
 
 
             Route::get('/projects', [PlateformeProjectController::class , 'index'])->name('projects');

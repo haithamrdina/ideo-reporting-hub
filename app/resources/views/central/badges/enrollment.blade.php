@@ -43,11 +43,11 @@
                         <div>
                             <div class="row align-items-center p-2 m-2">
                                 <div class="col-auto">
-                                    <h2>Liste des plans de formation</h2>
+                                    <h2>Liste des inscriptions aux plans de formation</h2>
                                 </div>
                             </div>
                             <div>
-                                <div id="table-lps" class="table-responsive">
+                                <div id="table-enrolllps" class="table-responsive">
                                     <div class="card-body border-bottom py-3">
                                         <div class="d-flex">
                                             <div class="text-muted">
@@ -76,31 +76,71 @@
                                         <table class="table card-table table-vcenter text-nowrap datatable">
                                             <thead>
                                                 <tr>
-                                                    <th><button class="table-sort" data-sort="sort-doceboid">ID docebo</button></th>
-                                                    <th><button class="table-sort" data-sort="sort-code">Code</button></th>
-                                                    <th><button class="table-sort" data-sort="sort-name">intitulé</button></th>
+                                                    <th><button class="table-sort" data-sort="sort-project">Projet</button></th>
+                                                    <th><button class="table-sort" data-sort="sort-group">Groupe</button></th>
+                                                    <th><button class="table-sort" data-sort="sort-username">Username</button></th>
+                                                    <th><button class="table-sort" data-sort="sort-lp">Plan de formation</button></th>
+                                                    <th><button class="table-sort" data-sort="sort-status">Statut</button></th>
+                                                    <th><button class="table-sort" data-sort="sort-completionpercent">Pourcentage d'achèvement</button></th>
+                                                    <th><button class="table-sort" data-sort="sort-session">Temps de session</button></th>
+                                                    <th><button class="table-sort" data-sort="sort-cmi">Temps d'engagement</button></th>
+                                                    <th><button class="table-sort" data-sort="sort-calculated">Temps calculé</button></th>
+                                                    <th><button class="table-sort" data-sort="sort-recommended">Temps pédagogique recommandé</button></th>
+                                                    <th><button class="table-sort" data-sort="sort-created">date de création</button></th>
+                                                    <th><button class="table-sort" data-sort="sort-updated">date du dernière modification</button></th>
+                                                    <th><button class="table-sort" data-sort="sort-completed">date du completion</button></th>
                                                 </tr>
                                             </thead>
                                             <tbody class="table-tbody">
                                                 @php
                                                     use Carbon\Carbon;
                                                 @endphp
-                                                @if (count($lps) > 0)
-                                                    @foreach ($lps as $lp)
-                                                            <td class="sort-doceboid">
-                                                                {{ $lp->docebo_id}}
+                                                @if (count($enrollLps) > 0)
+                                                    @foreach ($enrollLps as $enroll)
+                                                            <td class="sort-project">
+                                                                {{ $enroll->project->name}}
                                                             </td>
-                                                            <td class="sort-code">
-                                                                {{ $lp->code}}
+                                                            <td class="sort-group">
+                                                                {{ $enroll->group->name}}
                                                             </td>
-                                                            <td class="sort-name">
-                                                                {{ $lp->name}}
+                                                            <td class="sort-username">
+                                                                {{ $enroll->learner->username}}
+                                                            </td>
+                                                            <td class="sort-module">
+                                                                {{ $enroll->lp->name}}
+                                                            </td>
+                                                            <td class="sort-status">
+                                                                {{ $enroll->status}}
+                                                            </td>
+                                                            <td class="sort-completionpercent">
+                                                                {{ $enroll->enrollment_completion_percentage}} %
+                                                            </td>
+                                                            <td class="sort-session">
+                                                                {{ $enroll->session_time}}
+                                                            </td>
+                                                            <td class="sort-cmi">
+                                                                {{ $enroll->cmi_time}}
+                                                            </td>
+                                                            <td class="sort-calculated">
+                                                                {{ $enroll->calculated_time}}
+                                                            </td>
+                                                            <td class="sort-recommended">
+                                                                {{ $enroll->recommended_time}}
+                                                            </td>
+                                                            <td class="sort-created" data-created="{{ date('U', strtotime($enroll->enrollment_created_at)) }}">
+                                                                {{ date('d-m-Y H:i:s', strtotime($enroll->enrollment_created_at)) }}
+                                                            </td>
+                                                            <td class="sort-updated" data-updated="{{ date('U', strtotime($enroll->enrollment_updated_at)) }}">
+                                                                {{ $enroll->enrollment_updated_at != null ?  date('d-m-Y H:i:s', strtotime($enroll->enrollment_updated_at)) : '******' }}
+                                                            </td>
+                                                            <td class="sort-completed" data-completed="{{ date('U', strtotime($enroll->enrollment_completed_at)) }}">
+                                                                {{ $enroll->enrollment_completed_at != null ?  date('d-m-Y H:i:s', strtotime($enroll->enrollment_completed_at)) : '******' }}
                                                             </td>
                                                         </tr>
                                                     @endforeach
                                                 @else
                                                     <tr>
-                                                        <td colspan="3">
+                                                        <td colspan="13">
                                                             <div class="empty-img">
                                                                 <img src="{{ global_asset('static/illustrations/no-data-found.svg') }}"
                                                                     class="w-100" height="128" alt="">
@@ -137,9 +177,29 @@
             sortClass: 'table-sort',
             listClass: 'table-tbody',
             valueNames: [
-                'sort-doceboid',
-                'sort-code',
-                'sort-name',
+                'sort-project',
+                'sort-group',
+                'sort-username',
+                'sort-lp',
+                'sort-status',
+                'sort-session',
+                'sort-cmi',
+                'sort-caclulated',
+                'sort-recommended',
+                'sort-completionpercent',
+                {
+                    attr: 'data-created',
+                    name: 'sort-created'
+                },
+                {
+                    attr: 'data-updated',
+                    name: 'sort-updated'
+                }
+                ,
+                {
+                    attr: 'data-completed',
+                    name: 'sort-completed'
+                }
             ],
             page: 17,
             pagination: [{
@@ -150,7 +210,7 @@
                 item: '<li class="page-item"><a class="btn btn-icon btn-red mx-1 page" href="#"></a></li>'
             }]
         };
-        var listjs = new List('table-lps', options);
+        var listjs = new List('table-enrolllps', options);
         var listjsItemsPerPage = document.getElementById('listjs-items-per-page');
         if(listjsItemsPerPage != null){
             listjsItemsPerPage.addEventListener('change', function(e) {

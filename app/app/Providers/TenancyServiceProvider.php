@@ -115,6 +115,8 @@ class TenancyServiceProvider extends ServiceProvider
 
             'sur_mesure' => 'tenantconfigfields.sur_mesure',
 
+            'gamification' => 'tenantconfigfields.gamification',
+            'learderboard_id' => 'tenantconfigfields.learderboard_id',
             'cmi_time' => 'tenantconfigfields.enrollmentfields.cmi_time',
             'calculated_time' => 'tenantconfigfields.enrollmentfields.calculated_time',
             'recommended_time' => 'tenantconfigfields.enrollmentfields.recommended_time',

@@ -56,4 +56,10 @@
             Tickets
         </a>
     </div>
+    <h4 class="subheader mt-4">GAMIFICATION</h4>
+    <div class="list-group list-group-transparent">
+        <a href="{{ route('admin.tenants.badges',['tenant' => $tenant->id]) }}" class="list-group-item list-group-item-action d-flex align-items-center {{ request()->routeIs('admin.tenants.badges') ? 'active' : '' }}">
+            Badges
+        </a>
+    </div>
 </div>

@@ -60,6 +60,7 @@ use OpenAI\Laravel\Facades\OpenAI;
 /**
  *  start TEST FUNCTION
  */
+
 Route::get('/all-test' , function(){
     $start_datetime = date('Y-m-d H:i:s');
     Log::info("[$start_datetime]: Update Data for all tenants has finished.");
@@ -296,6 +297,10 @@ Route::name('admin.')->group(function () {
 
         Route::get('tenants/{tenant}/enrollements/lps/maj',[ TenantController::class, 'majEnrollsLps'])->name('tenants.lps.enroll.maj');
         Route::get('tenants/{tenant}/enrollements/lps',[ TenantController::class, 'getEnrollsLps'])->name('tenants.lps.enroll');
+
+
+        Route::get('tenants/{tenant}/badges',[ TenantController::class, 'getBadges'])->name('tenants.badges');
+        Route::get('tenants/{tenant}/maj/badges',[ TenantController::class, 'majBadges'])->name('tenants.badges.maj');
 
     });
 });
