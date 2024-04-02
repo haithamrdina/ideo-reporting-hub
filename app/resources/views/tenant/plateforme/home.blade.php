@@ -44,7 +44,7 @@
     </div>
 @stop
 @section('page-content')
-    @if ($gamification !== false || $gamification !== null)
+    @if ($gamification !== false)
         <div class="page-body">
             <div class="container-fluid">
                 <!-- loader -->
