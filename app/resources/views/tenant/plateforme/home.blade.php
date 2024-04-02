@@ -123,29 +123,31 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        @foreach($leaderboard as $data)
-                                                        <tr>
-                                                            <td>
-                                                                <div class="row align-items-center">
-                                                                    <div class="col-auto">
-                                                                        <div class="font-weight-medium">
-                                                                           {{$data['fullname']}}</br>{{ $data['username'] }}
-                                                                        </div>
-                                                                        <div class="text-warning">
-                                                                            {{ $data['group'] }}
+                                                        @isset($leaderboard)
+                                                            @foreach($leaderboard as $data)
+                                                            <tr>
+                                                                <td>
+                                                                    <div class="row align-items-center">
+                                                                        <div class="col-auto">
+                                                                            <div class="font-weight-medium">
+                                                                            {{$data['fullname']}}</br>{{ $data['username'] }}
+                                                                            </div>
+                                                                            <div class="text-warning">
+                                                                                {{ $data['group'] }}
+                                                                            </div>
                                                                         </div>
                                                                     </div>
-                                                                </div>
-                                                            </td>
-                                                            <td>{{ $data['points'] }}</td>
-                                                            <td class="w-33">
-                                                                <div class="progress progress-xs">
-                                                                    <div class="progress-bar bg-primary"
-                                                                        style="{{'width: '.$data['percentage'].'%'}}"></div>
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                        @endforeach
+                                                                </td>
+                                                                <td>{{ $data['points'] }}</td>
+                                                                <td class="w-33">
+                                                                    <div class="progress progress-xs">
+                                                                        <div class="progress-bar bg-primary"
+                                                                            style="{{'width: '.$data['percentage'].'%'}}"></div>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                            @endforeach
+                                                        @endisset
                                                     </tbody>
                                                 </table>
                                             </div>
@@ -163,34 +165,36 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        @foreach($badgeData as $item)
-                                                        <tr>
-                                                            <td>
-                                                                <div class="row align-items-center">
-                                                                    <div class="col-auto">
-                                                                        <div class="font-weight-medium">
-                                                                            {{ $item['name'] }}
-                                                                        </div>
-                                                                        <div class="text-warning">
-                                                                            {{ $item['code'] }}
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </td>
-                                                            <td colspan="2" class="w-50">
-                                                                <div class="row align-items-center">
-                                                                    <div class="col-auto">
-                                                                        <div class="font-weight-medium">
-                                                                            points : {{ $item['points'] }}.
-                                                                        </div>
-                                                                        <div class="text-warning">
-                                                                            total apprenants : {{ $item['total'] }}.
+                                                        @isset($badgeData)
+                                                            @foreach($badgeData as $item)
+                                                            <tr>
+                                                                <td>
+                                                                    <div class="row align-items-center">
+                                                                        <div class="col-auto">
+                                                                            <div class="font-weight-medium">
+                                                                                {{ $item['name'] }}
+                                                                            </div>
+                                                                            <div class="text-warning">
+                                                                                {{ $item['code'] }}
+                                                                            </div>
                                                                         </div>
                                                                     </div>
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                        @endforeach
+                                                                </td>
+                                                                <td colspan="2" class="w-50">
+                                                                    <div class="row align-items-center">
+                                                                        <div class="col-auto">
+                                                                            <div class="font-weight-medium">
+                                                                                points : {{ $item['points'] }}.
+                                                                            </div>
+                                                                            <div class="text-warning">
+                                                                                total apprenants : {{ $item['total'] }}.
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                            @endforeach
+                                                        @endisset
                                                     </tbody>
                                                 </table>
                                             </div>
