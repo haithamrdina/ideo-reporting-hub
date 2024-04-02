@@ -27,24 +27,27 @@ class HomeController extends Controller
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function index() {
-        $doceboConnector =  new DoceboConnector;
-        $leaderbordDataResponse = $doceboConnector->send(new getLeaderboardsData(tenant('leaderboard_id')));
-        $leaderboard = $leaderbordDataResponse->dto();
-        $badges = Badge::all();
+        if(tenant('gamification') == true){
+            $doceboConnector =  new DoceboConnector;
+            $leaderbordDataResponse = $doceboConnector->send(new getLeaderboardsData(tenant('leaderboard_id')));
+            $leaderboard = $leaderbordDataResponse->dto();
+            $badges = Badge::all();
 
-        $badgeData = [];
-        foreach($badges as $badge){
-            $badgeDataResponse = $doceboConnector->send(new getBadgeData($badge->docebo_id));
+            $badgeData = [];
+            foreach($badges as $badge){
+                $badgeDataResponse = $doceboConnector->send(new getBadgeData($badge->docebo_id));
 
-            $badgeData[] = [
-                'name' => $badge->name,
-                'code' => $badge->code,
-                'points' => $badge->points,
-                'total' => $badgeDataResponse->json('data.total_count')
-            ];
+                $badgeData[] = [
+                    'name' => $badge->name,
+                    'code' => $badge->code,
+                    'points' => $badge->points,
+                    'total' => $badgeDataResponse->json('data.total_count')
+                ];
+            }
+            return view('tenant.plateforme.home', compact('leaderboard', 'badgeData'));
+        }else{
+            return view('tenant.plateforme.home');
         }
-
-        return view('tenant.plateforme.home', compact('leaderboard', 'badgeData'));
     }
 
     public function getData(){
