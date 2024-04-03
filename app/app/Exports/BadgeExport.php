@@ -46,6 +46,7 @@ class BadgeExport  implements FromArray, WithHeadings, WithStrictNullComparison 
             'Filiale',
             'Username',
             'Nom complet',
+            'Categorie',
             'Points',
             'Date du dernier achievement'
         ];

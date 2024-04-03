@@ -45,6 +45,7 @@ class getBadgeData extends Request implements Paginatable
                     $learner->group->name,
                     $learner->username,
                     $learner->lastname .' '. $learner->firstname,
+                    $learner->categorie != null ? $learner->categorie : '******',
                     $item['points_count'],
                     (new \DateTime($item['last_achieved_date']))->format('Y-m-d H:i:s')
                 ];
