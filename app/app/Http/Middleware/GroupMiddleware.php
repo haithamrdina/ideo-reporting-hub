@@ -31,6 +31,7 @@ class GroupMiddleware
         if (Auth::guard('user')->user()->isProject()) {
             return redirect()->route('tenant.project.home');
         }
-        return redirect()->route('tenant.login');
+
+        abort(403, 'Unauthorized');
     }
 }

@@ -32,6 +32,6 @@ class PlateformeMiddleware
             return redirect()->route('tenant.group.home');
         }
 
-        return redirect()->route('tenant.login');
+        abort(403, 'Unauthorized');
     }
 }
