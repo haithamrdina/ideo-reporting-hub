@@ -32,6 +32,6 @@ class ProjectMiddleware
             return redirect()->route('tenant.group.home');
         }
 
-        abort(403, 'Unauthorized');
+        return $next($request);
     }
 }
