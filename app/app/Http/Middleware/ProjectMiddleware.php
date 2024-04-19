@@ -32,6 +32,6 @@ class ProjectMiddleware
             return redirect()->route('tenant.group.home');
         }
 
-        return $next($request);
+        return redirect()->route('tenant.login');
     }
 }

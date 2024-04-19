@@ -31,6 +31,6 @@ class GroupMiddleware
         if (Auth::guard('user')->user()->isProject()) {
             return redirect()->route('tenant.project.home');
         }
-        return $next($request);
+        return redirect()->route('tenant.login');
     }
 }
