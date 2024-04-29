@@ -20,15 +20,15 @@ class ProjectMiddleware
             return redirect()->route('tenant.login');
         }
 
-        if (Auth::guard('user')->user()->isProject()) {
+        if (Auth::guard('user')->check() && Auth::guard('user')->user()->isProject()) {
             return $next($request);
         }
 
-        if (Auth::guard('user')->user()->isPlateforme()) {
+        if (Auth::guard('user')->check() && Auth::guard('user')->user()->isPlateforme()) {
             return redirect()->route('tenant.plateforme.home');
         }
 
-        if (Auth::guard('user')->user()->isGroup()) {
+        if (Auth::guard('user')->check() && Auth::guard('user')->user()->isGroup()) {
             return redirect()->route('tenant.group.home');
         }
 
