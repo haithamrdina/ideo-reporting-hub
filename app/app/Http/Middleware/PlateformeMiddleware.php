@@ -16,6 +16,7 @@ class PlateformeMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
+
         if (!Auth::guard('user')->check()) {
             return redirect()->route('tenant.login');
         }

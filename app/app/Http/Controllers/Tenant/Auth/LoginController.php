@@ -68,6 +68,7 @@ class LoginController extends Controller
      */
     public function showLoginForm()
     {
+
         return view('tenant.auth.login');
     }
 
@@ -80,12 +81,12 @@ class LoginController extends Controller
     public function logout(Request $request)
     {
 
-        $homeRoute = $this->getHomeRoute();  // Get the appropriate home route based on user's role
+        $homeRoute = $this->redirectTo(); // Get the appropriate home route based on user's role
+
         $this->guard('user')->logout();
 
         $request->session()->invalidate();
-        $request->session()->regenerate();  // Regenerate the session ID
-
+        $request->session()->regenerateToken(); // Regenerate the CSRF token
 
         return $this->loggedOut($request) ?: redirect()->route($homeRoute);
     }
