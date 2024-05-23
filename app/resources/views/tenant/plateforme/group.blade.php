@@ -78,7 +78,8 @@
                             <a href="." class="navbar-brand navbar-brand-autodark"><img
                                     src="{{ global_asset('static/logo/logo.svg') }}" height="36" alt=""></a>
                         </div>
-                        <div class="text-muted mb-3">la préparation de vos données</div>
+                        <div class="text-muted mb-3">Vos données sont en cours de préparation, merci de patienter un
+                            instant.</div>
                         <div class="progress progress-sm mb-3">
                             <div class="progress-bar progress-bar-indeterminate"></div>
                         </div>

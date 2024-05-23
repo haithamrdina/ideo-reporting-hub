@@ -55,7 +55,8 @@
                                 <a href="." class="navbar-brand navbar-brand-autodark"><img
                                         src="{{ global_asset('static/logo/logo.svg') }}" height="36" alt=""></a>
                             </div>
-                            <div class="text-muted mb-3">la préparation de vos données</div>
+                            <div class="text-muted mb-3">Vos données sont en cours de préparation, merci de patienter un
+                                instant.</div>
                             <div class="progress progress-sm mb-3">
                                 <div class="progress-bar progress-bar-indeterminate"></div>
                             </div>
@@ -86,10 +87,10 @@
                                         <div class="card-actions btn-actions d-md-block d-sm-block d-lg-block">
                                             <div class="row g-2">
                                                 <div class="col-auto">
-                                                    <a href="{{ route('tenant.plateforme.gamification.export') }}" class="btn btn-icon text-black"
-                                                        aria-label="Button" id="btnGamificationExport"
-                                                        data-bs-toggle="tooltip" data-bs-placement="top"
-                                                        title="Générer votre rapport">
+                                                    <a href="{{ route('tenant.plateforme.gamification.export') }}"
+                                                        class="btn btn-icon text-black" aria-label="Button"
+                                                        id="btnGamificationExport" data-bs-toggle="tooltip"
+                                                        data-bs-placement="top" title="Générer votre rapport">
                                                         <svg xmlns="http://www.w3.org/2000/svg"
                                                             class="icon icon-tabler icon-tabler-file-spreadsheet"
                                                             width="24" height="24" viewBox="0 0 24 24"
@@ -124,28 +125,29 @@
                                                     </thead>
                                                     <tbody>
                                                         @isset($leaderboard)
-                                                            @foreach($leaderboard as $data)
-                                                            <tr>
-                                                                <td>
-                                                                    <div class="row align-items-center">
-                                                                        <div class="col-auto">
-                                                                            <div class="font-weight-medium">
-                                                                            {{$data['fullname']}}</br>{{ $data['username'] }}
-                                                                            </div>
-                                                                            <div class="text-warning">
-                                                                                {{ $data['group'] }}
+                                                            @foreach ($leaderboard as $data)
+                                                                <tr>
+                                                                    <td>
+                                                                        <div class="row align-items-center">
+                                                                            <div class="col-auto">
+                                                                                <div class="font-weight-medium">
+                                                                                    {{ $data['fullname'] }}</br>{{ $data['username'] }}
+                                                                                </div>
+                                                                                <div class="text-warning">
+                                                                                    {{ $data['group'] }}
+                                                                                </div>
                                                                             </div>
                                                                         </div>
-                                                                    </div>
-                                                                </td>
-                                                                <td>{{ $data['points'] }}</td>
-                                                                <td class="w-33">
-                                                                    <div class="progress progress-xs">
-                                                                        <div class="progress-bar bg-primary"
-                                                                            style="{{'width: '.$data['percentage'].'%'}}"></div>
-                                                                    </div>
-                                                                </td>
-                                                            </tr>
+                                                                    </td>
+                                                                    <td>{{ $data['points'] }}</td>
+                                                                    <td class="w-33">
+                                                                        <div class="progress progress-xs">
+                                                                            <div class="progress-bar bg-primary"
+                                                                                style="{{ 'width: ' . $data['percentage'] . '%' }}">
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
                                                             @endforeach
                                                         @endisset
                                                     </tbody>
@@ -166,33 +168,33 @@
                                                     </thead>
                                                     <tbody>
                                                         @isset($badgeData)
-                                                            @foreach($badgeData as $item)
-                                                            <tr>
-                                                                <td>
-                                                                    <div class="row align-items-center">
-                                                                        <div class="col-auto">
-                                                                            <div class="font-weight-medium">
-                                                                                {{ $item['name'] }}
-                                                                            </div>
-                                                                            <div class="text-warning">
-                                                                                {{ $item['code'] }}
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </td>
-                                                                <td colspan="2" class="w-50">
-                                                                    <div class="row align-items-center">
-                                                                        <div class="col-auto">
-                                                                            <div class="font-weight-medium">
-                                                                                points : {{ $item['points'] }}.
-                                                                            </div>
-                                                                            <div class="text-warning">
-                                                                                total apprenants : {{ $item['total'] }}.
+                                                            @foreach ($badgeData as $item)
+                                                                <tr>
+                                                                    <td>
+                                                                        <div class="row align-items-center">
+                                                                            <div class="col-auto">
+                                                                                <div class="font-weight-medium">
+                                                                                    {{ $item['name'] }}
+                                                                                </div>
+                                                                                <div class="text-warning">
+                                                                                    {{ $item['code'] }}
+                                                                                </div>
                                                                             </div>
                                                                         </div>
-                                                                    </div>
-                                                                </td>
-                                                            </tr>
+                                                                    </td>
+                                                                    <td colspan="2" class="w-50">
+                                                                        <div class="row align-items-center">
+                                                                            <div class="col-auto">
+                                                                                <div class="font-weight-medium">
+                                                                                    points : {{ $item['points'] }}.
+                                                                                </div>
+                                                                                <div class="text-warning">
+                                                                                    total apprenants : {{ $item['total'] }}.
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
                                                             @endforeach
                                                         @endisset
                                                     </tbody>
@@ -218,7 +220,8 @@
                                 <a href="." class="navbar-brand navbar-brand-autodark"><img
                                         src="{{ global_asset('static/logo/logo.svg') }}" height="36" alt=""></a>
                             </div>
-                            <div class="text-muted mb-3">la préparation de vos données</div>
+                            <div class="text-muted mb-3">Vos données sont en cours de préparation, merci de patienter un
+                                instant.</div>
                             <div class="progress progress-sm mb-3">
                                 <div class="progress-bar progress-bar-indeterminate"></div>
                             </div>

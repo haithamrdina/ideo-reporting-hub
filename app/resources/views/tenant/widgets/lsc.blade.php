@@ -17,34 +17,44 @@
                         </div>
                     </div>
                     <div class="col-auto">
-                        <a href="javascript:void(0)" class="btn btn-icon" aria-label="Button" id="btnLscFilter" data-bs-toggle="tooltip" data-bs-placement="top" title="Appliquer le filtre">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-filter-check" width="24" height="24" viewbox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <a href="javascript:void(0)" class="btn btn-icon" aria-label="Button" id="btnLscFilter"
+                            data-bs-toggle="tooltip" data-bs-placement="top" title="Appliquer le filtre">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-filter-check"
+                                width="24" height="24" viewbox="0 0 24 24" stroke-width="2" stroke="currentColor"
+                                fill="none" stroke-linecap="round" stroke-linejoin="round">
                                 <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                <path d="M11.18 20.274l-2.18 .726v-8.5l-4.48 -4.928a2 2 0 0 1 -.52 -1.345v-2.227h16v2.172a2 2 0 0 1 -.586 1.414l-4.414 4.414v3"></path>
+                                <path
+                                    d="M11.18 20.274l-2.18 .726v-8.5l-4.48 -4.928a2 2 0 0 1 -.52 -1.345v-2.227h16v2.172a2 2 0 0 1 -.586 1.414l-4.414 4.414v3">
+                                </path>
                                 <path d="M15 19l2 2l4 -4"></path>
                             </svg>
                         </a>
                     </div>
                     <div class="col-auto">
-                        <a href="javascript:void(0)" class="btn btn-icon" aria-label="Button" id="btnLscReload" data-bs-toggle="tooltip" data-bs-placement="top" title="Supprimer le filtre">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-refresh" width="24" height="24" viewbox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <a href="javascript:void(0)" class="btn btn-icon" aria-label="Button" id="btnLscReload"
+                            data-bs-toggle="tooltip" data-bs-placement="top" title="Supprimer le filtre">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-refresh"
+                                width="24" height="24" viewbox="0 0 24 24" stroke-width="2" stroke="currentColor"
+                                fill="none" stroke-linecap="round" stroke-linejoin="round">
                                 <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
                                 <path d="M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4"></path>
                                 <path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4"></path>
                             </svg>
                         </a>
                     </div>
-                    @if( request()->routeIs('tenant.plateforme.home') || request()->routeIs('tenant.project.home') || request()->routeIs('tenant.group.home') )
+                    @if (request()->routeIs('tenant.plateforme.home') ||
+                            request()->routeIs('tenant.project.home') ||
+                            request()->routeIs('tenant.group.home'))
                         <div class="col-auto">
-                            <a href="javascript:void(0)" class="btn  text-black" aria-label="Button" id="btnLscExport" data-bs-toggle="tooltip" data-bs-placement="top" title="Générer votre rapport">
+                            <a href="javascript:void(0)" class="btn  text-black" aria-label="Button" id="btnLscExport"
+                                data-bs-toggle="tooltip" data-bs-placement="top" title="Générer votre rapport">
                                 <svg xmlns="http://www.w3.org/2000/svg"
-                                    class="icon icon-tabler icon-tabler-file-spreadsheet" width="24"
-                                    height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
-                                    fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    class="icon icon-tabler icon-tabler-file-spreadsheet" width="24" height="24"
+                                    viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                    stroke-linecap="round" stroke-linejoin="round">
                                     <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
                                     <path d="M14 3v4a1 1 0 0 0 1 1h4"></path>
-                                    <path
-                                        d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z">
+                                    <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z">
                                     </path>
                                     <path d="M8 11h8v7h-8z"></path>
                                     <path d="M8 15h8"></path>
@@ -61,9 +71,11 @@
             <div class="container container-slim py-4 d-none" id="loaderLsc">
                 <div class="text-center">
                     <div class="mb-3">
-                        <a href="." class="navbar-brand navbar-brand-autodark"><img src="{{ global_asset('static/logo/logo.svg') }}" height="36" alt=""></a>
+                        <a href="." class="navbar-brand navbar-brand-autodark"><img
+                                src="{{ global_asset('static/logo/logo.svg') }}" height="36" alt=""></a>
                     </div>
-                    <div class="text-muted mb-3">la préparation de vos données</div>
+                    <div class="text-muted mb-3">Vos données sont en cours de préparation, merci de patienter un
+                        instant.</div>
                     <div class="progress progress-sm mb-3">
                         <div class="progress-bar progress-bar-indeterminate"></div>
                     </div>

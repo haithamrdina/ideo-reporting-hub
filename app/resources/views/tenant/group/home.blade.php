@@ -29,17 +29,17 @@
         <div class="container-xl">
             <div class="row g-2 align-items-center">
                 <div class="col">
-                     <!-- Page pre-title -->
-                     <span class="h1 text-red">
-                        @if(isset($project))
-                            {{ $project->name  }}
+                    <!-- Page pre-title -->
+                    <span class="h1 text-red">
+                        @if (isset($project))
+                            {{ $project->name }}
                         @elseif(isset($group))
-                            {{ $group->name  }}
+                            {{ $group->name }}
                         @endif
                     </span>
                     <!-- Page pre-title -->
                     <div class="page-pretitle mt-2">
-                            Ideo Reporting
+                        Ideo Reporting
                     </div>
                     <h2 class="page-title">
                         Vos données de progression sur la e-académie.
@@ -84,7 +84,8 @@
                             <a href="." class="navbar-brand navbar-brand-autodark"><img
                                     src="{{ global_asset('static/logo/logo.svg') }}" height="36" alt=""></a>
                         </div>
-                        <div class="text-muted mb-3">la préparation de vos données</div>
+                        <div class="text-muted mb-3">Vos données sont en cours de préparation, merci de patienter un
+                            instant.</div>
                         <div class="progress progress-sm mb-3">
                             <div class="progress-bar progress-bar-indeterminate"></div>
                         </div>
