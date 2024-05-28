@@ -148,8 +148,8 @@ class GroupeReportService
     public function getLearnersInscriptions($groupe)
     {
         $total_learners = Learner::where('group_id', $groupe->id)->count();
-        $active_learners = Learner::whereNotNull('last_access_date')->where('group_id', $groupe->id)->count();
-        $inactive_learners = Learner::whereNull('last_access_date')->where('group_id', $groupe->id)->count();
+        $active_learners = Learner::where('statut', 'active')->where('group_id', $groupe->id)->count();
+        $inactive_learners = Learner::where('statut', 'inactive')->where('group_id', $groupe->id)->count();
 
         return [
             'total' => $total_learners,

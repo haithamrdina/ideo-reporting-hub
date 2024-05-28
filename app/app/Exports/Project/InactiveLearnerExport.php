@@ -17,23 +17,33 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class InactiveLearnerExport implements FromArray, WithMapping, WithHeadings, WithStrictNullComparison, WithTitle, ShouldAutoSize, WithStyles
 {
+    protected $datedebut;
+    protected $datefin;
     protected $projectId;
-    public function __construct(string $projectId)
+    public function __construct(string $projectId, $datedebut = null, $datefin = null)
     {
         $this->projectId = $projectId;
+        $this->datedebut = $datedebut;
+        $this->datefin = $datefin;
     }
 
-    public function title(): string{
+    public function title(): string
+    {
         return 'Liste des apprenants inactifs';
     }
 
     public function array(): array
     {
-        $learners = Learner::where('statut' , 'inactive')->where('project_id', $this->projectId)->get()->toArray();
+        if ($this->datedebut != null && $this->datefin != null) {
+            $learners = Learner::where('statut', 'active')->whereBetween('last_access_date', [$this->datedebut, $this->datefin])->where('project_id', $this->projectId)->get()->toArray();
+        } else {
+            $learners = Learner::where('statut', 'active')->where('project_id', $this->projectId)->get()->toArray();
+        }
         return $learners;
     }
 
-    public function headings(): array{
+    public function headings(): array
+    {
         $userfields = config('tenantconfigfields.userfields');
         $data = [
             'Branche',
@@ -66,17 +76,19 @@ class InactiveLearnerExport implements FromArray, WithMapping, WithHeadings, Wit
         return $data;
     }
 
-    public function prepareRows($rows){
+    public function prepareRows($rows)
+    {
         $userfields = config('tenantconfigfields.userfields');
         if (isset($userfields['categorie']) && $userfields['categorie'] === true) {
-            foreach($rows as $key => $learner){
+            foreach ($rows as $key => $learner) {
                 $rows[$key]['categorie'] = Str::ucfirst($rows[$key]['categorie']);
             }
         }
         return $rows;
     }
 
-    public function map($row): array{
+    public function map($row): array
+    {
         $userfields = config('tenantconfigfields.userfields');
 
         $data = [
@@ -110,7 +122,8 @@ class InactiveLearnerExport implements FromArray, WithMapping, WithHeadings, Wit
         return $data;
     }
 
-    public function styles(Worksheet $sheet){
+    public function styles(Worksheet $sheet)
+    {
         return [
             '1' => ['font' => ['bold' => true]]
         ];

@@ -15,33 +15,48 @@ use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithTitle;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class CallExport implements FromArray, WithMapping, WithHeadings, WithStrictNullComparison ,WithTitle, ShouldAutoSize, WithStyles
+class CallExport implements FromArray, WithMapping, WithHeadings, WithStrictNullComparison, WithTitle, ShouldAutoSize, WithStyles
 {
 
-    public function title(): string{
+    public function title(): string
+    {
         return 'Appels téléphoniques';
     }
 
     protected $projectId;
-    public function __construct(string $projectId)
+    protected $datedebut;
+    protected $datefin;
+    public function __construct(string $projectId, $datedebut = null, $datefin = null)
     {
         $this->projectId = $projectId;
+        $this->datedebut = $datedebut;
+        $this->datefin = $datefin;
     }
 
     public function array(): array
     {
         $archive = config('tenantconfigfields.archive');
-        if($archive == true){
-            $calls = Call::where('project_id', $this->projectId)->get()->toArray();
-        }else{
-            $learnersIds = Learner::where('statut', '!=' , 'archive')->pluck('docebo_id')->toArray();
-            $calls = Call::whereIn('learner_docebo_id', $learnersIds)->where('project_id',$this->projectId)->get()->toArray();
+        if ($this->datedebut != null && $this->datefin != null) {
+            if ($archive == true) {
+                $calls = Call::whereBetween('date_call', [$this->datedebut, $this->datefin])->where('project_id', $this->projectId)->get()->toArray();
+            } else {
+                $learnersIds = Learner::where('statut', '!=', 'archive')->pluck('docebo_id')->toArray();
+                $calls = Call::whereIn('learner_docebo_id', $learnersIds)->where('project_id', $this->projectId)->whereBetween('date_call', [$this->datedebut, $this->datefin])->get()->toArray();
+            }
+        } else {
+            if ($archive == true) {
+                $calls = Call::where('project_id', $this->projectId)->get()->toArray();
+            } else {
+                $learnersIds = Learner::where('statut', '!=', 'archive')->pluck('docebo_id')->toArray();
+                $calls = Call::whereIn('learner_docebo_id', $learnersIds)->where('project_id', $this->projectId)->get()->toArray();
+            }
         }
         return $calls;
     }
 
-    public function headings(): array{
-        return  [
+    public function headings(): array
+    {
+        return [
             'Branche',
             'Filiale',
             'Username',
@@ -51,8 +66,9 @@ class CallExport implements FromArray, WithMapping, WithHeadings, WithStrictNull
         ];
     }
 
-    public function map($row): array{
-        return  [
+    public function map($row): array
+    {
+        return [
             Project::find($row['project_id'])->name,
             Group::find($row['group_id'])->name,
             Learner::where('docebo_id', $row['learner_docebo_id'])->first()->username,
@@ -62,7 +78,8 @@ class CallExport implements FromArray, WithMapping, WithHeadings, WithStrictNull
         ];
     }
 
-    public function styles(Worksheet $sheet){
+    public function styles(Worksheet $sheet)
+    {
         return [
             '1' => ['font' => ['bold' => true]]
         ];

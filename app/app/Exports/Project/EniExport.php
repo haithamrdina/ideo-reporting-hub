@@ -19,17 +19,22 @@ use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithTitle;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class EniExport implements FromArray, WithMapping, WithHeadings, WithStrictNullComparison ,WithTitle, ShouldAutoSize, WithStyles
+class EniExport implements FromArray, WithMapping, WithHeadings, WithStrictNullComparison, WithTitle, ShouldAutoSize, WithStyles
 {
 
-    public function title(): string{
+    public function title(): string
+    {
         return 'Inscriptions digitals';
     }
 
     protected $projectId;
-    public function __construct(string $projectId)
+    protected $datedebut;
+    protected $datefin;
+    public function __construct(string $projectId, $datedebut = null, $datefin = null)
     {
         $this->projectId = $projectId;
+        $this->datedebut = $datedebut;
+        $this->datefin = $datefin;
     }
     public function array(): array
     {
@@ -40,16 +45,56 @@ class EniExport implements FromArray, WithMapping, WithHeadings, WithStrictNullC
         })->pluck('docebo_id')->toArray();
 
         $archive = config('tenantconfigfields.archive');
-        if($archive == true){
-            $eniEnrolls = Enrollmodule::whereIn('module_docebo_id', $eniModules)->where('project_id',$this->projectId)->get()->toArray();
-        }else{
-            $learnersIds = Learner::where('statut', '!=' , 'archive')->pluck('docebo_id')->toArray();
-            $eniEnrolls = Enrollmodule::whereIn('module_docebo_id', $eniModules)->whereIn('learner_docebo_id', $learnersIds)->where('project_id',$this->projectId)->get()->toArray();
+        if ($this->datedebut != null && $this->datefin != null) {
+            $startDate = $this->datedebut;
+            $endDate = $this->datefin;
+            if ($archive == true) {
+                $eniEnrolls = Enrollmodule::where(function ($query) use ($eniModules, $startDate, $endDate) {
+                    $query->whereIn('module_docebo_id', $eniModules)
+                        ->whereNotNull('enrollment_completed_at')
+                        ->whereBetween('enrollment_completed_at', [$startDate, $endDate])
+                        ->where('project_id', $this->projectId);
+                })
+                    ->orWhere(function ($query) use ($eniModules, $startDate, $endDate) {
+                        $query->whereIn('module_docebo_id', $eniModules)
+                            ->whereNull('enrollment_updated_at')
+                            ->whereBetween('enrollment_updated_at', [$startDate, $endDate])
+                            ->where('project_id', $this->projectId);
+                    })
+                    ->get()->toArray();
+            } else {
+
+                $learnersIds = Learner::where('statut', '!=', 'archive')->pluck('docebo_id')->toArray();
+                $eniEnrolls = Enrollmodule::where(function ($query) use ($eniModules, $learnersIds, $startDate, $endDate) {
+                    $query->whereIn('module_docebo_id', $eniModules)
+                        ->whereIn('learner_docebo_id', $learnersIds)
+                        ->whereNotNull('enrollment_completed_at')
+                        ->whereBetween('enrollment_completed_at', [$startDate, $endDate])
+                        ->where('project_id', $this->projectId);
+                })
+                    ->orWhere(function ($query) use ($eniModules, $learnersIds, $startDate, $endDate) {
+                        $query->whereIn('module_docebo_id', $eniModules)
+                            ->whereIn('learner_docebo_id', $learnersIds)
+                            ->whereNull('enrollment_updated_at')
+                            ->whereBetween('enrollment_updated_at', [$startDate, $endDate])
+                            ->where('project_id', $this->projectId);
+                    })
+                    ->get()->toArray();
+            }
+
+        } else {
+            if ($archive == true) {
+                $eniEnrolls = Enrollmodule::whereIn('module_docebo_id', $eniModules)->where('project_id', $this->projectId)->get()->toArray();
+            } else {
+                $learnersIds = Learner::where('statut', '!=', 'archive')->pluck('docebo_id')->toArray();
+                $eniEnrolls = Enrollmodule::whereIn('module_docebo_id', $eniModules)->where('project_id', $this->projectId)->whereIn('learner_docebo_id', $learnersIds)->get()->toArray();
+            }
         }
         return $eniEnrolls;
     }
 
-    public function headings(): array{
+    public function headings(): array
+    {
         $userfields = config('tenantconfigfields.userfields');
         $enrollfields = config('tenantconfigfields.enrollmentfields');
         $data = [
@@ -63,11 +108,11 @@ class EniExport implements FromArray, WithMapping, WithHeadings, WithStrictNullC
             $data[] = 'Matricule';
         }
 
-        $data [] = 'Date d\'inscription';
-        $data [] = 'Statut';
-        $data [] = 'Date du dernière modification';
-        $data [] = 'Date d\'achèvement';
-        $data [] = 'Temps de session';
+        $data[] = 'Date d\'inscription';
+        $data[] = 'Statut';
+        $data[] = 'Date du dernière modification';
+        $data[] = 'Date d\'achèvement';
+        $data[] = 'Temps de session';
 
         if (isset($enrollfields['cmi_time']) && $enrollfields['cmi_time'] === true) {
             $data[] = 'Temps d\'engagement';
@@ -84,16 +129,17 @@ class EniExport implements FromArray, WithMapping, WithHeadings, WithStrictNullC
         return $data;
     }
 
-    public function prepareRows($rows){
+    public function prepareRows($rows)
+    {
         $timeConversionService = new TimeConversionService();
-        foreach($rows as $key => $learner){
-            if($rows[$key]['status'] == 'waiting'){
+        foreach ($rows as $key => $learner) {
+            if ($rows[$key]['status'] == 'waiting') {
                 $status = "En attente";
-            }elseif($rows[$key]['status'] == 'enrolled'){
+            } elseif ($rows[$key]['status'] == 'enrolled') {
                 $status = "Inscrit";
-            }elseif($rows[$key]['status'] == 'in_progress'){
+            } elseif ($rows[$key]['status'] == 'in_progress') {
                 $status = "En cours";
-            }elseif($rows[$key]['status'] == 'completed'){
+            } elseif ($rows[$key]['status'] == 'completed') {
                 $status = "Terminé";
             }
             $rows[$key]['status'] = $status;
@@ -101,13 +147,14 @@ class EniExport implements FromArray, WithMapping, WithHeadings, WithStrictNullC
             $rows[$key]['cmi_time'] = $timeConversionService->convertSecondsToTime($rows[$key]['cmi_time']);
             $rows[$key]['calculated_time'] = $timeConversionService->convertSecondsToTime($rows[$key]['calculated_time']);
             $rows[$key]['recommended_time'] = $timeConversionService->convertSecondsToTime($rows[$key]['recommended_time']);
-            $rows[$key]['enrollment_updated_at'] = $rows[$key]['enrollment_updated_at'] != null ? $rows[$key]['enrollment_updated_at'] : '******' ;
-            $rows[$key]['enrollment_completed_at'] =  $rows[$key]['enrollment_completed_at'] != null ? $rows[$key]['enrollment_completed_at'] : '******' ;
+            $rows[$key]['enrollment_updated_at'] = $rows[$key]['enrollment_updated_at'] != null ? $rows[$key]['enrollment_updated_at'] : '******';
+            $rows[$key]['enrollment_completed_at'] = $rows[$key]['enrollment_completed_at'] != null ? $rows[$key]['enrollment_completed_at'] : '******';
         }
         return $rows;
     }
 
-    public function map($row): array{
+    public function map($row): array
+    {
         $userfields = config('tenantconfigfields.userfields');
         $enrollfields = config('tenantconfigfields.enrollmentfields');
         $data = [
@@ -121,12 +168,12 @@ class EniExport implements FromArray, WithMapping, WithHeadings, WithStrictNullC
             $data[] = Learner::where('docebo_id', $row['learner_docebo_id'])->first()->matricule;
         }
 
-        $data [] = $row['enrollment_created_at'];
-        $data [] = $row['status'];
-        $data [] = $row['enrollment_updated_at'];
-        $data [] = $row['enrollment_completed_at'];
+        $data[] = $row['enrollment_created_at'];
+        $data[] = $row['status'];
+        $data[] = $row['enrollment_updated_at'];
+        $data[] = $row['enrollment_completed_at'];
 
-        $data [] = $row['session_time'];
+        $data[] = $row['session_time'];
         if (isset($enrollfields['cmi_time']) && $enrollfields['cmi_time'] === true) {
             $data[] = $row['cmi_time'];
         }
@@ -142,7 +189,8 @@ class EniExport implements FromArray, WithMapping, WithHeadings, WithStrictNullC
         return $data;
     }
 
-    public function styles(Worksheet $sheet){
+    public function styles(Worksheet $sheet)
+    {
         return [
             '1' => ['font' => ['bold' => true]]
         ];

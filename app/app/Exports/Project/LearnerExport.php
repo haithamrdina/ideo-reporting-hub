@@ -12,20 +12,25 @@ class LearnerExport implements WithMultipleSheets, ShouldQueue
     use Exportable, Queueable;
 
     protected $projectId;
-    public function __construct(string $projectId)
+    protected $datedebut;
+    protected $datefin;
+    public function __construct(string $projectId, $datedebut = null, $datefin = null)
     {
         $this->projectId = $projectId;
+        $this->datedebut = $datedebut;
+        $this->datefin = $datefin;
     }
 
-    public function sheets(): array{
+    public function sheets(): array
+    {
         $sheets = [
-            new ActiveLearnerExport($this->projectId),
-            new InactiveLearnerExport($this->projectId),
+            new ActiveLearnerExport($this->projectId, $this->datedebut, $this->datefin),
+            new InactiveLearnerExport($this->projectId,$this->datedebut, $this->datefin),
 
         ];
         $archive = config('tenantconfigfields.archive');
-        if($archive == true){
-            $sheets []= new ArchiveLearnerExport($this->projectId);
+        if ($archive == true && $this->datedebut ==null && $this->datefin == null) {
+            $sheets[] = new ArchiveLearnerExport($this->projectId);
         }
         return $sheets;
     }

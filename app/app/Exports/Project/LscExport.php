@@ -12,14 +12,19 @@ class LscExport implements WithMultipleSheets, ShouldQueue
     use Exportable, Queueable;
 
     protected $projectId;
-    public function __construct(string $projectId)
+    protected $datedebut;
+    protected $datefin;
+    public function __construct(string $projectId, $datedebut = null, $datefin = null)
     {
         $this->projectId = $projectId;
+        $this->datedebut = $datedebut;
+        $this->datefin = $datefin;
     }
-    public function sheets(): array{
+    public function sheets(): array
+    {
         $sheets = [
-            new TicketExport($this->projectId),
-            new CallExport($this->projectId)
+            new TicketExport($this->projectId, $this->datedebut, $this->datefin),
+            new CallExport($this->projectId, $this->datedebut, $this->datefin)
         ];
         return $sheets;
     }

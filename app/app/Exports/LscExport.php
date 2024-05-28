@@ -10,11 +10,18 @@ use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 class LscExport implements WithMultipleSheets, ShouldQueue
 {
     use Exportable, Queueable;
-
-    public function sheets(): array{
+    protected $datedebut;
+    protected $datefin;
+    public function __construct($datedebut = null, $datefin = null)
+    {
+        $this->datedebut = $datedebut;
+        $this->datefin = $datefin;
+    }
+    public function sheets(): array
+    {
         $sheets = [
-            new TicketExport(),
-            new CallExport()
+            new TicketExport($this->datedebut, $this->datefin),
+            new CallExport($this->datedebut, $this->datefin),
         ];
         return $sheets;
     }

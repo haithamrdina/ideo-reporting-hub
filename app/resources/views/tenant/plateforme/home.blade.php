@@ -39,6 +39,39 @@
                         Vos données de progression sur la e-académie.
                     </h2>
                 </div>
+                <div class="col-auto ms-auto d-print-none">
+                    <div class="btn-list">
+                        <a href="#" class="btn btn-red d-none d-sm-inline-block" data-bs-toggle="modal"
+                            data-bs-target="#modal-report-plateforme">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-file-spreadsheet"
+                                width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+                                fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                <path d="M14 3v4a1 1 0 0 0 1 1h4"></path>
+                                <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z">
+                                </path>
+                                <path d="M8 11h8v7h-8z"></path>
+                                <path d="M8 15h8"></path>
+                                <path d="M11 11v7"></path>
+                            </svg>
+                            Générer vos rapports
+                        </a>
+                        <a href="#" class="btn btn-red d-sm-none btn-icon" data-bs-toggle="modal"
+                            data-bs-target="#modal-report-plateforme" aria-label="Générer vos rapports">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-file-spreadsheet"
+                                width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+                                fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                <path d="M14 3v4a1 1 0 0 0 1 1h4"></path>
+                                <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z">
+                                </path>
+                                <path d="M8 11h8v7h-8z"></path>
+                                <path d="M8 15h8"></path>
+                                <path d="M11 11v7"></path>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -218,7 +251,8 @@
                         <div class="text-center mt-8">
                             <div class="mb-3">
                                 <a href="." class="navbar-brand navbar-brand-autodark"><img
-                                        src="{{ global_asset('static/logo/logo.svg') }}" height="36" alt=""></a>
+                                        src="{{ global_asset('static/logo/logo.svg') }}" height="36"
+                                        alt=""></a>
                             </div>
                             <div class="text-muted mb-3">Vos données sont en cours de préparation, merci de patienter un
                                 instant.</div>

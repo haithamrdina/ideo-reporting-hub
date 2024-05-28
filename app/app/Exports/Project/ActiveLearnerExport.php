@@ -20,14 +20,21 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 class ActiveLearnerExport implements FromArray, WithMapping, WithHeadings, WithStrictNullComparison ,WithTitle, ShouldAutoSize, WithStyles
 {
     protected $projectId;
-    public function __construct(string $projectId)
+    protected $datedebut;
+    protected $datefin;
+    public function __construct(string $projectId, $datedebut = null, $datefin = null)
     {
         $this->projectId = $projectId;
+        $this->datedebut = $datedebut;
+        $this->datefin = $datefin;
     }
-
     public function array(): array
     {
-        $learners = Learner::where('statut' , 'active')->where('project_id', $this->projectId)->get()->toArray();
+        if ($this->datedebut != null && $this->datefin != null) {
+            $learners = Learner::where('statut', 'active')->whereBetween('last_access_date', [$this->datedebut, $this->datefin])->where('project_id', $this->projectId)->get()->toArray();
+        } else {
+            $learners = Learner::where('statut', 'active')->where('project_id', $this->projectId)->get()->toArray();
+        }
         return $learners;
     }
 

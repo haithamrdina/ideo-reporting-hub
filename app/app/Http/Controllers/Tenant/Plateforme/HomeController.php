@@ -26,15 +26,16 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function index() {
-        if(tenant('gamification') == true){
-            $doceboConnector =  new DoceboConnector;
+    public function index()
+    {
+        if (tenant('gamification') == true) {
+            $doceboConnector = new DoceboConnector;
             $leaderbordDataResponse = $doceboConnector->send(new getLeaderboardsData(tenant('leaderboard_id')));
             $leaderboard = $leaderbordDataResponse->dto();
             $badges = Badge::all();
 
             $badgeData = [];
-            foreach($badges as $badge){
+            foreach ($badges as $badge) {
                 $badgeDataResponse = $doceboConnector->send(new getBadgeData($badge->docebo_id));
 
                 $badgeData[] = [
@@ -45,12 +46,13 @@ class HomeController extends Controller
                 ];
             }
             return view('tenant.plateforme.home', compact('leaderboard', 'badgeData'));
-        }else{
+        } else {
             return view('tenant.plateforme.home');
         }
     }
 
-    public function getData(){
+    public function getData()
+    {
         $plateformeReportService = new PlateformeReportService();
 
         $contract_start_date_conf = config('tenantconfigfields.contract_start_date');
@@ -58,7 +60,7 @@ class HomeController extends Controller
         $enrollfields = config('tenantconfigfields.enrollmentfields');
 
         $learnersInscriptionsPerStatDate = $plateformeReportService->getLearnersInscriptionsPerStatDate($contract_start_date_conf);
-        $timingDetailsPerStatDate = $plateformeReportService->getTimingDetailsPerStatDate($contract_start_date_conf,$enrollfields);
+        $timingDetailsPerStatDate = $plateformeReportService->getTimingDetailsPerStatDate($contract_start_date_conf, $enrollfields);
 
         $learnersInscriptions = $plateformeReportService->getLearnersInscriptions();
         $timingDetails = $plateformeReportService->getTimingDetails($enrollfields);
@@ -93,46 +95,51 @@ class HomeController extends Controller
         ]);
     }
 
-    public function getLanguageData($selectedLanguage){
+    public function getLanguageData($selectedLanguage)
+    {
         $plateformeReportService = new PlateformeReportService();
         $speexChart = $plateformeReportService->getStatSpeexChart($selectedLanguage);
         return response()->json($speexChart);
     }
 
-    public function getDigitalData($selectedDigital){
+    public function getDigitalData($selectedDigital)
+    {
         $enrollfields = config('tenantconfigfields.enrollmentfields');
         $plateformeReportService = new PlateformeReportService();
-        if($selectedDigital != "null"){
+        if ($selectedDigital != "null") {
             $digitalStats = $plateformeReportService->getStatDigitalPerModule($enrollfields, $selectedDigital);
-        }else{
+        } else {
             $digitalStats = $plateformeReportService->getStatDigital($enrollfields);
         }
         return response()->json($digitalStats);
     }
 
-    public function getSMData($selectedSM){
+    public function getSMData($selectedSM)
+    {
         $enrollfields = config('tenantconfigfields.enrollmentfields');
         $plateformeReportService = new PlateformeReportService();
-        if($selectedSM != "null"){
+        if ($selectedSM != "null") {
             $smStats = $plateformeReportService->getStatSMPerModule($enrollfields, $selectedSM);
-        }else{
+        } else {
             $smStats = $plateformeReportService->getStatSM($enrollfields);
         }
         return response()->json($smStats);
     }
 
-    public function getLpData($selectedLp){
+    public function getLpData($selectedLp)
+    {
         $enrollfields = config('tenantconfigfields.enrollmentfields');
         $plateformeReportService = new PlateformeReportService();
-        if($selectedLp != "null"){
+        if ($selectedLp != "null") {
             $digitalStats = $plateformeReportService->geStatsPerLp($enrollfields, $selectedLp);
-        }else{
+        } else {
             $digitalStats = $plateformeReportService->getLpStats($enrollfields);
         }
         return response()->json($digitalStats);
     }
 
-    public function getInscritsPerDate(Request $request){
+    public function getInscritsPerDate(Request $request)
+    {
 
         $categorie = config('tenantconfigfields.userfields.categorie');
         $enrollfields = config('tenantconfigfields.enrollmentfields');
@@ -141,9 +148,9 @@ class HomeController extends Controller
         if ($request->has('start_date') && $request->has('end_date')) {
             $dateStart = $request->input('start_date');
             $dateEnd = $request->input('end_date');
-            $learnersInscriptions = $plateformeReportService->getLearnersInscriptionsPerDate($dateStart , $dateEnd);
-            $timingDetails = $plateformeReportService->getTimingDetailsPerDate($enrollfields, $dateStart , $dateEnd);
-            $learnersCharts = $plateformeReportService->getLearnersChartsPerDate($categorie, $dateStart , $dateEnd);
+            $learnersInscriptions = $plateformeReportService->getLearnersInscriptionsPerDate($dateStart, $dateEnd);
+            $timingDetails = $plateformeReportService->getTimingDetailsPerDate($enrollfields, $dateStart, $dateEnd);
+            $learnersCharts = $plateformeReportService->getLearnersChartsPerDate($categorie, $dateStart, $dateEnd);
         } else {
             $learnersInscriptions = $plateformeReportService->getLearnersInscriptions();
             $timingDetails = $plateformeReportService->getTimingDetails($enrollfields);
@@ -156,7 +163,8 @@ class HomeController extends Controller
         ]);
     }
 
-    public function getLscPerDate(Request $request){
+    public function getLscPerDate(Request $request)
+    {
         $plateformeReportService = new PlateformeReportService();
         if ($request->has('start_date') && $request->has('end_date')) {
             $dateStart = $request->input('start_date');
@@ -169,26 +177,71 @@ class HomeController extends Controller
         return response()->json($lscStats);
     }
 
-    public function exportInscrits(){
+    public function exportInscrits()
+    {
         return Excel::download(new LearnerExport, 'rapport_des_inscrits.xlsx');
     }
 
-    public function exportModules(){
+    public function exportModules()
+    {
         return Excel::download(new ModuleExport, 'rapport_des_modules.xlsx');
     }
 
-    public function exportLps(){
+    public function exportLps()
+    {
         return Excel::download(new LpExport, 'rapport_de_formation_transverse.xlsx');
     }
 
-    public function exportLsc(){
+    public function exportLsc()
+    {
         return Excel::download(new LscExport, 'rapport_learner_success_center.xlsx');
     }
 
-    public function exportGamification(){
+    public function exportGamification()
+    {
         $badgesIDs = Badge::pluck('id')->toArray();
         return Excel::download(new GamificationExport($badgesIDs), 'rapport_gamification.xlsx');
     }
+
+    public function export(Request $request)
+    {
+        $rapport = $request->input('rapport');
+        $dateDebut = $request->input('dateDebut');
+        $dateFin = $request->input('dateFin');
+        if ($dateDebut != null && $dateFin != null) {
+            switch ($rapport) {
+                case 'inscriptions':
+                    $excel = Excel::download(new LearnerExport($dateDebut, $dateFin), 'rapport_des_inscrits.xlsx');
+                    break;
+                case 'transverse':
+                    $excel = Excel::download(new LpExport($dateDebut, $dateFin), 'rapport_de_formation_transverse.xlsx');
+                    break;
+                case 'modules':
+                    $excel = Excel::download(new ModuleExport($dateDebut, $dateFin), 'rapport_des_modules.xlsx');
+                    ;
+                    break;
+                case 'lsc':
+                    $excel = Excel::download(new LscExport($dateDebut, $dateFin), 'rapport_learner_success_center.xlsx');
+                    break;
+            }
+            return $excel;
+        } else {
+            switch ($rapport) {
+                case 'inscriptions':
+                    $excel = Excel::download(new LearnerExport, 'rapport_des_inscrits.xlsx');
+                    break;
+                case 'transverse':
+                    $excel = Excel::download(new LpExport, 'rapport_de_formation_transverse.xlsx');
+                    break;
+                case 'modules':
+                    $excel = Excel::download(new ModuleExport, 'rapport_des_modules.xlsx');
+                    ;
+                    break;
+                case 'lsc':
+                    $excel = Excel::download(new LscExport, 'rapport_learner_success_center.xlsx');
+                    break;
+            }
+            return $excel;
+        }
+    }
 }
-
-

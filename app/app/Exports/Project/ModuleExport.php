@@ -11,20 +11,25 @@ class ModuleExport implements WithMultipleSheets, ShouldQueue
 {
     use Exportable, Queueable;
     protected $projectId;
-    public function __construct(string $projectId)
+    protected $datedebut;
+    protected $datefin;
+    public function __construct(string $projectId, $datedebut = null, $datefin = null)
     {
         $this->projectId = $projectId;
+        $this->datedebut = $datedebut;
+        $this->datefin = $datefin;
     }
-    public function sheets(): array{
+    public function sheets(): array
+    {
         $sheets = [
-            new CegosExport($this->projectId),
-            new EniExport($this->projectId),
-            new SpeexExport($this->projectId),
-            new MoocExport($this->projectId),
+            new CegosExport($this->projectId, $this->datedebut, $this->datefin),
+            new EniExport($this->projectId, $this->datedebut, $this->datefin),
+            new SpeexExport($this->projectId, $this->datedebut, $this->datefin),
+            new MoocExport($this->projectId, $this->datedebut, $this->datefin),
         ];
         $sur_mesure = config('tenantconfigfields.sur_mesure');
-        if($sur_mesure == true){
-            $sheets []= new SmExport($this->projectId);
+        if ($sur_mesure == true) {
+            $sheets[] = new SmExport($this->projectId, $this->datedebut, $this->datefin);
         }
         return $sheets;
     }

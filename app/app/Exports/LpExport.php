@@ -20,6 +20,14 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 class LpExport implements FromArray, WithMapping, WithHeadings, WithStrictNullComparison, WithTitle, ShouldAutoSize, WithStyles
 {
 
+    protected $datedebut;
+    protected $datefin;
+    public function __construct($datedebut = null, $datefin = null)
+    {
+        $this->datedebut = $datedebut;
+        $this->datefin = $datefin;
+    }
+
     public function title(): string
     {
         return 'Formation Transverse';
@@ -28,11 +36,42 @@ class LpExport implements FromArray, WithMapping, WithHeadings, WithStrictNullCo
     public function array(): array
     {
         $archive = config('tenantconfigfields.archive');
-        if ($archive == true) {
-            $lpEnrolls = Lpenroll::get()->toArray();
+        if ($this->datedebut != null && $this->datefin != null) {
+            $startDate = $this->datedebut;
+            $endDate = $this->datefin;
+            if ($archive == true) {
+                $lpEnrolls = Lpenroll::where(function ($query) use ($startDate, $endDate) {
+                    $query->whereNotNull('enrollment_completed_at')
+                        ->whereBetween('enrollment_completed_at', [$startDate, $endDate]);
+                })
+                    ->orWhere(function ($query) use ($startDate, $endDate) {
+                        $query->whereNull('enrollment_updated_at')
+                            ->whereBetween('enrollment_updated_at', [$startDate, $endDate]);
+                    })
+                    ->get()->toArray();
+            } else {
+
+                $learnersIds = Learner::where('statut', '!=', 'archive')->pluck('docebo_id')->toArray();
+                $lpEnrolls = Lpenroll::where(function ($query) use ($learnersIds, $startDate, $endDate) {
+                    $query->whereIn('learner_docebo_id', $learnersIds)
+                        ->whereNotNull('enrollment_completed_at')
+                        ->whereBetween('enrollment_completed_at', [$startDate, $endDate]);
+                })
+                    ->orWhere(function ($query) use ($learnersIds, $startDate, $endDate) {
+                        $query->whereIn('learner_docebo_id', $learnersIds)
+                            ->whereNull('enrollment_updated_at')
+                            ->whereBetween('enrollment_updated_at', [$startDate, $endDate]);
+                    })
+                    ->get()->toArray();
+            }
+
         } else {
-            $learnersIds = Learner::where('statut', '!=', 'archive')->pluck('docebo_id')->toArray();
-            $lpEnrolls = Lpenroll::whereIn('learner_docebo_id', $learnersIds)->get()->toArray();
+            if ($archive == true) {
+                $lpEnrolls = Lpenroll::get()->toArray();
+            } else {
+                $learnersIds = Learner::where('statut', '!=', 'archive')->pluck('docebo_id')->toArray();
+                $lpEnrolls = Lpenroll::whereIn('learner_docebo_id', $learnersIds)->get()->toArray();
+            }
         }
         return $lpEnrolls;
     }
