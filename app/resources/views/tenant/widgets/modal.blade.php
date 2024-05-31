@@ -181,11 +181,11 @@
                                         <option value="connexion">Rapport des connexions</option>
                                     </optgroup>
                                     <optgroup label="Formation Transverse">
-                                        <option value="transverse">Rapport des inscriptions au formation
+                                        <option value="transverse" disabled>Rapport des inscriptions au formation
                                             transverse</option>
                                     </optgroup>
                                     <optgroup label="Modules">
-                                        <option value="cegos">Rapport des inscriptions au formation
+                                        <option value="cegos" disabled>Rapport des inscriptions au formation
                                             softskills</option>
                                         <option value="eni">Rapport des inscriptions au formation digital
                                         </option>
