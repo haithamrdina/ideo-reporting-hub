@@ -2,10 +2,19 @@
 
 namespace App\Http\Controllers\Tenant\Group;
 
+use App\Exports\Group\ActiveLearnerExport;
+use App\Exports\Group\CallExport;
+use App\Exports\Group\CegosExport;
+use App\Exports\Group\EniExport;
+use App\Exports\Group\InactiveLearnerExport;
 use App\Exports\Group\LearnerExport;
 use App\Exports\Group\LpExport;
 use App\Exports\Group\LscExport;
 use App\Exports\Group\ModuleExport;
+use App\Exports\Group\MoocExport;
+use App\Exports\Group\SmExport;
+use App\Exports\Group\SpeexExport;
+use App\Exports\Group\TicketExport;
 use App\Http\Controllers\Controller;
 use App\Models\Group;
 use App\Services\GroupeReportService;
@@ -187,38 +196,49 @@ class HomeController extends Controller
         $dateFin = $request->input('dateFin');
         $groupId = $request->input('group_id');
         if ($dateDebut != null && $dateFin != null) {
-            switch ($rapport) {
-                case 'inscriptions':
-                    $excel = Excel::download(new LearnerExport($groupId, $dateDebut, $dateFin), 'rapport_des_inscrits.xlsx');
-                    break;
-                case 'transverse':
-                    $excel = Excel::download(new LpExport($groupId, $dateDebut, $dateFin), 'rapport_de_formation_transverse.xlsx');
-                    break;
-                case 'modules':
-                    $excel = Excel::download(new ModuleExport($groupId, $dateDebut, $dateFin), 'rapport_des_modules.xlsx');
-                    ;
-                    break;
-                case 'lsc':
-                    $excel = Excel::download(new LscExport($groupId, $dateDebut, $dateFin), 'rapport_learner_success_center.xlsx');
-                    break;
+            if ($rapport == 'active') {
+                return Excel::download(new ActiveLearnerExport($groupId, $dateDebut, $dateFin), 'rapport_des_inscrits_actifs.xlsx');
+            } elseif ($rapport == 'inactive') {
+                return Excel::download(new InactiveLearnerExport($groupId, $dateDebut, $dateFin), 'rapport_des_inscrits_inactifs.xlsx');
+            } elseif ($rapport == 'transverse') {
+                return Excel::download(new LpExport($groupId, $dateDebut, $dateFin), 'rapport_formation_transverse.xlsx');
+            } elseif ($rapport == 'cegos') {
+                return Excel::download(new CegosExport($groupId, $dateDebut, $dateFin), 'rapport_formation_softskills.xlsx');
+            } elseif ($rapport == 'eni') {
+                return Excel::download(new EniExport($groupId, $dateDebut, $dateFin), 'rapport_formation_digitals.xlsx');
+            } elseif ($rapport == 'speex') {
+                return Excel::download(new SpeexExport($groupId, $dateDebut, $dateFin), 'rapport_formation_langue.xlsx');
+            } elseif ($rapport == 'sm') {
+                return Excel::download(new SmExport($groupId, $dateDebut, $dateFin), 'rapport_formation_surmesure.xlsx');
+            } elseif ($rapport == 'mooc') {
+                return Excel::download(new MoocExport($groupId, $dateDebut, $dateFin), 'rapport_formation_moocs.xlsx');
+            } elseif ($rapport == 'tickets') {
+                return Excel::download(new TicketExport($groupId, $dateDebut, $dateFin), 'rapport_lsc_tickets.xlsx');
+            } elseif ($rapport == 'calls') {
+                return Excel::download(new CallExport($groupId, $dateDebut, $dateFin), 'rapport_lsc_calls.xlsx');
             }
-            return $excel;
         } else {
-            switch ($rapport) {
-                case 'inscriptions':
-                    $excel = Excel::download(new LearnerExport($groupId), 'rapport_des_inscrits.xlsx');
-                    break;
-                case 'transverse':
-                    $excel = Excel::download(new LpExport($groupId), 'rapport_de_formation_transverse.xlsx');
-                    break;
-                case 'modules':
-                    $excel = Excel::download(new ModuleExport($groupId), 'rapport_des_modules.xlsx');
-                    break;
-                case 'lsc':
-                    $excel = Excel::download(new LscExport($groupId), 'rapport_learner_success_center.xlsx');
-                    break;
+            if ($rapport == 'active') {
+                return Excel::download(new ActiveLearnerExport($groupId), 'rapport_des_inscrits_actifs.xlsx');
+            } elseif ($rapport == 'inactive') {
+                return Excel::download(new InactiveLearnerExport($groupId), 'rapport_des_inscrits_inactifs.xlsx');
+            } elseif ($rapport == 'transverse') {
+                return Excel::download(new LpExport($groupId), 'rapport_formation_transverse.xlsx');
+            } elseif ($rapport == 'cegos') {
+                return Excel::download(new CegosExport($groupId), 'rapport_formation_softskills.xlsx');
+            } elseif ($rapport == 'eni') {
+                return Excel::download(new EniExport($groupId), 'rapport_formation_digitals.xlsx');
+            } elseif ($rapport == 'speex') {
+                return Excel::download(new SpeexExport($groupId), 'rapport_formation_langue.xlsx');
+            } elseif ($rapport == 'sm') {
+                return Excel::download(new SmExport($groupId), 'rapport_formation_surmesure.xlsx');
+            } elseif ($rapport == 'mooc') {
+                return Excel::download(new MoocExport($groupId), 'rapport_formation_moocs.xlsx');
+            } elseif ($rapport == 'tickets') {
+                return Excel::download(new TicketExport($groupId), 'rapport_lsc_tickets.xlsx');
+            } elseif ($rapport == 'calls') {
+                return Excel::download(new CallExport($groupId), 'rapport_lsc_calls.xlsx');
             }
-            return $excel;
         }
     }
 }

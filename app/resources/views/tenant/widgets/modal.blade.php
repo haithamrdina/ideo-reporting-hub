@@ -1,3 +1,6 @@
+@php
+    $sur_mesure = config('tenantconfigfields.sur_mesure');
+@endphp
 <div class="modal modal-blur fade" id="modal-session-time" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
         <div class="modal-content">
@@ -172,10 +175,32 @@
                                 <label class="form-label">Liste des rapports</label>
                                 <select class="form-select" name="rapport">
                                     <option value="" disabled selected>Choisir votre rapport</option>
-                                    <option value="inscriptions">Rapport des inscriptions</option>
-                                    <option value="transverse">Rapport des formations transverses</option>
-                                    <option value="modules">Rapport des modules</option>
-                                    <option value="lsc">Rapport learner success</option>
+                                    <optgroup label="Inscriptions">
+                                        <option value="active">Rapport des inscrits actifs</option>
+                                        <option value="inactive">Rapport des inscrits inactifs</option>
+                                        <option value="connexion">Rapport des connexions</option>
+                                    </optgroup>
+                                    <optgroup label="Formation Transverse">
+                                        <option value="transverse">Rapport des inscriptions au formation
+                                            transverse</option>
+                                    </optgroup>
+                                    <optgroup label="Modules">
+                                        <option value="cegos">Rapport des inscriptions au formation
+                                            softskills</option>
+                                        <option value="eni">Rapport des inscriptions au formation digital
+                                        </option>
+                                        <option value="speex">Rapport des inscriptions au formation langue
+                                        </option>
+                                        @if ($sur_mesure == true)
+                                            <option value="sm">Rapport des inscriptions au formation sur
+                                                mesure</option>
+                                        @endif
+                                        <option value="mooc">Rapport des inscriptions au mooc</option>
+                                    </optgroup>
+                                    <optgroup label="Learner Success Center">
+                                        <option value="tickets">Rapport des tickets</option>
+                                        <option value="calls">Rapport des appels</option>
+                                    </optgroup>
                                 </select>
                             </div>
                         </div>
@@ -231,10 +256,31 @@
                                     <label class="form-label">Liste des rapports</label>
                                     <select class="form-select" name="rapport">
                                         <option value="" disabled selected>Choisir votre rapport</option>
-                                        <option value="inscriptions">Rapport des inscriptions</option>
-                                        <option value="transverse">Rapport des formations transverses</option>
-                                        <option value="modules">Rapport des modules</option>
-                                        <option value="lsc">Rapport learner success</option>
+                                        <optgroup label="Inscriptions">
+                                            <option value="active">Rapport des inscrits actifs</option>
+                                            <option value="inactive">Rapport des inscrits inactifs</option>
+                                        </optgroup>
+                                        <optgroup label="Formation Transverse">
+                                            <option value="transverse">Rapport des inscriptions au formation
+                                                transverse</option>
+                                        </optgroup>
+                                        <optgroup label="Modules">
+                                            <option value="cegos">Rapport des inscriptions au formation
+                                                softskills</option>
+                                            <option value="eni">Rapport des inscriptions au formation digital
+                                            </option>
+                                            <option value="speex">Rapport des inscriptions au formation langue
+                                            </option>
+                                            @if ($sur_mesure == true)
+                                                <option value="sm">Rapport des inscriptions au formation sur
+                                                    mesure</option>
+                                            @endif
+                                            <option value="mooc">Rapport des inscriptions au mooc</option>
+                                        </optgroup>
+                                        <optgroup label="Learner Success Center">
+                                            <option value="tickets">Rapport des tickets</option>
+                                            <option value="calls">Rapport des appels</option>
+                                        </optgroup>
                                     </select>
                                 </div>
                             </div>
@@ -291,10 +337,31 @@
                                     <label class="form-label">Liste des rapports</label>
                                     <select class="form-select" name="rapport">
                                         <option value="" disabled selected>Choisir votre rapport</option>
-                                        <option value="inscriptions">Rapport des inscriptions</option>
-                                        <option value="transverse">Rapport des formations transverses</option>
-                                        <option value="modules">Rapport des modules</option>
-                                        <option value="lsc">Rapport learner success</option>
+                                        <optgroup label="Inscriptions">
+                                            <option value="active">Rapport des inscrits actifs</option>
+                                            <option value="inactive">Rapport des inscrits inactifs</option>
+                                        </optgroup>
+                                        <optgroup label="Formation Transverse">
+                                            <option value="transverse">Rapport des inscriptions au formation
+                                                transverse</option>
+                                        </optgroup>
+                                        <optgroup label="Modules">
+                                            <option value="cegos">Rapport des inscriptions au formation
+                                                softskills</option>
+                                            <option value="eni">Rapport des inscriptions au formation digital
+                                            </option>
+                                            <option value="speex">Rapport des inscriptions au formation langue
+                                            </option>
+                                            @if ($sur_mesure == true)
+                                                <option value="sm">Rapport des inscriptions au formation sur
+                                                    mesure</option>
+                                            @endif
+                                            <option value="mooc">Rapport des inscriptions au mooc</option>
+                                        </optgroup>
+                                        <optgroup label="Learner Success Center">
+                                            <option value="tickets">Rapport des tickets</option>
+                                            <option value="calls">Rapport des appels</option>
+                                        </optgroup>
                                     </select>
                                 </div>
                             </div>
