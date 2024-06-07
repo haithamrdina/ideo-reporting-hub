@@ -53,11 +53,11 @@ class DoceboCourseList extends Request implements Paginatable
             $niveau = null;
             $language = null;
 
-            if ($this->containsAny($item['code'], $softCodes)) {
+            if ($this->startsWithAny($item['code'], $softCodes)) {
                 $category = 'CEGOS';
                 $article = null;
                 $niveau = null;
-            } elseif ($this->containsAny($item['code'], $eniCodes)) {
+            } elseif ($this->startsWithAny($item['code'], $eniCodes)) {
                 $category = 'ENI';
                 $article = null;
                 $niveau = null;
@@ -67,7 +67,7 @@ class DoceboCourseList extends Request implements Paginatable
                 $article = $articleSpeex['articleId'];
                 $niveau = $articleSpeex['niveau'];
                 $language = $articleSpeex['language'];
-            } elseif ($this->containsAny($item['code'], $smCodes)) {
+            } elseif ($this->startsWithAny($item['code'], $smCodes)) {
                 $category = 'SM';
                 $article = null;
                 $niveau = null;
@@ -97,6 +97,16 @@ class DoceboCourseList extends Request implements Paginatable
     {
         foreach ($search as $s) {
             if (strpos($str, $s) !== false) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private function startsWithAny(string $str, array $search): bool
+    {
+        foreach ($search as $prefix) {
+            if (strpos($str, $prefix) === 0) {
                 return true;
             }
         }
