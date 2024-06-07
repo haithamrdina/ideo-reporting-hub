@@ -13,7 +13,7 @@
             <div class="row g-2 align-items-center">
                 <div class="col">
                     <div class="page-pretitle">
-                       Gestion des tenants
+                        Gestion des tenants
                     </div>
                     <h2 class="page-title">
                         Apprenants
@@ -76,18 +76,30 @@
                                         <table class="table card-table table-vcenter text-nowrap datatable">
                                             <thead>
                                                 <tr>
-                                                    <th><button class="table-sort" data-sort="sort-doceboid">ID docebo</button></th>
-                                                    <th><button class="table-sort" data-sort="sort-speexid">ID speex</button></th>
-                                                    <th><button class="table-sort" data-sort="sort-project">Projet</button></th>
-                                                    <th><button class="table-sort" data-sort="sort-group">Groupe</button></th>
-                                                    <th><button class="table-sort" data-sort="sort-lastname">Nom</button></th>
-                                                    <th><button class="table-sort" data-sort="sort-firstname">Prénom</button></th>
-                                                    <th><button class="table-sort" data-sort="sort-email">Email</button></th>
-                                                    <th><button class="table-sort" data-sort="sort-username">Username</button></th>
-                                                    <th><button class="table-sort" data-sort="sort-statut">statut</button></th>
-                                                    <th><button class="table-sort" data-sort="sort-category">Categorie</button></th>
-                                                    <th><button class="table-sort" data-sort="sort-creation">Date de création</button></th>
-                                                    <th><button class="table-sort" data-sort="sort-access">Date du dernier accès</button></th>
+                                                    <th><button class="table-sort" data-sort="sort-doceboid">ID
+                                                            docebo</button></th>
+                                                    <th><button class="table-sort" data-sort="sort-speexid">ID
+                                                            speex</button></th>
+                                                    <th><button class="table-sort" data-sort="sort-project">Projet</button>
+                                                    </th>
+                                                    <th><button class="table-sort" data-sort="sort-group">Groupe</button>
+                                                    </th>
+                                                    <th><button class="table-sort" data-sort="sort-lastname">Nom</button>
+                                                    </th>
+                                                    <th><button class="table-sort"
+                                                            data-sort="sort-firstname">Prénom</button></th>
+                                                    <th><button class="table-sort" data-sort="sort-email">Email</button>
+                                                    </th>
+                                                    <th><button class="table-sort"
+                                                            data-sort="sort-username">Username</button></th>
+                                                    <th><button class="table-sort" data-sort="sort-statut">statut</button>
+                                                    </th>
+                                                    <th><button class="table-sort"
+                                                            data-sort="sort-category">Categorie</button></th>
+                                                    <th><button class="table-sort" data-sort="sort-creation">Date de
+                                                            création</button></th>
+                                                    <th><button class="table-sort" data-sort="sort-access">Date du dernier
+                                                            accès</button></th>
                                                 </tr>
                                             </thead>
                                             <tbody class="table-tbody">
@@ -96,52 +108,55 @@
                                                 @endphp
                                                 @if (count($learners) > 0)
                                                     @foreach ($learners as $learner)
-                                                            <td class="sort-doceboid">
-                                                                {{ $learner->docebo_id}}
-                                                            </td>
-                                                            <td class="sort-speexid">
-                                                                {{ $learner->speex_id != null ? $learner->speex_id : '******'}}
-                                                            </td>
-                                                            <td class="sort-project">
-                                                                {{ $learner->project->name}}
-                                                            </td>
-                                                            <td class="sort-group">
-                                                                {{ $learner->group->name}}
-                                                            </td>
-                                                            <td class="sort-lastname">
-                                                                {{ $learner->lastname}}
-                                                            </td>
-                                                            <td class="sort-firstname">
-                                                                {{ $learner->firstname}}
-                                                            </td>
-                                                            <td class="sort-email">
-                                                                {{ $learner->email}}
-                                                            </td>
-                                                            <td class="sort-username">
-                                                                {{ $learner->username}}
-                                                            </td>
-                                                            <td class="sort-statut">
-                                                                {{ $learner->statut}}
-                                                            </td>
-                                                            <td class="sort-statut">
-                                                                {{ $learner->categorie}}
-                                                            </td>
-                                                            <td class="sort-creation" data-creation="{{ date('U', strtotime($learner->creation_date)) }}">
-                                                                {{ date('d-m-Y H:i:s', strtotime($learner->creation_date)) }}
-                                                            </td>
-                                                            <td class="sort-access" data-access="{{ date('U', strtotime($learner->last_access_date)) }}">
-                                                                {{ $learner->last_access_date != null ?  date('d-m-Y H:i:s', strtotime($learner->last_access_date)) : '******' }}
-                                                            </td>
+                                                        <td class="sort-doceboid">
+                                                            {{ $learner->docebo_id }}
+                                                        </td>
+                                                        <td class="sort-speexid">
+                                                            {{ $learner->speex_id != null ? $learner->speex_id : '******' }}
+                                                        </td>
+                                                        <td class="sort-project">
+                                                            {{ $learner->project->name }}
+                                                        </td>
+                                                        <td class="sort-group">
+                                                            {{ $learner->group->name }}
+                                                        </td>
+                                                        <td class="sort-lastname">
+                                                            {{ $learner->lastname }}
+                                                        </td>
+                                                        <td class="sort-firstname">
+                                                            {{ $learner->firstname }}
+                                                        </td>
+                                                        <td class="sort-email">
+                                                            {{ $learner->email }}
+                                                        </td>
+                                                        <td class="sort-username">
+                                                            {{ $learner->username }}
+                                                        </td>
+                                                        <td class="sort-statut">
+                                                            {{ $learner->statut }}
+                                                        </td>
+                                                        <td class="sort-statut">
+                                                            {{ $learner->categorie }}
+                                                        </td>
+                                                        <td class="sort-creation"
+                                                            data-creation="{{ date('U', strtotime($learner->creation_date)) }}">
+                                                            {{ date('d-m-Y H:i:s', strtotime($learner->creation_date)) }}
+                                                        </td>
+                                                        <td class="sort-access"
+                                                            data-access="{{ date('U', strtotime($learner->last_access_date)) }}">
+                                                            {{ $learner->last_access_date != null ? date('d-m-Y H:i:s', strtotime($learner->last_access_date)) : '******' }}
+                                                        </td>
                                                         </tr>
                                                     @endforeach
                                                 @else
                                                     <tr>
-                                                        <td colspan="7">
+                                                        <td colspan="12">
                                                             <div class="empty-img">
                                                                 <img src="{{ global_asset('static/illustrations/no-data-found.svg') }}"
                                                                     class="w-100" height="128" alt="">
                                                             </div>
-                                                            <p class="empty-title text-danger text-center">Aucun résultat trouvé</p>
+                                                            <p class="empty-title text-danger text-center">Aucun résultat
+                                                                trouvé</p>
                                                         </td>
                                                     </tr>
                                                 @endif
@@ -167,49 +182,49 @@
     <script src="{{ asset('dist/libs/list/dist/list.min.js') }}" defer></script>
 @stop
 @section('ideoreport_js')
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        var options = {
-            sortClass: 'table-sort',
-            listClass: 'table-tbody',
-            valueNames: [
-                'sort-doceboid',
-                'sort-speexid',
-                'sort-project',
-                'sort-group',
-                'sort-lastname',
-                'sort-firstname',
-                'sort-email',
-                'sort-username',
-                'sort-statut',
-                'sort-category',
-                {
-                    attr: 'data-creation',
-                    name: 'sort-creation'
-                },
-                {
-                    attr: 'data-access',
-                    name: 'sort-access'
-                }
-            ],
-            page: 17,
-            pagination: [{
-                name: "pagination",
-                paginationClass: "pagination",
-                left: 2,
-                right: 2,
-                item: '<li class="page-item"><a class="btn btn-icon btn-red mx-1 page" href="#"></a></li>'
-            }]
-        };
-        var listjs = new List('table-learners', options);
-        var listjsItemsPerPage = document.getElementById('listjs-items-per-page');
-        if(listjsItemsPerPage != null){
-            listjsItemsPerPage.addEventListener('change', function(e) {
-                var items = this.value;
-                listjs.page = items;
-                listjs.update();
-            });
-        }
-    })
-</script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var options = {
+                sortClass: 'table-sort',
+                listClass: 'table-tbody',
+                valueNames: [
+                    'sort-doceboid',
+                    'sort-speexid',
+                    'sort-project',
+                    'sort-group',
+                    'sort-lastname',
+                    'sort-firstname',
+                    'sort-email',
+                    'sort-username',
+                    'sort-statut',
+                    'sort-category',
+                    {
+                        attr: 'data-creation',
+                        name: 'sort-creation'
+                    },
+                    {
+                        attr: 'data-access',
+                        name: 'sort-access'
+                    }
+                ],
+                page: 17,
+                pagination: [{
+                    name: "pagination",
+                    paginationClass: "pagination",
+                    left: 2,
+                    right: 2,
+                    item: '<li class="page-item"><a class="btn btn-icon btn-red mx-1 page" href="#"></a></li>'
+                }]
+            };
+            var listjs = new List('table-learners', options);
+            var listjsItemsPerPage = document.getElementById('listjs-items-per-page');
+            if (listjsItemsPerPage != null) {
+                listjsItemsPerPage.addEventListener('change', function(e) {
+                    var items = this.value;
+                    listjs.page = items;
+                    listjs.update();
+                });
+            }
+        })
+    </script>
 @stop
