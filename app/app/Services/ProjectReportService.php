@@ -907,13 +907,10 @@ class ProjectReportService
             $total_calculated_time_eni = $timeConversionService->convertSecondsToHours($digitalEnrolls->sum('calculated_time'));
             $total_calculated_time_total = $total_calculated_time_cegos + $total_calculated_time_eni + $total_calculated_time_speex + $total_calculated_time_mooc;
 
-            $pr_calculated_time_mooc = ($total_calculated_time_mooc / $total_calculated_time_total) * 100;
-            ;
-            $pr_calculated_time_speex = ($total_calculated_time_speex / $total_calculated_time_total) * 100;
-            ;
-            $pr_calculated_time_cegos = ($total_calculated_time_cegos / $total_calculated_time_total) * 100;
-            $pr_calculated_time_eni = ($total_calculated_time_eni / $total_calculated_time_total) * 100;
-            ;
+            $pr_calculated_time_mooc = $total_calculated_time_total != 0 ? ($total_calculated_time_mooc / $total_calculated_time_total) * 100 : 0;
+            $pr_calculated_time_speex = $total_calculated_time_total != 0 ? ($total_calculated_time_speex / $total_calculated_time_total) * 100 : 0;
+            $pr_calculated_time_cegos = $total_calculated_time_total != 0 ? ($total_calculated_time_cegos / $total_calculated_time_total) * 100 : 0;
+            $pr_calculated_time_eni = $total_calculated_time_total != 0 ? ($total_calculated_time_eni / $total_calculated_time_total) * 100 : 0;
         } else {
             $total_calculated_time_mooc = null;
             $total_calculated_time_speex = null;
