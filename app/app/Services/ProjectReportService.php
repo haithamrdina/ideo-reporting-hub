@@ -912,15 +912,16 @@ class ProjectReportService
             $pr_calculated_time_cegos = $total_calculated_time_total != 0 ? ($total_calculated_time_cegos / $total_calculated_time_total) * 100 : 0;
             $pr_calculated_time_eni = $total_calculated_time_total != 0 ? ($total_calculated_time_eni / $total_calculated_time_total) * 100 : 0;
         } else {
-            $total_calculated_time_mooc = null;
-            $total_calculated_time_speex = null;
-            $total_calculated_time_cegos = null;
-            $total_calculated_time_eni = null;
-            $total_calculated_time_total = 0;
-            $pr_calculated_time_mooc = 0;
-            $pr_calculated_time_speex = 0;
-            $pr_calculated_time_cegos = 0;
-            $pr_calculated_time_eni = 0;
+            $total_calculated_time_mooc = $timeConversionService->convertSecondsToHours($moocEnrolls->sum('session_time'));
+            $total_calculated_time_speex = $timeConversionService->convertSecondsToHours($langEnrolls->sum('session_time'));
+            $total_calculated_time_cegos = $timeConversionService->convertSecondsToHours($softEnrolls->sum('session_time'));
+            $total_calculated_time_eni = $timeConversionService->convertSecondsToHours($digitalEnrolls->sum('session_time'));
+            $total_calculated_time_total = $total_calculated_time_cegos + $total_calculated_time_eni + $total_calculated_time_speex + $total_calculated_time_mooc;
+
+            $pr_calculated_time_mooc = $total_calculated_time_total != 0 ? ($total_calculated_time_mooc / $total_calculated_time_total) * 100 : 0;
+            $pr_calculated_time_speex = $total_calculated_time_total != 0 ? ($total_calculated_time_speex / $total_calculated_time_total) * 100 : 0;
+            $pr_calculated_time_cegos = $total_calculated_time_total != 0 ? ($total_calculated_time_cegos / $total_calculated_time_total) * 100 : 0;
+            $pr_calculated_time_eni = $total_calculated_time_total != 0 ? ($total_calculated_time_eni / $total_calculated_time_total) * 100 : 0;
         }
 
         $softLabel = 'Modules softskills ( ' . $total_calculated_time_cegos . ' heures - ' . round($pr_calculated_time_cegos, 2) . ' %)';
