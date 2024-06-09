@@ -749,7 +749,7 @@ class HomeController extends Controller
                     ];
                 }
             }
-
+            Storage::put('rapport_connexion.xlsx', '');
             (new FastExcel($statsConnexions))->export('rapport_connexion.xlsx');
         } elseif ($rapport == "active") {
             $softModules = Module::where(['category' => 'CEGOS', 'status' => CourseStatusEnum::ACTIVE])->pluck('docebo_id')->toArray();
