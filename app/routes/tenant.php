@@ -46,7 +46,7 @@ Route::middleware([
 
         Route::middleware(['user.auth:user', 'plateforme'])->prefix('plateforme')->name('plateforme.')->group(function () {
             Route::get('/home', [PlateformeHomeController::class, 'index'])->name('home');
-            Route::post('/home', [PlateformeHomeController::class, 'export2'])->name('export');
+            Route::post('/home', [PlateformeHomeController::class, 'export'])->name('export');
             Route::get('/getdata', [PlateformeHomeController::class, 'getData']);
             Route::get('/notifications/{notification}/mark-as-read', [PlateformeHomeController::class, 'markAsRead'])->name('notifications.markAsRead');
             Route::get('/getlanguagedata/{selectedLanguage}', [PlateformeHomeController::class, 'getLanguageData']);
