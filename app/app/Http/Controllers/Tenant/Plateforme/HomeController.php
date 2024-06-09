@@ -273,7 +273,11 @@ class HomeController extends Controller
             if ($rapport == 'connexion') {
                 return Excel::download(new ConnexionExport, 'rapport_des_connexions.xlsx');
             } elseif ($rapport == 'active') {
-                return Excel::download(new ActiveLearnerExport, 'rapport_des_inscrits_actifs.xlsx');
+                //return Excel::download(new ActiveLearnerExport, 'rapport_des_inscrits_actifs.xlsx');
+                (new ActiveLearnerExport())->queue('rapport_des_inscrits_actifs.xlsx')->chain([
+                    new NotifyUserOfCompletedExport(Auth::guard('user')->user(), ["name" => "des inscrits actifs", "link" => tenant_asset('rapport_des_inscrits_actifs.xlsx')]),
+                ]);
+                return back();
             } elseif ($rapport == 'inactive') {
                 return Excel::download(new InactiveLearnerExport, 'rapport_des_inscrits_inactifs.xlsx');
             } elseif ($rapport == 'transverse') {

@@ -13,6 +13,7 @@ use Maatwebsite\Excel\Concerns\FromArray;
 use Maatwebsite\Excel\Concerns\WithMapping;
 use Illuminate\Support\Str;
 use Maatwebsite\Excel\Concerns\Exportable;
+use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -21,7 +22,7 @@ use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithTitle;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class ActiveLearnerExport implements FromArray, WithMapping, WithHeadings, WithStrictNullComparison, WithTitle, ShouldAutoSize, WithStyles, ShouldQueue
+class ActiveLearnerExport implements FromCollection, WithMapping, WithHeadings, WithStrictNullComparison, WithTitle, ShouldAutoSize, WithStyles, ShouldQueue
 {
     use Exportable, Queueable;
     protected $datedebut;
@@ -36,12 +37,12 @@ class ActiveLearnerExport implements FromArray, WithMapping, WithHeadings, WithS
         return 'Liste des apprenants actifs';
     }
 
-    public function array(): array
+    public function collection()
     {
         if ($this->datedebut != null && $this->datefin != null) {
-            $learners = Learner::where('statut', 'active')->whereBetween('last_access_date', [$this->datedebut, $this->datefin])->get()->toArray();
+            $learners = Learner::where('statut', 'active')->whereBetween('last_access_date', [$this->datedebut, $this->datefin])->get();
         } else {
-            $learners = Learner::where('statut', 'active')->get()->toArray();
+            $learners = Learner::where('statut', 'active')->get();
         }
         return $learners;
     }
