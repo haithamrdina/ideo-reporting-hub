@@ -351,7 +351,7 @@ class HomeController extends Controller
 
             $softEnrolls = $softEnrollsQuery->get();
 
-            (new FastExcel($softEnrolls))->download('rapport_formation_softskills.xlsx', function ($enroll) {
+            return (new FastExcel($softEnrolls))->download('rapport_formation_softskills.xlsx', function ($enroll) {
                 $userfields = config('tenantconfigfields.userfields');
                 $enrollfields = config('tenantconfigfields.enrollmentfields');
                 $data = [
@@ -422,7 +422,7 @@ class HomeController extends Controller
                 }
             }
 
-            (new FastExcel($lpEnrolls))->download('rapport_formation_transverse.xlsx', function ($enroll) {
+            return (new FastExcel($lpEnrolls))->download('rapport_formation_transverse.xlsx', function ($enroll) {
                 $userfields = config('tenantconfigfields.userfields');
                 $enrollfields = config('tenantconfigfields.enrollmentfields');
                 $data = [
@@ -486,7 +486,7 @@ class HomeController extends Controller
 
             $softEnrolls = $softEnrollsQuery->get();
 
-            (new FastExcel($softEnrolls))->download('rapport_formation_digital.xlsx', function ($enroll) {
+            return (new FastExcel($softEnrolls))->download('rapport_formation_digital.xlsx', function ($enroll) {
                 $userfields = config('tenantconfigfields.userfields');
                 $enrollfields = config('tenantconfigfields.enrollmentfields');
                 $data = [
@@ -550,7 +550,7 @@ class HomeController extends Controller
 
             $softEnrolls = $softEnrollsQuery->get();
 
-            (new FastExcel($softEnrolls))->download('rapport_formation_langues.xlsx', function ($enroll) {
+            return (new FastExcel($softEnrolls))->download('rapport_formation_langues.xlsx', function ($enroll) {
                 $userfields = config('tenantconfigfields.userfields');
                 $enrollfields = config('tenantconfigfields.enrollmentfields');
                 $data = [
@@ -614,7 +614,7 @@ class HomeController extends Controller
 
             $softEnrolls = $softEnrollsQuery->get();
 
-            (new FastExcel($softEnrolls))->download('rapport_formation_sur_mesure.xlsx', function ($enroll) {
+            return (new FastExcel($softEnrolls))->download('rapport_formation_sur_mesure.xlsx', function ($enroll) {
                 $userfields = config('tenantconfigfields.userfields');
                 $enrollfields = config('tenantconfigfields.enrollmentfields');
                 $data = [
@@ -686,7 +686,7 @@ class HomeController extends Controller
             }
 
 
-            (new FastExcel($moocEnrolls))->download('rapport_formation_moocs.xlsx', function ($enroll) {
+            return (new FastExcel($moocEnrolls))->download('rapport_formation_moocs.xlsx', function ($enroll) {
                 $userfields = config('tenantconfigfields.userfields');
                 $enrollfields = config('tenantconfigfields.enrollmentfields');
                 $data = [
