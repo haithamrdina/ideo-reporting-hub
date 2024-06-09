@@ -13,6 +13,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromArray;
+use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
@@ -21,7 +22,7 @@ use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithTitle;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class CegosExport implements FromArray, WithMapping, WithHeadings, WithStrictNullComparison, WithTitle, ShouldAutoSize, WithStyles, ShouldQueue
+class CegosExport implements FromCollection, WithMapping, WithHeadings, WithStrictNullComparison, WithTitle, ShouldAutoSize, WithStyles, ShouldQueue
 {
     use Exportable, Queueable;
     protected $datedebut;
@@ -37,7 +38,7 @@ class CegosExport implements FromArray, WithMapping, WithHeadings, WithStrictNul
         return 'Inscriptions softskills';
     }
 
-    public function array(): array
+    public function collection()
     {
         $softModules = Module::where(['category' => 'CEGOS', 'status' => CourseStatusEnum::ACTIVE])->pluck('docebo_id')->toArray();
         $archive = config('tenantconfigfields.archive');
@@ -55,7 +56,7 @@ class CegosExport implements FromArray, WithMapping, WithHeadings, WithStrictNul
                             ->whereNull('enrollment_updated_at')
                             ->whereBetween('enrollment_updated_at', [$startDate, $endDate]);
                     })
-                    ->get()->toArray();
+                    ->get();
             } else {
 
                 $learnersIds = Learner::where('statut', '!=', 'archive')->pluck('docebo_id')->toArray();
@@ -71,18 +72,18 @@ class CegosExport implements FromArray, WithMapping, WithHeadings, WithStrictNul
                             ->whereNull('enrollment_updated_at')
                             ->whereBetween('enrollment_updated_at', [$startDate, $endDate]);
                     })
-                    ->get()->toArray();
+                    ->get();
             }
 
         } else {
             if ($archive == true) {
-                $softEnrolls = Enrollmodule::whereIn('module_docebo_id', $softModules)->get()->toArray();
+                $softEnrolls = Enrollmodule::whereIn('module_docebo_id', $softModules)->get();
             } else {
                 $learnersIds = Learner::where('statut', '!=', 'archive')->pluck('docebo_id')->toArray();
                 $softEnrolls = Enrollmodule::whereIn('module_docebo_id', $softModules)->whereIn(
                     'learner_docebo_id',
                     $learnersIds
-                )->get()->toArray();
+                )->get();
             }
         }
         return $softEnrolls;
