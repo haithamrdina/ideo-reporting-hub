@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Jobs\NotifyUserOfCompletedExport;
 use App\Jobs\UpdateBadgeJob;
 use App\Jobs\UpdateCallJob;
 use App\Jobs\UpdateEnrollementLangueJob;
@@ -49,7 +50,8 @@ class EventServiceProvider extends ServiceProvider
             UpdateEnrollementLangueJob::class,
             UpdateEnrollementModuleJob::class,
             UpdateEnrollementsLpsJob::class,
-            UpdateBadgeJob::class
+            UpdateBadgeJob::class,
+            NotifyUserOfCompletedExport::class
         ]);
     }
 

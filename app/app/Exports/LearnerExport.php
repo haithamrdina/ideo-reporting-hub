@@ -24,9 +24,7 @@ class LearnerExport implements WithMultipleSheets, ShouldQueue
     {
         $archive = config('tenantconfigfields.archive');
         $sheets = [];
-        if (Auth::guard('user')->user()->isPlateforme() ) {
-            $sheets[] = new ConnexionExport($this->datedebut, $this->datefin);
-        }
+        $sheets[] = new ConnexionExport($this->datedebut, $this->datefin);
         $sheets[] = new ActiveLearnerExport($this->datedebut, $this->datefin);
         $sheets[] = new InactiveLearnerExport($this->datedebut, $this->datefin);
         if ($archive == true && $this->datefin == null && $this->datefin == null) {

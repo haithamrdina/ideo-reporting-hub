@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     var loader = document.getElementById('loader');
     var content = document.getElementById('content');
     // Create a new XMLHttpRequest object
@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Configure the request
     xhr.open('GET', '/plateforme/getdata', true);
     // Set up a callback function to handle the response
-    xhr.onload = function() {
+    xhr.onload = function () {
         if (xhr.status >= 200 && xhr.status < 300) { // Parse the JSON response
             var data = JSON.parse(xhr.responseText);
             // Call a function to update the page with the data
@@ -50,12 +50,12 @@ document.getElementById('select-enis').addEventListener('change', function () {
     updateDigitalModule(selectedDigital);
 });
 document.getElementById('btnEniReload').addEventListener('click', function () {
-     updateDigitalModule(null);
+    updateDigitalModule(null);
 });
 
 
 $smsSelect = document.getElementById('select-sms');
-if($smsSelect != null){
+if ($smsSelect != null) {
 
     document.getElementById('select-sms').addEventListener('change', function () {
         var selectedSM = document.getElementById('select-sms').value;
@@ -246,37 +246,37 @@ function updateDataInscritPerDate(learnersInscriptionsPerStatDate, timingDetails
     var tprAY = document.getElementById('tprAY');
     var avgtprAY = document.getElementById('avgtprAY');
 
-    if(inscritsAY != null){
+    if (inscritsAY != null) {
         inscritsAY.textContent = learnersInscriptionsPerStatDate.total;
     }
-    if(actifsAY != null){
+    if (actifsAY != null) {
         actifsAY.textContent = learnersInscriptionsPerStatDate.active;
     }
-    if(inactifsAY != null){
+    if (inactifsAY != null) {
         inactifsAY.textContent = learnersInscriptionsPerStatDate.inactive;
     }
-    if(sessionAY != null){
+    if (sessionAY != null) {
         sessionAY.textContent = timingDetailsPerStatDate.total_session_time;
     }
-    if(avgsessionAY != null){
+    if (avgsessionAY != null) {
         avgsessionAY.textContent = timingDetailsPerStatDate.avg_session_time;
     }
-    if(cmiAY != null){
+    if (cmiAY != null) {
         cmiAY.textContent = timingDetailsPerStatDate.total_cmi_time;
     }
-    if(avgcmiAY != null){
+    if (avgcmiAY != null) {
         avgcmiAY.textContent = timingDetailsPerStatDate.avg_cmi_time;
     }
-    if(tcAY != null){
+    if (tcAY != null) {
         tcAY.textContent = timingDetailsPerStatDate.total_calculated_time;
     }
-    if(avgtcAY != null){
+    if (avgtcAY != null) {
         avgtcAY.textContent = timingDetailsPerStatDate.avg_calculated_time;
     }
-    if(tprAY != null){
+    if (tprAY != null) {
         tprAY.textContent = timingDetailsPerStatDate.total_recommended_time;
     }
-    if(avgtprAY != null){
+    if (avgtprAY != null) {
         avgtprAY.textContent = timingDetailsPerStatDate.avg_recommended_time;
     }
 }
@@ -298,7 +298,7 @@ function updateDataInscrit(learnersInscriptions, timingDetails, learnersCharts) 
     inscrits.textContent = learnersInscriptions.total;
     actifs.textContent = learnersInscriptions.active;
     inactifs.textContent = learnersInscriptions.inactive;
-    if(archives != null){
+    if (archives != null) {
         archives.textContent = learnersInscriptions.archive;
     }
     session.textContent = timingDetails.total_session_time;
@@ -310,8 +310,7 @@ function updateDataInscrit(learnersInscriptions, timingDetails, learnersCharts) 
     tpr.textContent = timingDetails.total_recommended_time;
     avgtpr.textContent = timingDetails.avg_recommended_time;
 
-    if(learnersCharts.chartInscritPerCategorie != null)
-    {
+    if (learnersCharts.chartInscritPerCategorie != null) {
         window.ApexCharts && (new ApexCharts(document.getElementById('chart-demo-pie'), {
             chart: {
                 type: "donut",
@@ -355,82 +354,81 @@ function updateDataInscrit(learnersInscriptions, timingDetails, learnersCharts) 
             }
         })).render();
     }
-    if(learnersCharts.chartInscritPerCategoryAndStatus != null)
-    {
+    if (learnersCharts.chartInscritPerCategoryAndStatus != null) {
         window.ApexCharts && (new ApexCharts(document.getElementById('chart-completion-tasks-9'),
-        {
-            chart: {
-                type: "bar",
-                fontFamily: 'inherit',
-                height: 240,
-                parentHeightOffset: 0,
-                toolbar: {
-                    show: false
+            {
+                chart: {
+                    type: "bar",
+                    fontFamily: 'inherit',
+                    height: 240,
+                    parentHeightOffset: 0,
+                    toolbar: {
+                        show: false
+                    },
+                    animations: {
+                        enabled: true
+                    },
+                    stacked: true
                 },
-                animations: {
-                    enabled: true
+                plotOptions: {
+                    bar: {
+                        columnWidth: '50%'
+                    }
                 },
-                stacked: true
-            },
-            plotOptions: {
-                bar: {
-                    columnWidth: '50%'
-                }
-            },
-            dataLabels: {
-                enabled: false
-            },
-            fill: {
-                opacity: 1
-            },
-            series: [{
-                name: "actif",
-                data: learnersCharts.chartInscritPerCategoryAndStatus.actives
-            }, {
-                name: "inactive",
-                data: learnersCharts.chartInscritPerCategoryAndStatus.inactives
-            }],
-            tooltip: {
-                theme: 'dark'
-            },
-            grid: {
-                padding: {
-                    top: -20,
-                    right: 0,
-                    left: -4,
-                    bottom: -4
-                },
-                strokeDashArray: 4
-            },
-            xaxis: {
-                labels: {
-                    padding: 0
-                },
-                tooltip: {
+                dataLabels: {
                     enabled: false
                 },
-                axisBorder: {
-                    show: false
+                fill: {
+                    opacity: 1
+                },
+                series: [{
+                    name: "actif",
+                    data: learnersCharts.chartInscritPerCategoryAndStatus.actives
+                }, {
+                    name: "inactive",
+                    data: learnersCharts.chartInscritPerCategoryAndStatus.inactives
+                }],
+                tooltip: {
+                    theme: 'dark'
+                },
+                grid: {
+                    padding: {
+                        top: -20,
+                        right: 0,
+                        left: -4,
+                        bottom: -4
+                    },
+                    strokeDashArray: 4
+                },
+                xaxis: {
+                    labels: {
+                        padding: 0
+                    },
+                    tooltip: {
+                        enabled: false
+                    },
+                    axisBorder: {
+                        show: false
+                    }
+                },
+                yaxis: {
+                    labels: {
+                        padding: 4
+                    }
+                },
+                labels: learnersCharts.chartInscritPerCategoryAndStatus.labels,
+                colors: [
+                    tabler.getColor("green"), tabler.getColor("red")
+                ],
+                legend: {
+                    show: true
                 }
-            },
-            yaxis: {
-                labels: {
-                    padding: 4
-                }
-            },
-            labels: learnersCharts.chartInscritPerCategoryAndStatus.labels,
-            colors: [
-                tabler.getColor("green"), tabler.getColor("red")
-            ],
-            legend: {
-                show: true
             }
-        }
         )).render();
     }
 }
 
-function updateSoftModules(softStats){
+function updateSoftModules(softStats) {
     var sessionSoft = document.getElementById('sessionSoft');
     var cmiSoft = document.getElementById('cmiSoft');
     var tcSoft = document.getElementById('tcSoft');
@@ -445,7 +443,7 @@ function updateSoftModules(softStats){
     trSoft.textContent = softStats.statSoftTimes.total_recommended_time;
     insSoftT.textContent = softStats.statSoftskills.completed;
     insSoftND.textContent = softStats.statSoftskills.enrolled;
-    insSoftP.textContent= softStats.statSoftskills.in_progress;
+    insSoftP.textContent = softStats.statSoftskills.in_progress;
 
     window.ApexCharts && (new ApexCharts(document.getElementById('chart-softs'), {
         chart: {
@@ -499,7 +497,7 @@ function updateSoftModules(softStats){
             y: {
                 title: {
                     formatter: function () {
-                    return ''
+                        return ''
                     }
                 }
             }
@@ -529,7 +527,7 @@ function updateSoftModules(softStats){
     })).render();
 }
 
-function updateMoocModules(moocStats){
+function updateMoocModules(moocStats) {
     var sessionMc = document.getElementById('sessionMc');
     var cmiMc = document.getElementById('cmiMc');
     var tcMc = document.getElementById('tcMc');
@@ -545,7 +543,7 @@ function updateMoocModules(moocStats){
     trMc.textContent = moocStats.statMoocTimes.total_recommended_time;
     insMcT.textContent = moocStats.statMooc.completed;
     insMcND.textContent = moocStats.statMooc.enrolled;
-    insMcP.textContent= moocStats.statMooc.in_progress;
+    insMcP.textContent = moocStats.statMooc.in_progress;
     insMcW.textContent = moocStats.statMooc.waiting;
 
     window.ApexCharts && (new ApexCharts(document.getElementById('chart-moocs'), {
@@ -600,7 +598,7 @@ function updateMoocModules(moocStats){
             y: {
                 title: {
                     formatter: function () {
-                    return ''
+                        return ''
                     }
                 }
             }
@@ -630,7 +628,7 @@ function updateMoocModules(moocStats){
     })).render();
 }
 
-function updateDigitalModules(digitalStats, selectedDigital=null){
+function updateDigitalModules(digitalStats, selectedDigital = null) {
     var sessionEni = document.getElementById('sessionEni');
     var cmiEni = document.getElementById('cmiEni');
     var tcEni = document.getElementById('tcEni');
@@ -645,11 +643,11 @@ function updateDigitalModules(digitalStats, selectedDigital=null){
     trEni.textContent = digitalStats.statDigitalTimes.total_recommended_time;
     insEniT.textContent = digitalStats.statDigital.completed;
     insEniND.textContent = digitalStats.statDigital.enrolled;
-    insEniP.textContent= digitalStats.statDigital.in_progress;
+    insEniP.textContent = digitalStats.statDigital.in_progress;
 
-    document.getElementById('select-enis').innerHTML="";
+    document.getElementById('select-enis').innerHTML = "";
     document.getElementById('select-enis').insertAdjacentHTML('beforeend', '<option value="" class="text-gray-600">Séléctionner un module</option>');
-    digitalStats.modulesDigital.forEach(function(v) {
+    digitalStats.modulesDigital.forEach(function (v) {
         var selected = v.docebo_id == selectedDigital ? 'selected' : '';
         var content = '<option value="' + v.docebo_id + '"' + selected + '>' + v.name + '</option>';
         document.getElementById('select-enis').insertAdjacentHTML('beforeend', content);
@@ -707,7 +705,7 @@ function updateDigitalModules(digitalStats, selectedDigital=null){
             y: {
                 title: {
                     formatter: function () {
-                    return ''
+                        return ''
                     }
                 }
             }
@@ -737,7 +735,7 @@ function updateDigitalModules(digitalStats, selectedDigital=null){
     })).render();
 }
 
-function updateLanguageTiming(speexStats){
+function updateLanguageTiming(speexStats) {
     var sessionSpeex = document.getElementById('sessionSpeex');
     var cmiSpeex = document.getElementById('cmiSpeex');
     var tcSpeex = document.getElementById('tcSpeex');
@@ -751,22 +749,22 @@ function updateLanguageTiming(speexStats){
     trSpeex.textContent = speexStats.statSpeexTimes.total_recommended_time;
     insSpeexT.textContent = speexStats.statSpeex.completed;
     insSpeexND.textContent = speexStats.statSpeex.enrolled;
-    insSpeexP.textContent= speexStats.statSpeex.in_progress;
+    insSpeexP.textContent = speexStats.statSpeex.in_progress;
 
-    document.getElementById('select-langues').innerHTML="";
-    speexStats.speexLangues.forEach(function(v) {
+    document.getElementById('select-langues').innerHTML = "";
+    speexStats.speexLangues.forEach(function (v) {
         var content = '<option value="' + v + '">' + v + '</option>';
         document.getElementById('select-langues').insertAdjacentHTML('beforeend', content);
     });
 
     var selectedLangue = document.getElementById('select-langues').value;
-    if(!selectedLangue){
+    if (!selectedLangue) {
         selectedLangue = "null";
     }
     updateLanguageChart(selectedLangue);
 }
 
-function updateChartTiming(timingChart){
+function updateChartTiming(timingChart) {
     window.ApexCharts && (new ApexCharts(document.getElementById('chart-combination'), {
         chart: {
             type: "bar",
@@ -794,13 +792,13 @@ function updateChartTiming(timingChart){
         series: [{
             name: "Temps de session",
             data: timingChart.session
-        },{
+        }, {
             name: "Temps d'engagement",
             data: timingChart.cmi
-        },{
+        }, {
             name: "Temps calculé",
             data: timingChart.calculated
-        },{
+        }, {
             name: "Temps pédagogique recommandé",
             data: timingChart.recommended
         }],
@@ -839,7 +837,7 @@ function updateChartTiming(timingChart){
     })).render();
 }
 
-function updateChartCalculatedTiming(timingCalculatedChart){
+function updateChartCalculatedTiming(timingCalculatedChart) {
     window.ApexCharts && (new ApexCharts(document.getElementById('chart-formation'), {
         chart: {
             type: "donut",
@@ -884,7 +882,7 @@ function updateChartCalculatedTiming(timingCalculatedChart){
     })).render();
 }
 
-function updateLps(lpStats, selectedLp=null){
+function updateLps(lpStats, selectedLp = null) {
     var sessionLp = document.getElementById('sessionLp');
     var cmiLp = document.getElementById('cmiLp');
     var tcLp = document.getElementById('tcLp');
@@ -901,13 +899,13 @@ function updateLps(lpStats, selectedLp=null){
     trLp.textContent = lpStats.statLpsTimes.total_recommended_time;
     insLpT.textContent = lpStats.statLps.completed;
     insLpND.textContent = lpStats.statLps.enrolled;
-    insLpP.textContent= lpStats.statLps.in_progress;
+    insLpP.textContent = lpStats.statLps.in_progress;
     insLpPL.textContent = lpStats.statLps.in_progress_min;
     insLpPG.textContent = lpStats.statLps.in_progress_max;
 
     document.getElementById('select-lps').innerHTML = "";
     document.getElementById('select-lps').insertAdjacentHTML('beforeend', '<option value="" class="text-gray-600">Séléctionner un plan de formation</option>');
-    lpStats.lps.forEach(function(v) {
+    lpStats.lps.forEach(function (v) {
         var selected = v.docebo_id == selectedLp ? 'selected' : '';
         var content = '<option value="' + v.docebo_id + '"' + selected + '>' + v.name + '</option>';
         document.getElementById('select-lps').insertAdjacentHTML('beforeend', content);
@@ -965,7 +963,7 @@ function updateLps(lpStats, selectedLp=null){
             y: {
                 title: {
                     formatter: function () {
-                    return ''
+                        return ''
                     }
                 }
             }
@@ -995,7 +993,7 @@ function updateLps(lpStats, selectedLp=null){
     })).render();
 }
 
-function updateLsc(lscStats){
+function updateLsc(lscStats) {
     var tickets = document.getElementById('tickets');
     var calls = document.getElementById('calls');
 
@@ -1024,7 +1022,7 @@ function updateLsc(lscStats){
         grid: {
             strokeDashArray: 4
         },
-        colors:  ["#1676FB", "#798bff", "#6b5b95", "#b8acff", "#f9db7b", "#1EE0AC", "#ffa9ce"],
+        colors: ["#1676FB", "#798bff", "#6b5b95", "#b8acff", "#f9db7b", "#1EE0AC", "#ffa9ce"],
         legend: {
             show: true,
             position: 'bottom',
@@ -1071,7 +1069,7 @@ function updateLsc(lscStats){
         series: [{
             name: "Reçu",
             data: lscStats.callsPerSubjectAndTypeChart.reçu
-        },{
+        }, {
             name: "Emis",
             data: lscStats.callsPerSubjectAndTypeChart.emis
         }],
@@ -1134,7 +1132,7 @@ function updateLsc(lscStats){
         series: [{
             name: "Reçu",
             data: lscStats.callsPerStatutAndTypeChart.reçu
-        },{
+        }, {
             name: "Emis",
             data: lscStats.callsPerStatutAndTypeChart.emis
         }],
@@ -1179,18 +1177,18 @@ function updateLsc(lscStats){
 
 }
 
-function updateLanguageChart(selectedLangue=null){
+function updateLanguageChart(selectedLangue = null) {
     var loaderLG = document.getElementById('loaderLG');
     var contentLG = document.getElementById('contentLG');
     loaderLG.classList.remove('d-none');
     contentLG.classList.add('d-none');
     var xhr = new XMLHttpRequest();
-    xhr.open('GET', '/plateforme/getlanguagedata/'+ selectedLangue, true);
+    xhr.open('GET', '/plateforme/getlanguagedata/' + selectedLangue, true);
     xhr.onreadystatechange = function () {
         if (xhr.readyState === XMLHttpRequest.DONE) {
             if (xhr.status === 200) {
                 var data = JSON.parse(xhr.responseText);
-                if(data){
+                if (data) {
 
                     window.ApexCharts && (new ApexCharts(document.getElementById('chart-speex'), {
                         chart: {
@@ -1216,7 +1214,7 @@ function updateLanguageChart(selectedLangue=null){
                         series: [{
                             name: "Nombre d'inscrits",
                             data: data.inscrits
-                        },{
+                        }, {
                             name: "cumul de formation en heures",
                             data: data.heures
                         }],
@@ -1270,20 +1268,20 @@ function updateLanguageChart(selectedLangue=null){
     xhr.send();
 }
 
-function updateDigitalModule(selectedDigital=null){
+function updateDigitalModule(selectedDigital = null) {
     var loaderDG = document.getElementById('loaderDG');
     var contentDG = document.getElementById('contentDG');
     loaderDG.classList.remove('d-none');
     contentDG.classList.add('d-none');
     var xhr = new XMLHttpRequest();
-    xhr.open('GET', '/plateforme/getdigitaldata/'+ selectedDigital, true);
+    xhr.open('GET', '/plateforme/getdigitaldata/' + selectedDigital, true);
     xhr.onreadystatechange = function () {
         if (xhr.readyState === XMLHttpRequest.DONE) {
             if (xhr.status === 200) {
                 var data = JSON.parse(xhr.responseText);
-                if(data){
+                if (data) {
 
-                    updateDigitalModules(data,selectedDigital);
+                    updateDigitalModules(data, selectedDigital);
                     loaderDG.classList.add('d-none');
                     contentDG.classList.remove('d-none');
                 }
@@ -1296,20 +1294,20 @@ function updateDigitalModule(selectedDigital=null){
     xhr.send();
 }
 
-function updateLpData(selectedLp=null){
+function updateLpData(selectedLp = null) {
     var loaderLP = document.getElementById('loaderLP');
     var contentLP = document.getElementById('contentLP');
     loaderLP.classList.remove('d-none');
     contentLP.classList.add('d-none');
     var xhr = new XMLHttpRequest();
-    xhr.open('GET', '/plateforme/getlpdata/'+ selectedLp, true);
+    xhr.open('GET', '/plateforme/getlpdata/' + selectedLp, true);
     xhr.onreadystatechange = function () {
         if (xhr.readyState === XMLHttpRequest.DONE) {
             if (xhr.status === 200) {
                 var data = JSON.parse(xhr.responseText);
-                if(data){
+                if (data) {
 
-                    updateLps(data,selectedLp);
+                    updateLps(data, selectedLp);
                     loaderLP.classList.add('d-none');
                     contentLP.classList.remove('d-none');
                 }
@@ -1330,20 +1328,20 @@ function formatDate(dateString) {
     return year + '-' + month + '-' + day;
 }
 
-function updateSMModule(selectedSM=null){
+function updateSMModule(selectedSM = null) {
     var loaderSM = document.getElementById('loaderSM');
     var contentSM = document.getElementById('contentSM');
     loaderSM.classList.remove('d-none');
     contentSM.classList.add('d-none');
     var xhr = new XMLHttpRequest();
-    xhr.open('GET', '/plateforme/getsmdata/'+ selectedSM, true);
+    xhr.open('GET', '/plateforme/getsmdata/' + selectedSM, true);
     xhr.onreadystatechange = function () {
         if (xhr.readyState === XMLHttpRequest.DONE) {
             if (xhr.status === 200) {
                 var data = JSON.parse(xhr.responseText);
-                if(data){
+                if (data) {
 
-                    updateSMModules(data,selectedSM);
+                    updateSMModules(data, selectedSM);
                     loaderSM.classList.add('d-none');
                     contentSM.classList.remove('d-none');
                 }
@@ -1356,7 +1354,7 @@ function updateSMModule(selectedSM=null){
     xhr.send();
 }
 
-function updateSMModules(smStats, selectedSM=null){
+function updateSMModules(smStats, selectedSM = null) {
     var sessionSM = document.getElementById('sessionSm');
     var cmiSM = document.getElementById('cmiSm');
     var tcSM = document.getElementById('tcSm');
@@ -1364,41 +1362,41 @@ function updateSMModules(smStats, selectedSM=null){
     var insSMT = document.getElementById('insSmT');
     var insSMND = document.getElementById('insSmND');
     var insSMP = document.getElementById('insSmP');
-    if(sessionSM != null){
+    if (sessionSM != null) {
         sessionSM.textContent = smStats.statSMTimes.total_session_time;
     }
-    if(cmiSM != null){
+    if (cmiSM != null) {
         cmiSM.textContent = smStats.statSMTimes.total_cmi_time;
     }
-    if(tcSM != null){
+    if (tcSM != null) {
         tcSM.textContent = smStats.statSMTimes.total_calculated_time;
     }
-    if(trSM != null){
+    if (trSM != null) {
         trSM.textContent = smStats.statSMTimes.total_recommended_time;
     }
-    if(insSMT != null){
+    if (insSMT != null) {
         insSMT.textContent = smStats.statSM.completed;
     }
-    if(insSMND != null){
+    if (insSMND != null) {
         insSMND.textContent = smStats.statSM.enrolled;;
     }
-    if(insSMP != null){
-        insSMP.textContent= smStats.statSM.in_progress;
+    if (insSMP != null) {
+        insSMP.textContent = smStats.statSM.in_progress;
 
     }
 
     $smsSelect = document.getElementById('select-sms');
-    if($smsSelect != null){
-        document.getElementById('select-sms').innerHTML="";
+    if ($smsSelect != null) {
+        document.getElementById('select-sms').innerHTML = "";
         document.getElementById('select-sms').insertAdjacentHTML('beforeend', '<option value="" class="text-gray-600">Séléctionner un module</option>');
-        smStats.modulesSms.forEach(function(v) {
+        smStats.modulesSms.forEach(function (v) {
             var selected = v.docebo_id == selectedSM ? 'selected' : '';
             var content = '<option value="' + v.docebo_id + '"' + selected + '>' + v.name + '</option>';
             document.getElementById('select-sms').insertAdjacentHTML('beforeend', content);
         });
     }
 
-    if(document.getElementById('chart-sm') != null){
+    if (document.getElementById('chart-sm') != null) {
         window.ApexCharts && (new ApexCharts(document.getElementById('chart-sm'), {
             chart: {
                 type: "bar",
@@ -1451,7 +1449,7 @@ function updateSMModules(smStats, selectedSM=null){
                 y: {
                     title: {
                         formatter: function () {
-                        return ''
+                            return ''
                         }
                     }
                 }
@@ -1480,4 +1478,24 @@ function updateSMModules(smStats, selectedSM=null){
             },
         })).render();
     }
+}
+
+function markNotificationAsRead(event) {
+    event.preventDefault();
+
+    var notificationId = event.target.getAttribute('data-notification-id');
+    var xhr = new XMLHttpRequest();
+
+    xhr.open('GET', '/plateforme/notifications/' + notificationId + '/mark-as-read');
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+            if (xhr.status === 200) {
+                // Once notification is marked as read, initiate download
+                window.location.href = event.target.href;
+            } else {
+                console.error('Error marking notification as read: ' + xhr.responseText);
+            }
+        }
+    };
+    xhr.send();
 }
