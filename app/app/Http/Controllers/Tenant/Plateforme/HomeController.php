@@ -303,7 +303,7 @@ class HomeController extends Controller
                 case 'inscriptions':
                     (new LearnerExport())->queue('rapport_inscriptions.xlsx')->chain([
                         new NotifyUserOfCompletedExport(Auth::guard('user')->user(), [
-                            "name" => "des formations softskills",
+                            "name" => "des inscriptions",
                             "link" => tenant_asset('rapport_inscriptions.xlsx')
                         ]),
                     ]);
@@ -319,7 +319,7 @@ class HomeController extends Controller
                 case 'modules':
                     (new ModuleExport())->queue('rapport_formation_softskills.xlsx')->chain([
                         new NotifyUserOfCompletedExport(Auth::guard('user')->user(), [
-                            "name" => "des formations softskills",
+                            "name" => "des modules",
                             "link" => tenant_asset('rapport_formation_softskills.xlsx')
                         ]),
                     ]);
