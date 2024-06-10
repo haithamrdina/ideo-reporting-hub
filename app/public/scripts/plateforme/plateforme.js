@@ -1520,6 +1520,10 @@ document.getElementById('reportForm').addEventListener('submit', function (event
         }
     })
         .then(response => response.json())
+        .then(data => {
+            // Traiter la réponse du serveur
+            alert(data['message']);
+        })
         .catch(error => {
             console.error('Error:', error);
         });
@@ -1540,6 +1544,6 @@ async function updateNotification() {
 }
 
 // Call updateNotification every 60 seconds (60000 milliseconds)
-setInterval(updateNotification, 10000);
+setInterval(updateNotification, 5000);
 
 
