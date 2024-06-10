@@ -16,7 +16,7 @@ use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithTitle;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class TicketExport implements FromArray, WithMapping, WithHeadings, WithStrictNullComparison, WithTitle, ShouldAutoSize, WithStyles
+class TicketExport implements FromCollection, WithMapping, WithHeadings, WithStrictNullComparison, WithTitle, ShouldAutoSize, WithStyles
 {
     protected $datedebut;
     protected $datefin;
@@ -31,22 +31,22 @@ class TicketExport implements FromArray, WithMapping, WithHeadings, WithStrictNu
         return 'Tickets';
     }
 
-    public function array(): array
+    public function collection()
     {
         $archive = config('tenantconfigfields.archive');
         if ($this->datedebut != null && $this->datefin != null) {
             if ($archive == true) {
-                $tickets = Ticket::whereBetween('ticket_created_at', [$this->datedebut, $this->datefin])->get()->toArray();
+                $tickets = Ticket::whereBetween('ticket_created_at', [$this->datedebut, $this->datefin])->get();
             } else {
                 $learnersIds = Learner::where('statut', '!=', 'archive')->pluck('docebo_id')->toArray();
-                $tickets = Ticket::whereIn('learner_docebo_id', $learnersIds)->whereBetween('ticket_created_at', [$this->datedebut, $this->datefin])->get()->toArray();
+                $tickets = Ticket::whereIn('learner_docebo_id', $learnersIds)->whereBetween('ticket_created_at', [$this->datedebut, $this->datefin])->get();
             }
         } else {
             if ($archive == true) {
-                $tickets = Ticket::get()->toArray();
+                $tickets = Ticket::get();
             } else {
                 $learnersIds = Learner::where('statut', '!=', 'archive')->pluck('docebo_id')->toArray();
-                $tickets = Ticket::whereIn('learner_docebo_id', $learnersIds)->get()->toArray();
+                $tickets = Ticket::whereIn('learner_docebo_id', $learnersIds)->get();
             }
         }
         return $tickets;

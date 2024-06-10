@@ -9,7 +9,7 @@
         $date = \Carbon\Carbon::createFromFormat('Y-m-d', $contract_start_date_conf);
         $yearOfDate = $date->year;
         $currentYear = now()->year;
-        if ($yearOfDate > $currentYear) {
+        if ($yearOfDate < $currentYear) {
             $statDate = $date->format('d-m-') . now()->year;
         } else {
             $statDate = $date->format('d-m-') . (now()->year - 1);

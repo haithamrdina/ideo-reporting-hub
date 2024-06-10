@@ -26,7 +26,7 @@ class ProjectReportService
             $yearOfDate = $date->year;
             $currentYear = now()->year;
 
-            if ($yearOfDate > $currentYear) {
+            if ($yearOfDate < $currentYear) {
                 $startDate = now()->year . $date->format('-m-d');
             } else {
                 $startDate = (now()->year - 1) . $date->format('-m-d');
@@ -60,7 +60,7 @@ class ProjectReportService
             $yearOfDate = $date->year;
             $currentYear = now()->year;
 
-            if ($yearOfDate > $currentYear) {
+            if ($yearOfDate < $currentYear) {
                 $startDate = now()->year . $date->format('-m-d');
             } else {
                 $startDate = (now()->year - 1) . $date->format('-m-d');

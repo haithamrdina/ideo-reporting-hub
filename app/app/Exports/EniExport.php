@@ -19,7 +19,7 @@ use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithTitle;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class EniExport implements FromArray, WithMapping, WithHeadings, WithStrictNullComparison, WithTitle, ShouldAutoSize, WithStyles
+class EniExport implements FromCollection, WithMapping, WithHeadings, WithStrictNullComparison, WithTitle, ShouldAutoSize, WithStyles
 {
 
     protected $datedebut;
@@ -35,7 +35,7 @@ class EniExport implements FromArray, WithMapping, WithHeadings, WithStrictNullC
         return 'Inscriptions digitals';
     }
 
-    public function array(): array
+    public function collection()
     {
         $eniModules = Module::where(['category' => 'ENI', 'status' => CourseStatusEnum::ACTIVE])->pluck('docebo_id')->toArray();
         $archive = config('tenantconfigfields.archive');
@@ -53,7 +53,7 @@ class EniExport implements FromArray, WithMapping, WithHeadings, WithStrictNullC
                             ->whereNull('enrollment_updated_at')
                             ->whereBetween('enrollment_updated_at', [$startDate, $endDate]);
                     })
-                    ->get()->toArray();
+                    ->get();
             } else {
 
                 $learnersIds = Learner::where('statut', '!=', 'archive')->pluck('docebo_id')->toArray();
@@ -69,15 +69,15 @@ class EniExport implements FromArray, WithMapping, WithHeadings, WithStrictNullC
                             ->whereNull('enrollment_updated_at')
                             ->whereBetween('enrollment_updated_at', [$startDate, $endDate]);
                     })
-                    ->get()->toArray();
+                    ->get();
             }
 
         } else {
             if ($archive == true) {
-                $eniEnrolls = Enrollmodule::whereIn('module_docebo_id', $eniModules)->get()->toArray();
+                $eniEnrolls = Enrollmodule::whereIn('module_docebo_id', $eniModules)->get();
             } else {
                 $learnersIds = Learner::where('statut', '!=', 'archive')->pluck('docebo_id')->toArray();
-                $eniEnrolls = Enrollmodule::whereIn('module_docebo_id', $eniModules)->whereIn('learner_docebo_id', $learnersIds)->get()->toArray();
+                $eniEnrolls = Enrollmodule::whereIn('module_docebo_id', $eniModules)->whereIn('learner_docebo_id', $learnersIds)->get();
             }
         }
         return $eniEnrolls;

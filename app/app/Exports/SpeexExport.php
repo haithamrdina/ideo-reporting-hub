@@ -19,7 +19,7 @@ use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithTitle;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class SpeexExport implements FromArray, WithMapping, WithHeadings, WithStrictNullComparison, WithTitle, ShouldAutoSize, WithStyles
+class SpeexExport implements FromCollection, WithMapping, WithHeadings, WithStrictNullComparison, WithTitle, ShouldAutoSize, WithStyles
 {
 
     protected $datedebut;
@@ -34,7 +34,7 @@ class SpeexExport implements FromArray, WithMapping, WithHeadings, WithStrictNul
         return 'Inscriptions Langues';
     }
 
-    public function array(): array
+    public function collection()
     {
         $speexModules = Module::where(['category' => 'SPEEX', 'status' => CourseStatusEnum::ACTIVE])->pluck('docebo_id')->toArray();
         $archive = config('tenantconfigfields.archive');
@@ -53,7 +53,7 @@ class SpeexExport implements FromArray, WithMapping, WithHeadings, WithStrictNul
                             ->whereNull('enrollment_updated_at')
                             ->whereBetween('enrollment_updated_at', [$startDate, $endDate]);
                     })
-                    ->get()->toArray();
+                    ->get();
                 ;
             } else {
 
@@ -70,18 +70,18 @@ class SpeexExport implements FromArray, WithMapping, WithHeadings, WithStrictNul
                             ->whereNull('enrollment_updated_at')
                             ->whereBetween('enrollment_updated_at', [$startDate, $endDate]);
                     })
-                    ->get()->toArray();
+                    ->get();
             }
 
         } else {
             if ($archive == true) {
-                $speexEnrolls = Langenroll::whereIn('module_docebo_id', $speexModules)->get()->toArray();
+                $speexEnrolls = Langenroll::whereIn('module_docebo_id', $speexModules)->get();
             } else {
                 $learnersIds = Learner::where('statut', '!=', 'archive')->pluck('docebo_id')->toArray();
                 $speexEnrolls = Langenroll::whereIn('module_docebo_id', $speexModules)->whereIn(
                     'learner_docebo_id',
                     $learnersIds
-                )->get()->toArray();
+                )->get();
             }
         }
 

@@ -26,7 +26,7 @@ class GroupeReportService
             $yearOfDate = $date->year;
             $currentYear = now()->year;
 
-            if ($yearOfDate > $currentYear) {
+            if ($yearOfDate < $currentYear) {
                 $startDate = now()->year . $date->format('-m-d');
             } else {
                 $startDate = (now()->year - 1) . $date->format('-m-d');
@@ -60,7 +60,7 @@ class GroupeReportService
             $yearOfDate = $date->year;
             $currentYear = now()->year;
 
-            if ($yearOfDate > $currentYear) {
+            if ($yearOfDate < $currentYear) {
                 $startDate = now()->year . $date->format('-m-d');
             } else {
                 $startDate = (now()->year - 1) . $date->format('-m-d');
@@ -446,9 +446,9 @@ class GroupeReportService
 
         $digitalEnrolls = Enrollmodule::where('module_docebo_id', $selectedDigital)->whereIn('learner_docebo_id', $learnersIds)->where('group_id', $groupe->id)->get();
 
-        $digitalEnrollsInEnrolled = Enrollmodule::where('module_docebo_id', $selectedDigital)->whereIn('learner_docebo_id', $learnersIds)->where('status', 'enrolled')->where('group_id', $groupeId)->count();
-        $digitalEnrollsInProgress = Enrollmodule::where('module_docebo_id', $selectedDigital)->whereIn('learner_docebo_id', $learnersIds)->where('status', 'in_progress')->where('group_id', $groupeId)->count();
-        $digitalEnrollsInCompleted = Enrollmodule::where('module_docebo_id', $selectedDigital)->whereIn('learner_docebo_id', $learnersIds)->where('status', 'completed')->where('group_id', $groupeId)->count();
+        $digitalEnrollsInEnrolled = Enrollmodule::where('module_docebo_id', $selectedDigital)->whereIn('learner_docebo_id', $learnersIds)->where('status', 'enrolled')->where('group_id', $groupId)->count();
+        $digitalEnrollsInProgress = Enrollmodule::where('module_docebo_id', $selectedDigital)->whereIn('learner_docebo_id', $learnersIds)->where('status', 'in_progress')->where('group_id', $groupId)->count();
+        $digitalEnrollsInCompleted = Enrollmodule::where('module_docebo_id', $selectedDigital)->whereIn('learner_docebo_id', $learnersIds)->where('status', 'completed')->where('group_id', $groupId)->count();
 
         $statDigital = [
             'enrolled' => $digitalEnrollsInEnrolled,

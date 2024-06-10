@@ -5,18 +5,23 @@ namespace App\Exports;
 use App\Models\Group;
 use App\Models\Learner;
 use App\Models\Project;
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromArray;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\WithStrictNullComparison;
 use Illuminate\Support\Str;
+use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithTitle;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class InactiveLearnerExport implements FromArray, WithMapping, WithHeadings, WithStrictNullComparison, WithTitle, ShouldAutoSize, WithStyles
+class InactiveLearnerExport implements FromCollection, WithMapping, WithHeadings, WithStrictNullComparison, WithTitle, ShouldAutoSize, WithStyles, ShouldQueue
 {
+    use Exportable, Queueable;
     protected $datedebut;
     protected $datefin;
     public function __construct($datedebut = null, $datefin = null)
@@ -29,12 +34,12 @@ class InactiveLearnerExport implements FromArray, WithMapping, WithHeadings, Wit
         return 'Liste des apprenants inactifs';
     }
 
-    public function array(): array
+    public function collection()
     {
         if ($this->datedebut != null && $this->datefin != null) {
-            $learners = Learner::where('statut', 'inactive')->whereBetween('creation_date', [$this->datedebut, $this->datefin])->get()->toArray();
+            $learners = Learner::where('statut', 'inactive')->whereBetween('creation_date', [$this->datedebut, $this->datefin])->get();
         } else {
-            $learners = Learner::where('statut', 'inactive')->get()->toArray();
+            $learners = Learner::where('statut', 'inactive')->get();
         }
         return $learners;
     }

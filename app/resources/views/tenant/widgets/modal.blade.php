@@ -159,7 +159,7 @@
     </div>
 @endif
 
-<div class="modal modal-blur fade" id="modal-report-plateforme" tabindex="-1" role="dialog" aria-hidden="true">
+{{-- <div class="modal modal-blur fade" id="modal-report-plateforme" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <form action="{{ route('tenant.plateforme.export') }}" method="post">
@@ -223,6 +223,140 @@
                         Cancel
                     </a>
                     <button type="submit" class="btn btn-red ms-auto" data-bs-dismiss="modal">
+                        <!-- Download SVG icon from http://tabler-icons.io/i/plus -->
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                            viewbox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <path d="M12 5l0 14" />
+                            <path d="M5 12l14 0" />
+                        </svg>
+                        Générer votre rapport
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div> --}}
+{{-- <div class="modal modal-blur fade" id="modal-report-plateforme" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <form id="reportForm">
+                @csrf
+                <div class="modal-header">
+                    <h5 class="modal-title">Nouveau Rapport</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="mb-3">
+                                <label class="form-label">Liste des rapports</label>
+                                <select class="form-select" name="rapport">
+                                    <option value="" disabled selected>Choisir votre rapport</option>
+                                    <optgroup label="Inscriptions">
+                                        <option value="active">Rapport des inscrits actifs</option>
+                                        <option value="inactive">Rapport des inscrits inactifs</option>
+                                        <option value="connexion">Rapport des connexions</option>
+                                    </optgroup>
+                                    <optgroup label="Formation Transverse">
+                                        <option value="transverse">Rapport des inscriptions au formation transverse
+                                        </option>
+                                    </optgroup>
+                                    <optgroup label="Modules">
+                                        <option value="cegos">Rapport des inscriptions au formation softskills
+                                        </option>
+                                        <option value="eni">Rapport des inscriptions au formation digital</option>
+                                        <option value="speex">Rapport des inscriptions au formation langue</option>
+                                        @if ($sur_mesure == true)
+                                            <option value="sm">Rapport des inscriptions au formation sur mesure
+                                            </option>
+                                        @endif
+                                        <option value="mooc">Rapport des inscriptions au mooc</option>
+                                    </optgroup>
+                                    <optgroup label="Learner Success Center">
+                                        <option value="tickets">Rapport des tickets</option>
+                                        <option value="calls">Rapport des appels</option>
+                                    </optgroup>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="mb-3">
+                                <label class="form-label">Date début</label>
+                                <input type="date" class="form-control" name="dateDebut">
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="mb-3">
+                                <label class="form-label">Date fin</label>
+                                <input type="date" class="form-control" name="dateFin">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <a href="#" class="btn btn-link link-secondary" data-bs-dismiss="modal">
+                        Cancel
+                    </a>
+                    <button type="submit" class="btn btn-red ms-auto">
+                        <!-- Download SVG icon from http://tabler-icons.io/i/plus -->
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+                            viewbox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <path d="M12 5l0 14" />
+                            <path d="M5 12l14 0" />
+                        </svg>
+                        Générer votre rapport
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div> --}}
+<div class="modal modal-blur fade" id="modal-report-plateforme" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <form id="reportForm">
+                @csrf
+                <div class="modal-header">
+                    <h5 class="modal-title">Nouveau Rapport</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="mb-3">
+                                <label class="form-label">Liste des rapports</label>
+                                <select class="form-select" name="rapport">
+                                    <option value="" disabled selected>Choisir votre rapport</option>
+                                    <option value="inscriptions">Rapport des inscriptions</option>
+                                    <option value="modules">Rapport des modules</option>
+                                    <option value="transverse">Rapport de formation tranverse</option>
+                                    <option value="lsc">Rapport de learner success center</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="mb-3">
+                                <label class="form-label">Date début</label>
+                                <input type="date" class="form-control" name="dateDebut">
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="mb-3">
+                                <label class="form-label">Date fin</label>
+                                <input type="date" class="form-control" name="dateFin">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <a href="#" class="btn btn-link link-secondary" data-bs-dismiss="modal">
+                        Cancel
+                    </a>
+                    <button type="submit" class="btn btn-red ms-auto">
                         <!-- Download SVG icon from http://tabler-icons.io/i/plus -->
                         <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
                             viewbox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"

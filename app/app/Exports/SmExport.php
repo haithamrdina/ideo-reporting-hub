@@ -19,7 +19,7 @@ use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithTitle;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class SmExport implements FromArray, WithMapping, WithHeadings, WithStrictNullComparison, WithTitle, ShouldAutoSize, WithStyles
+class SmExport implements FromCollection, WithMapping, WithHeadings, WithStrictNullComparison, WithTitle, ShouldAutoSize, WithStyles
 {
 
     protected $datedebut;
@@ -34,7 +34,7 @@ class SmExport implements FromArray, WithMapping, WithHeadings, WithStrictNullCo
         return 'Inscriptions digitals';
     }
 
-    public function array(): array
+    public function collection()
     {
         $smModules = Module::where(['category' => 'SM', 'status' => CourseStatusEnum::ACTIVE])->pluck('docebo_id')->toArray();
         $archive = config('tenantconfigfields.archive');
@@ -52,7 +52,7 @@ class SmExport implements FromArray, WithMapping, WithHeadings, WithStrictNullCo
                             ->whereNull('enrollment_updated_at')
                             ->whereBetween('enrollment_updated_at', [$startDate, $endDate]);
                     })
-                    ->get()->toArray();
+                    ->get();
             } else {
 
                 $learnersIds = Learner::where('statut', '!=', 'archive')->pluck('docebo_id')->toArray();
@@ -68,18 +68,18 @@ class SmExport implements FromArray, WithMapping, WithHeadings, WithStrictNullCo
                             ->whereNull('enrollment_updated_at')
                             ->whereBetween('enrollment_updated_at', [$startDate, $endDate]);
                     })
-                    ->get()->toArray();
+                    ->get();
             }
 
         } else {
             if ($archive == true) {
-                $smEnrolls = Enrollmodule::whereIn('module_docebo_id', $smModules)->get()->toArray();
+                $smEnrolls = Enrollmodule::whereIn('module_docebo_id', $smModules)->get();
             } else {
                 $learnersIds = Learner::where('statut', '!=', 'archive')->pluck('docebo_id')->toArray();
                 $smEnrolls = Enrollmodule::whereIn('module_docebo_id', $smModules)->whereIn(
                     'learner_docebo_id',
                     $learnersIds
-                )->get()->toArray();
+                )->get();
             }
         }
         return $smEnrolls;

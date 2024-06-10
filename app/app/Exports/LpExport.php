@@ -12,6 +12,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromArray;
+use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
@@ -20,7 +21,7 @@ use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithTitle;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class LpExport implements FromArray, WithMapping, WithHeadings, WithStrictNullComparison, WithTitle, ShouldAutoSize, WithStyles, ShouldQueue
+class LpExport implements FromCollection, WithMapping, WithHeadings, WithStrictNullComparison, WithTitle, ShouldAutoSize, WithStyles, ShouldQueue
 {
     use Exportable, Queueable;
     protected $datedebut;
@@ -36,7 +37,7 @@ class LpExport implements FromArray, WithMapping, WithHeadings, WithStrictNullCo
         return 'Formation Transverse';
     }
 
-    public function array(): array
+    public function collection()
     {
         $archive = config('tenantconfigfields.archive');
         if ($this->datedebut != null && $this->datefin != null) {
@@ -51,7 +52,7 @@ class LpExport implements FromArray, WithMapping, WithHeadings, WithStrictNullCo
                         $query->whereNull('enrollment_updated_at')
                             ->whereBetween('enrollment_updated_at', [$startDate, $endDate]);
                     })
-                    ->get()->toArray();
+                    ->get();
             } else {
 
                 $learnersIds = Learner::where('statut', '!=', 'archive')->pluck('docebo_id')->toArray();
@@ -65,15 +66,15 @@ class LpExport implements FromArray, WithMapping, WithHeadings, WithStrictNullCo
                             ->whereNull('enrollment_updated_at')
                             ->whereBetween('enrollment_updated_at', [$startDate, $endDate]);
                     })
-                    ->get()->toArray();
+                    ->get();
             }
 
         } else {
             if ($archive == true) {
-                $lpEnrolls = Lpenroll::get()->toArray();
+                $lpEnrolls = Lpenroll::get();
             } else {
                 $learnersIds = Learner::where('statut', '!=', 'archive')->pluck('docebo_id')->toArray();
-                $lpEnrolls = Lpenroll::whereIn('learner_docebo_id', $learnersIds)->get()->toArray();
+                $lpEnrolls = Lpenroll::whereIn('learner_docebo_id', $learnersIds)->get();
             }
         }
         return $lpEnrolls;

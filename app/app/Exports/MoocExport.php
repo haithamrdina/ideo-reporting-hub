@@ -18,7 +18,7 @@ use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithTitle;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class MoocExport implements FromArray, WithMapping, WithHeadings, WithStrictNullComparison, WithTitle, ShouldAutoSize, WithStyles
+class MoocExport implements FromCollection, WithMapping, WithHeadings, WithStrictNullComparison, WithTitle, ShouldAutoSize, WithStyles
 {
 
     protected $datedebut;
@@ -33,7 +33,7 @@ class MoocExport implements FromArray, WithMapping, WithHeadings, WithStrictNull
         return 'Inscriptions Mooc';
     }
 
-    public function array(): array
+    public function collection()
     {
         $archive = config('tenantconfigfields.archive');
         if ($this->datedebut != null && $this->datefin != null) {
@@ -48,7 +48,7 @@ class MoocExport implements FromArray, WithMapping, WithHeadings, WithStrictNull
                         $query->whereNull('enrollment_updated_at')
                             ->whereBetween('enrollment_updated_at', [$startDate, $endDate]);
                     })
-                    ->get()->toArray();
+                    ->get();
             } else {
 
                 $learnersIds = Learner::where('statut', '!=', 'archive')->pluck('docebo_id')->toArray();
@@ -62,15 +62,15 @@ class MoocExport implements FromArray, WithMapping, WithHeadings, WithStrictNull
                             ->whereNull('enrollment_updated_at')
                             ->whereBetween('enrollment_updated_at', [$startDate, $endDate]);
                     })
-                    ->get()->toArray();
+                    ->get();
             }
 
         } else {
             if ($archive == true) {
-                $moocEnrolls = Enrollmooc::get()->toArray();
+                $moocEnrolls = Enrollmooc::get();
             } else {
                 $learnersIds = Learner::where('statut', '!=', 'archive')->pluck('docebo_id')->toArray();
-                $moocEnrolls = Enrollmooc::whereIn('learner_docebo_id', $learnersIds)->get()->toArray();
+                $moocEnrolls = Enrollmooc::whereIn('learner_docebo_id', $learnersIds)->get();
             }
         }
 

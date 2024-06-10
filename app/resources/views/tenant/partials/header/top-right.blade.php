@@ -1,5 +1,5 @@
 <div class="d-none d-md-flex">
-    <div class="nav-item dropdown d-none d-md-flex me-3">
+    <div class="nav-item dropdown d-none d-md-flex me-3" id="notification_div">
         <a href="#" class="nav-link px-0" data-bs-toggle="dropdown" tabindex="-1" aria-label="Show notifications">
             <!-- Download SVG icon from http://tabler-icons.io/i/bell -->
             <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24"
@@ -9,7 +9,10 @@
                 <path d="M9 17v1a3 3 0 0 0 6 0v-1"></path>
             </svg>
             @if (count(Auth::guard('user')->user()->unreadNotifications) > 0)
-                <span class="badge bg-red"></span>
+                <span
+                    class="badge bg-red badge-pill">{{ count(Auth::guard('user')->user()->unreadNotifications) }}</span>
+            @else
+                <span class="badge bg-red badge-pill">0</span>
             @endif
         </a>
         <div class="dropdown-menu dropdown-menu-arrow dropdown-menu-end dropdown-menu-card">

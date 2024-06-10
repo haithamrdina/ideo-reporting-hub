@@ -200,35 +200,59 @@ class HomeController extends Controller
 
     public function exportInscrits()
     {
-        return Excel::download(new LearnerExport, 'rapport_des_inscrits.xlsx');
-        // (new LearnerExport())->queue('rapport_des_inscrits.xlsx')->chain([
-        //     new NotifyUserOfCompletedExport(Auth::guard('user')->user(), ["name" => "des inscrits", "link" => tenant_asset('rapport_des_inscrits.xlsx')]),
-        // ]);
-
-        // return back();
+        (new LearnerExport())->queue('rapport_inscriptions.xlsx')->chain([
+            new NotifyUserOfCompletedExport(Auth::guard('user')->user(), [
+                "name" => "des formations softskills",
+                "link" => tenant_asset('rapport_inscriptions.xlsx')
+            ]),
+        ]);
+        return response()->json(['message' => 'Le rapport est en cours de génération et vous serez notifié une fois terminé.']);
     }
 
     public function exportModules()
     {
-        return Excel::download(new ModuleExport, 'rapport_des_modules.xlsx');
+        (new ModuleExport())->queue('rapport_formation_softskills.xlsx')->chain([
+            new NotifyUserOfCompletedExport(Auth::guard('user')->user(), [
+                "name" => "des formations softskills",
+                "link" => tenant_asset('rapport_formation_softskills.xlsx')
+            ]),
+        ]);
+        return response()->json(['message' => 'Le rapport est en cours de génération et vous serez notifié une fois terminé.']);
     }
 
     public function exportLps()
     {
-        // (new LpExport())->store('rapport_formation_transverse.xlsx');
-        // return back();
-        return Excel::download(new LpExport, 'rapport_de_formation_transverse.xlsx');
+        (new LpExport())->queue('rapport_formation_transverse.xlsx')->chain([
+            new NotifyUserOfCompletedExport(Auth::guard('user')->user(), [
+                "name" => "des formations transverses",
+                "link" => tenant_asset('rapport_formation_transverse.xlsx')
+            ]),
+        ]);
+        return response()->json(['message' => 'Le rapport est en cours de génération et vous serez notifié une fois terminé.']);
     }
 
     public function exportLsc()
     {
-        return Excel::download(new LscExport, 'rapport_learner_success_center.xlsx');
+        //return Excel::download(new LscExport, 'rapport_learner_success_center.xlsx');
+        (new LscExport())->queue('rapport_learner_success.xlsx')->chain([
+            new NotifyUserOfCompletedExport(Auth::guard('user')->user(), [
+                "name" => "de learner success center",
+                "link" => tenant_asset('rapport_learner_success.xlsx')
+            ]),
+        ]);
+        return response()->json(['message' => 'Le rapport est en cours de génération et vous serez notifié une fois terminé.']);
     }
 
     public function exportGamification()
     {
         $badgesIDs = Badge::pluck('id')->toArray();
-        return Excel::download(new GamificationExport($badgesIDs), 'rapport_gamification.xlsx');
+        (new GamificationExport($badgesIDs))->queue('rapport_gamification.xlsx')->chain([
+            new NotifyUserOfCompletedExport(Auth::guard('user')->user(), [
+                "name" => "des inscriptions",
+                "link" => tenant_asset('rapport_gamification.xlsx')
+            ]),
+        ]);
+        return response()->json(['message' => 'Le rapport est en cours de génération et vous serez notifié une fois terminé.']);
     }
 
     public function export(Request $request)
@@ -236,79 +260,84 @@ class HomeController extends Controller
         $rapport = $request->input('rapport');
         $dateDebut = $request->input('dateDebut');
         $dateFin = $request->input('dateFin');
-        if ($dateDebut != null && $dateFin != null) {
-            if ($rapport == 'connexion') {
-                return Excel::download(new ConnexionExport($dateDebut, $dateFin), 'rapport_des_connexions.xlsx');
-            } elseif ($rapport == 'active') {
-                return Excel::download(new ActiveLearnerExport($dateDebut, $dateFin), 'rapport_des_inscrits_actifs.xlsx');
-            } elseif ($rapport == 'inactive') {
-                return Excel::download(new InactiveLearnerExport($dateDebut, $dateFin), 'rapport_des_inscrits_inactifs.xlsx');
-            } elseif ($rapport == 'transverse') {
-                //return Excel::download(new LpExport($dateDebut, $dateFin), 'rapport_formation_transverse.xlsx');
-                (new LpExport($dateDebut, $dateFin))->queue('rapport_formation_transverse.xlsx')->chain([
-                    new NotifyUserOfCompletedExport(Auth::guard('user')->user(), ["name" => "des formations transverses", "link" => tenant_asset('rapport_formation_transverse.xlsx')]),
-                ]);
-                return back();
-            } elseif ($rapport == 'cegos') {
-                //return Excel::download(new CegosExport($dateDebut, $dateFin), 'rapport_formation_softskills.xlsx');
-                (new CegosExport($dateDebut, $dateFin))->queue('rapport_formation_softskills.xlsx')->chain([
-                    new NotifyUserOfCompletedExport(Auth::guard('user')->user(), ["name" => "des formations softskills", "link" => tenant_asset('rapport_formation_softskills.xlsx')]),
-                ]);
 
-                return back();
-            } elseif ($rapport == 'eni') {
-                return Excel::download(new EniExport($dateDebut, $dateFin), 'rapport_formation_digitals.xlsx');
-            } elseif ($rapport == 'speex') {
-                return Excel::download(new SpeexExport($dateDebut, $dateFin), 'rapport_formation_langue.xlsx');
-            } elseif ($rapport == 'sm') {
-                return Excel::download(new SmExport($dateDebut, $dateFin), 'rapport_formation_surmesure.xlsx');
-            } elseif ($rapport == 'mooc') {
-                return Excel::download(new MoocExport($dateDebut, $dateFin), 'rapport_formation_moocs.xlsx');
-            } elseif ($rapport == 'tickets') {
-                return Excel::download(new TicketExport($dateDebut, $dateFin), 'rapport_lsc_tickets.xlsx');
-            } elseif ($rapport == 'calls') {
-                return Excel::download(new CallExport($dateDebut, $dateFin), 'rapport_lsc_calls.xlsx');
+        if ($dateDebut && $dateFin) {
+            switch ($rapport) {
+                case 'inscriptions':
+                    (new LearnerExport($dateDebut, $dateFin))->queue('rapport_inscriptions.xlsx')->chain([
+                        new NotifyUserOfCompletedExport(Auth::guard('user')->user(), [
+                            "name" => "des inscriptions",
+                            "link" => tenant_asset('rapport_inscriptions.xlsx')
+                        ]),
+                    ]);
+                    return response()->json(['message' => 'Le rapport est en cours de génération et vous serez notifié une fois terminé.']);
+                case 'transverse':
+                    (new LpExport($dateDebut, $dateFin))->queue('rapport_formation_transverse.xlsx')->chain([
+                        new NotifyUserOfCompletedExport(Auth::guard('user')->user(), [
+                            "name" => "des formations transverses",
+                            "link" => tenant_asset('rapport_formation_transverse.xlsx')
+                        ]),
+                    ]);
+                    return response()->json(['message' => 'Le rapport est en cours de génération et vous serez notifié une fois terminé.']);
+                case 'modules':
+                    (new ModuleExport($dateDebut, $dateFin))->queue('rapport_formation_softskills.xlsx')->chain([
+                        new NotifyUserOfCompletedExport(Auth::guard('user')->user(), [
+                            "name" => "des formations softskills",
+                            "link" => tenant_asset('rapport_formation_softskills.xlsx')
+                        ]),
+                    ]);
+                    return response()->json(['message' => 'Le rapport est en cours de génération et vous serez notifié une fois terminé.']);
+                case 'lsc':
+                    (new LscExport($dateDebut, $dateFin))->queue('rapport_learner_success.xlsx')->chain([
+                        new NotifyUserOfCompletedExport(Auth::guard('user')->user(), [
+                            "name" => "de learner success center",
+                            "link" => tenant_asset('rapport_learner_success.xlsx')
+                        ]),
+                    ]);
+                    return response()->json(['message' => 'Le rapport est en cours de génération et vous serez notifié une fois terminé.']);
+                default:
+                    return response()->json(['error' => 'Type de rapport invalide.'], 400);
             }
         } else {
-            if ($rapport == 'connexion') {
-                return Excel::download(new ConnexionExport, 'rapport_des_connexions.xlsx');
-            } elseif ($rapport == 'active') {
-                //return Excel::download(new ActiveLearnerExport, 'rapport_des_inscrits_actifs.xlsx');
-                (new ActiveLearnerExport())->queue('rapport_des_inscrits_actifs.xlsx')->chain([
-                    new NotifyUserOfCompletedExport(Auth::guard('user')->user(), ["name" => "des inscrits actifs", "link" => tenant_asset('rapport_des_inscrits_actifs.xlsx')]),
-                ]);
-                return back();
-            } elseif ($rapport == 'inactive') {
-                return Excel::download(new InactiveLearnerExport, 'rapport_des_inscrits_inactifs.xlsx');
-            } elseif ($rapport == 'transverse') {
-                //return Excel::download(new LpExport, 'rapport_formation_transverse.xlsx');
-                //(new LpExport())->store('rapport_formation_transverse.xlsx');
-                (new LpExport())->queue('rapport_formation_transverse.xlsx')->chain([
-                    new NotifyUserOfCompletedExport(Auth::guard('user')->user(), ["name" => "des formations transverses", "link" => tenant_asset('rapport_formation_transverse.xlsx')]),
-                ]);
-                return back();
-            } elseif ($rapport == 'cegos') {
-                //return Excel::download(new CegosExport, 'rapport_formation_softskills.xlsx');
-                (new CegosExport())->queue('rapport_formation_softskills.xlsx')->chain([
-                    new NotifyUserOfCompletedExport(Auth::guard('user')->user(), ["name" => "des formations softskills", "link" => tenant_asset('rapport_formation_softskills.xlsx')]),
-                ]);
-                // (new CegosExport())->store('rapport_formation_softskills.xlsx');
-                return back();
-            } elseif ($rapport == 'eni') {
-                return Excel::download(new EniExport, 'rapport_formation_digitals.xlsx');
-            } elseif ($rapport == 'speex') {
-                return Excel::download(new SpeexExport, 'rapport_formation_langue.xlsx');
-            } elseif ($rapport == 'sm') {
-                return Excel::download(new SmExport, 'rapport_formation_surmesure.xlsx');
-            } elseif ($rapport == 'mooc') {
-                return Excel::download(new MoocExport, 'rapport_formation_moocs.xlsx');
-            } elseif ($rapport == 'tickets') {
-                return Excel::download(new TicketExport, 'rapport_lsc_tickets.xlsx');
-            } elseif ($rapport == 'calls') {
-                return Excel::download(new CallExport, 'rapport_lsc_calls.xlsx');
+            switch ($rapport) {
+                case 'inscriptions':
+                    (new LearnerExport())->queue('rapport_inscriptions.xlsx')->chain([
+                        new NotifyUserOfCompletedExport(Auth::guard('user')->user(), [
+                            "name" => "des formations softskills",
+                            "link" => tenant_asset('rapport_inscriptions.xlsx')
+                        ]),
+                    ]);
+                    return response()->json(['message' => 'Le rapport est en cours de génération et vous serez notifié une fois terminé.']);
+                case 'transverse':
+                    (new LpExport())->queue('rapport_formation_transverse.xlsx')->chain([
+                        new NotifyUserOfCompletedExport(Auth::guard('user')->user(), [
+                            "name" => "des formations transverses",
+                            "link" => tenant_asset('rapport_formation_transverse.xlsx')
+                        ]),
+                    ]);
+                    return response()->json(['message' => 'Le rapport est en cours de génération et vous serez notifié une fois terminé.']);
+                case 'modules':
+                    (new ModuleExport())->queue('rapport_formation_softskills.xlsx')->chain([
+                        new NotifyUserOfCompletedExport(Auth::guard('user')->user(), [
+                            "name" => "des formations softskills",
+                            "link" => tenant_asset('rapport_formation_softskills.xlsx')
+                        ]),
+                    ]);
+                    return response()->json(['message' => 'Le rapport est en cours de génération et vous serez notifié une fois terminé.']);
+                case 'lsc':
+                    (new LscExport())->queue('rapport_learner_success.xlsx')->chain([
+                        new NotifyUserOfCompletedExport(Auth::guard('user')->user(), [
+                            "name" => "de learner success center",
+                            "link" => tenant_asset('rapport_learner_success.xlsx')
+                        ]),
+                    ]);
+                    return response()->json(['message' => 'Le rapport est en cours de génération et vous serez notifié une fois terminé.']);
+                default:
+                    return response()->json(['error' => 'Type de rapport invalide.'], 400);
             }
         }
     }
+
 
     public function markAsRead($notificationId)
     {
@@ -318,701 +347,103 @@ class HomeController extends Controller
         return response()->json(['success' => true]);
     }
 
-
-    // public function export2(Request $request)
-    // {
-    //     $rapport = $request->input('rapport');
-    //     $dateDebut = $request->input('dateDebut');
-    //     $dateFin = $request->input('dateFin');
-    //     $archive = config('tenantconfigfields.archive');
-    //     if ($rapport == "cegos") {
-    //         $softModules = Module::where(['category' => 'CEGOS', 'status' => CourseStatusEnum::ACTIVE])->pluck('docebo_id')->toArray();
-    //         $softEnrollsQuery = Enrollmodule::whereIn('module_docebo_id', $softModules);
-
-    //         if ($dateDebut != null && $dateFin != null) {
-    //             $softEnrollsQuery->where(function ($query) use ($dateDebut, $dateFin, $archive) {
-    //                 $query->whereNotNull('enrollment_completed_at')
-    //                     ->whereBetween('enrollment_completed_at', [$dateDebut, $dateFin]);
-    //                 if (!$archive) {
-    //                     $learnersIds = Learner::where('statut', '!=', 'archive')->pluck('docebo_id')->toArray();
-    //                     $query->whereIn('learner_docebo_id', $learnersIds);
-    //                 }
-    //             })
-    //                 ->orWhere(function ($query) use ($dateDebut, $dateFin, $archive) {
-    //                     $query->whereNull('enrollment_updated_at')
-    //                         ->whereBetween('enrollment_updated_at', [$dateDebut, $dateFin]);
-    //                     if (!$archive) {
-    //                         $learnersIds = Learner::where('statut', '!=', 'archive')->pluck('docebo_id')->toArray();
-    //                         $query->whereIn('learner_docebo_id', $learnersIds);
-    //                     }
-    //                 });
-    //         } else {
-    //             if (!$archive) {
-    //                 $learnersIds = Learner::where('statut', '!=', 'archive')->pluck('docebo_id')->toArray();
-    //                 $softEnrollsQuery->whereIn('learner_docebo_id', $learnersIds);
-    //             }
-    //         }
-
-    //         $softEnrolls = $softEnrollsQuery->get();
-    //         dd($softEnrolls);
-    //         return (new FastExcel($softEnrolls))->download('rapport_formation_softskills.xlsx', function ($enroll) {
-    //             $userfields = config('tenantconfigfields.userfields');
-    //             $enrollfields = config('tenantconfigfields.enrollmentfields');
-    //             $data = [
-    //                 'Branche' => $enroll->project->name ?? '******',
-    //                 'Filiale' => $enroll->group->name ?? '******',
-    //                 'Module' => $enroll->module->name ?? '******',
-    //                 'Username' => $enroll->module->name ?? '******',
-    //             ];
-
-    //             if (isset($userfields['matricule']) && $userfields['matricule'] === true) {
-    //                 $data['Matricule'] = $enroll->learner->matricule ?? 'Matricule';
-    //             }
-
-    //             $data['Date d\'inscription'] = $enroll->enrollment_created_at ?? 'Date d\'inscription';
-    //             $data['Statut'] = $enroll->status ?? '******';
-    //             $data['Date du dernière modification'] = $enroll->enrollment_updated_at ?? '******';
-    //             $data['Date d\'achèvement'] = $enroll->enrollment_completed_at ?? '******';
-    //             $data['Temps de session'] = $enroll->session_time ?? '******';
-
-    //             if (isset($enrollfields['cmi_time']) && $enrollfields['cmi_time'] === true) {
-    //                 $data['Temps d\'engagement'] = $enroll->cmi_time ?? '******';
-    //             }
-
-    //             if (isset($enrollfields['calculated_time']) && $enrollfields['calculated_time'] === true) {
-    //                 $data['Temps calculé'] = $enroll->calculated_time ?? '******';
-    //             }
-
-    //             if (isset($enrollfields['recommended_time']) && $enrollfields['recommended_time'] === true) {
-    //                 $data['Temps pédagogique recommandé'] = $enroll->recommended_time ?? '******';
-    //             }
-
-    //             return $data;
-    //         });
-    //     } elseif ($rapport == "transverse") {
-    //         if ($dateDebut != null && $dateFin != null) {
-    //             if ($archive == true) {
-    //                 $lpEnrolls = Lpenroll::where(function ($query) use ($dateDebut, $dateFin) {
-    //                     $query->whereNotNull('enrollment_completed_at')
-    //                         ->whereBetween('enrollment_completed_at', [$dateDebut, $dateFin]);
-    //                 })
-    //                     ->orWhere(function ($query) use ($dateDebut, $dateFin) {
-    //                         $query->whereNull('enrollment_updated_at')
-    //                             ->whereBetween('enrollment_updated_at', [$dateDebut, $dateFin]);
-    //                     })
-    //                     ->get();
-    //             } else {
-
-    //                 $learnersIds = Learner::where('statut', '!=', 'archive')->pluck('docebo_id')->toArray();
-    //                 $lpEnrolls = Lpenroll::where(function ($query) use ($learnersIds, $dateDebut, $dateFin) {
-    //                     $query->whereIn('learner_docebo_id', $learnersIds)
-    //                         ->whereNotNull('enrollment_completed_at')
-    //                         ->whereBetween('enrollment_completed_at', [$dateDebut, $dateFin]);
-    //                 })
-    //                     ->orWhere(function ($query) use ($learnersIds, $dateDebut, $dateFin) {
-    //                         $query->whereIn('learner_docebo_id', $learnersIds)
-    //                             ->whereNull('enrollment_updated_at')
-    //                             ->whereBetween('enrollment_updated_at', [$dateDebut, $dateFin]);
-    //                     })
-    //                     ->get();
-    //             }
-
-    //         } else {
-    //             if ($archive == true) {
-    //                 $lpEnrolls = Lpenroll::get();
-    //             } else {
-    //                 $learnersIds = Learner::where('statut', '!=', 'archive')->pluck('docebo_id')->toArray();
-    //                 $lpEnrolls = Lpenroll::whereIn('learner_docebo_id', $learnersIds)->get();
-    //             }
-    //         }
-
-    //         return (new FastExcel($lpEnrolls))->download('rapport_formation_transverse.xlsx', function ($enroll) {
-    //             $userfields = config('tenantconfigfields.userfields');
-    //             $enrollfields = config('tenantconfigfields.enrollmentfields');
-    //             $data = [
-    //                 'Branche' => $enroll->project->name ?? '******',
-    //                 'Filiale' => $enroll->group->name ?? '******',
-    //                 'Plan de formation' => $enroll->lp->name ?? '******',
-    //                 'Username' => $enroll->module->name ?? '******',
-    //             ];
-
-    //             if (isset($userfields['matricule']) && $userfields['matricule'] === true) {
-    //                 $data['Matricule'] = $enroll->learner->matricule ?? 'Matricule';
-    //             }
-
-    //             $data['Date d\'inscription'] = $enroll->enrollment_created_at ?? 'Date d\'inscription';
-    //             $data['Statut'] = $enroll->status ?? '******';
-    //             $data['Date du dernière modification'] = $enroll->enrollment_updated_at ?? '******';
-    //             $data['Date d\'achèvement'] = $enroll->enrollment_completed_at ?? '******';
-    //             $data['Temps de session'] = $enroll->session_time ?? '******';
-
-    //             if (isset($enrollfields['cmi_time']) && $enrollfields['cmi_time'] === true) {
-    //                 $data['Temps d\'engagement'] = $enroll->cmi_time ?? '******';
-    //             }
-
-    //             if (isset($enrollfields['calculated_time']) && $enrollfields['calculated_time'] === true) {
-    //                 $data['Temps calculé'] = $enroll->calculated_time ?? '******';
-    //             }
-
-    //             if (isset($enrollfields['recommended_time']) && $enrollfields['recommended_time'] === true) {
-    //                 $data['Temps pédagogique recommandé'] = $enroll->recommended_time ?? '******';
-    //             }
-
-    //             return $data;
-    //         });
-    //     } elseif ($rapport == "eni") {
-    //         $softModules = Module::where(['category' => 'ENI', 'status' => CourseStatusEnum::ACTIVE])->pluck('docebo_id')->toArray();
-    //         $softEnrollsQuery = Enrollmodule::whereIn('module_docebo_id', $softModules);
-
-    //         if ($dateDebut != null && $dateFin != null) {
-    //             $softEnrollsQuery->where(function ($query) use ($dateDebut, $dateFin, $archive) {
-    //                 $query->whereNotNull('enrollment_completed_at')
-    //                     ->whereBetween('enrollment_completed_at', [$dateDebut, $dateFin]);
-    //                 if (!$archive) {
-    //                     $learnersIds = Learner::where('statut', '!=', 'archive')->pluck('docebo_id')->toArray();
-    //                     $query->whereIn('learner_docebo_id', $learnersIds);
-    //                 }
-    //             })
-    //                 ->orWhere(function ($query) use ($dateDebut, $dateFin, $archive) {
-    //                     $query->whereNull('enrollment_updated_at')
-    //                         ->whereBetween('enrollment_updated_at', [$dateDebut, $dateFin]);
-    //                     if (!$archive) {
-    //                         $learnersIds = Learner::where('statut', '!=', 'archive')->pluck('docebo_id')->toArray();
-    //                         $query->whereIn('learner_docebo_id', $learnersIds);
-    //                     }
-    //                 });
-    //         } else {
-    //             if (!$archive) {
-    //                 $learnersIds = Learner::where('statut', '!=', 'archive')->pluck('docebo_id')->toArray();
-    //                 $softEnrollsQuery->whereIn('learner_docebo_id', $learnersIds);
-    //             }
-    //         }
-
-    //         $softEnrolls = $softEnrollsQuery->get();
-
-    //         return (new FastExcel($softEnrolls))->download('rapport_formation_digital.xlsx', function ($enroll) {
-    //             $userfields = config('tenantconfigfields.userfields');
-    //             $enrollfields = config('tenantconfigfields.enrollmentfields');
-    //             $data = [
-    //                 'Branche' => $enroll->project->name ?? '******',
-    //                 'Filiale' => $enroll->group->name ?? '******',
-    //                 'Module' => $enroll->module->name ?? '******',
-    //                 'Username' => $enroll->module->name ?? '******',
-    //             ];
-
-    //             if (isset($userfields['matricule']) && $userfields['matricule'] === true) {
-    //                 $data['Matricule'] = $enroll->learner->matricule ?? 'Matricule';
-    //             }
-
-    //             $data['Date d\'inscription'] = $enroll->enrollment_created_at ?? 'Date d\'inscription';
-    //             $data['Statut'] = $enroll->status ?? '******';
-    //             $data['Date du dernière modification'] = $enroll->enrollment_updated_at ?? '******';
-    //             $data['Date d\'achèvement'] = $enroll->enrollment_completed_at ?? '******';
-    //             $data['Temps de session'] = $enroll->session_time ?? '******';
-
-    //             if (isset($enrollfields['cmi_time']) && $enrollfields['cmi_time'] === true) {
-    //                 $data['Temps d\'engagement'] = $enroll->cmi_time ?? '******';
-    //             }
-
-    //             if (isset($enrollfields['calculated_time']) && $enrollfields['calculated_time'] === true) {
-    //                 $data['Temps calculé'] = $enroll->calculated_time ?? '******';
-    //             }
-
-    //             if (isset($enrollfields['recommended_time']) && $enrollfields['recommended_time'] === true) {
-    //                 $data['Temps pédagogique recommandé'] = $enroll->recommended_time ?? '******';
-    //             }
-
-    //             return $data;
-    //         });
-    //     } elseif ($rapport == "speex") {
-    //         $softModules = Module::where(['category' => 'SPEEX', 'status' => CourseStatusEnum::ACTIVE])->pluck('docebo_id')->toArray();
-    //         $softEnrollsQuery = Enrollmodule::whereIn('module_docebo_id', $softModules);
-
-    //         if ($dateDebut != null && $dateFin != null) {
-    //             $softEnrollsQuery->where(function ($query) use ($dateDebut, $dateFin, $archive) {
-    //                 $query->whereNotNull('enrollment_completed_at')
-    //                     ->whereBetween('enrollment_completed_at', [$dateDebut, $dateFin]);
-    //                 if (!$archive) {
-    //                     $learnersIds = Learner::where('statut', '!=', 'archive')->pluck('docebo_id')->toArray();
-    //                     $query->whereIn('learner_docebo_id', $learnersIds);
-    //                 }
-    //             })
-    //                 ->orWhere(function ($query) use ($dateDebut, $dateFin, $archive) {
-    //                     $query->whereNull('enrollment_updated_at')
-    //                         ->whereBetween('enrollment_updated_at', [$dateDebut, $dateFin]);
-    //                     if (!$archive) {
-    //                         $learnersIds = Learner::where('statut', '!=', 'archive')->pluck('docebo_id')->toArray();
-    //                         $query->whereIn('learner_docebo_id', $learnersIds);
-    //                     }
-    //                 });
-    //         } else {
-    //             if (!$archive) {
-    //                 $learnersIds = Learner::where('statut', '!=', 'archive')->pluck('docebo_id')->toArray();
-    //                 $softEnrollsQuery->whereIn('learner_docebo_id', $learnersIds);
-    //             }
-    //         }
-
-    //         $softEnrolls = $softEnrollsQuery->get();
-
-    //         return (new FastExcel($softEnrolls))->download('rapport_formation_langues.xlsx', function ($enroll) {
-    //             $userfields = config('tenantconfigfields.userfields');
-    //             $enrollfields = config('tenantconfigfields.enrollmentfields');
-    //             $data = [
-    //                 'Branche' => $enroll->project->name ?? '******',
-    //                 'Filiale' => $enroll->group->name ?? '******',
-    //                 'Module' => $enroll->module->name ?? '******',
-    //                 'Username' => $enroll->module->name ?? '******',
-    //             ];
-
-    //             if (isset($userfields['matricule']) && $userfields['matricule'] === true) {
-    //                 $data['Matricule'] = $enroll->learner->matricule ?? 'Matricule';
-    //             }
-
-    //             $data['Date d\'inscription'] = $enroll->enrollment_created_at ?? 'Date d\'inscription';
-    //             $data['Statut'] = $enroll->status ?? '******';
-    //             $data['Date du dernière modification'] = $enroll->enrollment_updated_at ?? '******';
-    //             $data['Date d\'achèvement'] = $enroll->enrollment_completed_at ?? '******';
-    //             $data['Temps de session'] = $enroll->session_time ?? '******';
-
-    //             if (isset($enrollfields['cmi_time']) && $enrollfields['cmi_time'] === true) {
-    //                 $data['Temps d\'engagement'] = $enroll->cmi_time ?? '******';
-    //             }
-
-    //             if (isset($enrollfields['calculated_time']) && $enrollfields['calculated_time'] === true) {
-    //                 $data['Temps calculé'] = $enroll->calculated_time ?? '******';
-    //             }
-
-    //             if (isset($enrollfields['recommended_time']) && $enrollfields['recommended_time'] === true) {
-    //                 $data['Temps pédagogique recommandé'] = $enroll->recommended_time ?? '******';
-    //             }
-
-    //             return $data;
-    //         });
-    //     } elseif ($rapport == "sm") {
-    //         $softModules = Module::where(['category' => 'SM', 'status' => CourseStatusEnum::ACTIVE])->pluck('docebo_id')->toArray();
-    //         $softEnrollsQuery = Enrollmodule::whereIn('module_docebo_id', $softModules);
-
-    //         if ($dateDebut != null && $dateFin != null) {
-    //             $softEnrollsQuery->where(function ($query) use ($dateDebut, $dateFin, $archive) {
-    //                 $query->whereNotNull('enrollment_completed_at')
-    //                     ->whereBetween('enrollment_completed_at', [$dateDebut, $dateFin]);
-    //                 if (!$archive) {
-    //                     $learnersIds = Learner::where('statut', '!=', 'archive')->pluck('docebo_id')->toArray();
-    //                     $query->whereIn('learner_docebo_id', $learnersIds);
-    //                 }
-    //             })
-    //                 ->orWhere(function ($query) use ($dateDebut, $dateFin, $archive) {
-    //                     $query->whereNull('enrollment_updated_at')
-    //                         ->whereBetween('enrollment_updated_at', [$dateDebut, $dateFin]);
-    //                     if (!$archive) {
-    //                         $learnersIds = Learner::where('statut', '!=', 'archive')->pluck('docebo_id')->toArray();
-    //                         $query->whereIn('learner_docebo_id', $learnersIds);
-    //                     }
-    //                 });
-    //         } else {
-    //             if (!$archive) {
-    //                 $learnersIds = Learner::where('statut', '!=', 'archive')->pluck('docebo_id')->toArray();
-    //                 $softEnrollsQuery->whereIn('learner_docebo_id', $learnersIds);
-    //             }
-    //         }
-
-    //         $softEnrolls = $softEnrollsQuery->get();
-
-    //         return (new FastExcel($softEnrolls))->download('rapport_formation_sur_mesure.xlsx', function ($enroll) {
-    //             $userfields = config('tenantconfigfields.userfields');
-    //             $enrollfields = config('tenantconfigfields.enrollmentfields');
-    //             $data = [
-    //                 'Branche' => $enroll->project->name ?? '******',
-    //                 'Filiale' => $enroll->group->name ?? '******',
-    //                 'Module' => $enroll->module->name ?? '******',
-    //                 'Username' => $enroll->module->name ?? '******',
-    //             ];
-
-    //             if (isset($userfields['matricule']) && $userfields['matricule'] === true) {
-    //                 $data['Matricule'] = $enroll->learner->matricule ?? 'Matricule';
-    //             }
-
-    //             $data['Date d\'inscription'] = $enroll->enrollment_created_at ?? 'Date d\'inscription';
-    //             $data['Statut'] = $enroll->status ?? '******';
-    //             $data['Date du dernière modification'] = $enroll->enrollment_updated_at ?? '******';
-    //             $data['Date d\'achèvement'] = $enroll->enrollment_completed_at ?? '******';
-    //             $data['Temps de session'] = $enroll->session_time ?? '******';
-
-    //             if (isset($enrollfields['cmi_time']) && $enrollfields['cmi_time'] === true) {
-    //                 $data['Temps d\'engagement'] = $enroll->cmi_time ?? '******';
-    //             }
-
-    //             if (isset($enrollfields['calculated_time']) && $enrollfields['calculated_time'] === true) {
-    //                 $data['Temps calculé'] = $enroll->calculated_time ?? '******';
-    //             }
-
-    //             if (isset($enrollfields['recommended_time']) && $enrollfields['recommended_time'] === true) {
-    //                 $data['Temps pédagogique recommandé'] = $enroll->recommended_time ?? '******';
-    //             }
-
-    //             return $data;
-    //         });
-    //     } elseif ($rapport == "mooc") {
-    //         if ($dateDebut != null && $dateFin != null) {
-    //             if ($archive == true) {
-    //                 $moocEnrolls = Enrollmooc::where(function ($query) use ($dateDebut, $dateFin) {
-    //                     $query->whereNotNull('enrollment_completed_at')
-    //                         ->whereBetween('enrollment_completed_at', [$dateDebut, $dateFin]);
-    //                 })
-    //                     ->orWhere(function ($query) use ($dateDebut, $dateFin) {
-    //                         $query->whereNull('enrollment_updated_at')
-    //                             ->whereBetween('enrollment_updated_at', [$dateDebut, $dateFin]);
-    //                     })
-    //                     ->get();
-    //             } else {
-
-    //                 $learnersIds = Learner::where('statut', '!=', 'archive')->pluck('docebo_id')->toArray();
-    //                 $moocEnrolls = Enrollmooc::where(function ($query) use ($learnersIds, $dateDebut, $dateFin) {
-    //                     $query->whereIn('learner_docebo_id', $learnersIds)
-    //                         ->whereNotNull('enrollment_completed_at')
-    //                         ->whereBetween('enrollment_completed_at', [$dateDebut, $dateFin]);
-    //                 })
-    //                     ->orWhere(function ($query) use ($learnersIds, $dateDebut, $dateFin) {
-    //                         $query->whereIn('learner_docebo_id', $learnersIds)
-    //                             ->whereNull('enrollment_updated_at')
-    //                             ->whereBetween('enrollment_updated_at', [$dateDebut, $dateFin]);
-    //                     })
-    //                     ->get();
-    //             }
-
-    //         } else {
-    //             if ($archive == true) {
-    //                 $moocEnrolls = Enrollmooc::get();
-    //             } else {
-    //                 $learnersIds = Learner::where('statut', '!=', 'archive')->pluck('docebo_id')->toArray();
-    //                 $moocEnrolls = Enrollmooc::whereIn('learner_docebo_id', $learnersIds)->get();
-    //             }
-    //         }
-
-
-    //         return (new FastExcel($moocEnrolls))->download('rapport_formation_moocs.xlsx', function ($enroll) {
-    //             $userfields = config('tenantconfigfields.userfields');
-    //             $enrollfields = config('tenantconfigfields.enrollmentfields');
-    //             $data = [
-    //                 'Branche' => $enroll->project->name ?? '******',
-    //                 'Filiale' => $enroll->group->name ?? '******',
-    //                 'Mooc' => $enroll->mooc->name ?? '******',
-    //                 'Username' => $enroll->module->name ?? '******',
-    //             ];
-
-    //             if (isset($userfields['matricule']) && $userfields['matricule'] === true) {
-    //                 $data['Matricule'] = $enroll->learner->matricule ?? 'Matricule';
-    //             }
-
-    //             $data['Date d\'inscription'] = $enroll->enrollment_created_at ?? 'Date d\'inscription';
-    //             $data['Statut'] = $enroll->status ?? '******';
-    //             $data['Date du dernière modification'] = $enroll->enrollment_updated_at ?? '******';
-    //             $data['Date d\'achèvement'] = $enroll->enrollment_completed_at ?? '******';
-    //             $data['Temps de session'] = $enroll->session_time ?? '******';
-
-    //             if (isset($enrollfields['cmi_time']) && $enrollfields['cmi_time'] === true) {
-    //                 $data['Temps d\'engagement'] = $enroll->cmi_time ?? '******';
-    //             }
-
-    //             if (isset($enrollfields['calculated_time']) && $enrollfields['calculated_time'] === true) {
-    //                 $data['Temps calculé'] = $enroll->calculated_time ?? '******';
-    //             }
-
-    //             if (isset($enrollfields['recommended_time']) && $enrollfields['recommended_time'] === true) {
-    //                 $data['Temps pédagogique recommandé'] = $enroll->recommended_time ?? '******';
-    //             }
-
-    //             return $data;
-    //         });
-    //     } elseif ($rapport == "connexion") {
-    //         $groups = Group::where('status', 1)->get();
-    //         $statsConnexions = [];
-    //         if ($dateDebut != null && $dateFin != null) {
-    //             foreach ($groups as $group) {
-    //                 $actives = $group->learners()->where('statut', 'active')->whereBetween('last_access_date', [$dateDebut, $dateFin])->count();
-    //                 $inactives = $group->learners()->where('statut', 'inactive')->whereBetween('creation_date', [$dateDebut, $dateFin])->count();
-    //                 $total = $actives + $inactives;
-    //                 $pourcentage = ($total != 0) ? $actives * 100 / $total : 0;
-    //                 $statsConnexions[] = [
-    //                     'filiale' => $group->name,
-    //                     'Nombre de connexions' => $actives,
-    //                     'total' => $total,
-    //                     'pourcentage' => round($pourcentage, 2) . " %"
-    //                 ];
-    //             }
-    //         } else {
-    //             foreach ($groups as $group) {
-    //                 $actives = $group->learners()->where('statut', 'active')->count();
-    //                 $total = $group->learners()->whereIn('statut', ['active', 'inactive'])->count();
-    //                 $pourcentage = ($total != 0) ? $actives * 100 / $total : 0;
-    //                 $statsConnexions[] = [
-    //                     'filiale' => $group->name,
-    //                     'Nombre de connexions' => $actives,
-    //                     'total' => $total,
-    //                     'pourcentage' => round($pourcentage, 2) . " %"
-    //                 ];
-    //             }
-    //         }
-
-    //         return (new FastExcel($statsConnexions))->download('rapport_connexion.xlsx');
-    //     } elseif ($rapport == "active") {
-    //         $softModules = Module::where(['category' => 'CEGOS', 'status' => CourseStatusEnum::ACTIVE])->pluck('docebo_id')->toArray();
-    //         $softEnrollsQuery = Enrollmodule::whereIn('module_docebo_id', $softModules);
-
-    //         if ($dateDebut != null && $dateFin != null) {
-    //             $softEnrollsQuery->where(function ($query) use ($dateDebut, $dateFin, $archive) {
-    //                 $query->whereNotNull('enrollment_completed_at')
-    //                     ->whereBetween('enrollment_completed_at', [$dateDebut, $dateFin]);
-    //                 if (!$archive) {
-    //                     $learnersIds = Learner::where('statut', '!=', 'archive')->pluck('docebo_id')->toArray();
-    //                     $query->whereIn('learner_docebo_id', $learnersIds);
-    //                 }
-    //             })
-    //                 ->orWhere(function ($query) use ($dateDebut, $dateFin, $archive) {
-    //                     $query->whereNull('enrollment_updated_at')
-    //                         ->whereBetween('enrollment_updated_at', [$dateDebut, $dateFin]);
-    //                     if (!$archive) {
-    //                         $learnersIds = Learner::where('statut', '!=', 'archive')->pluck('docebo_id')->toArray();
-    //                         $query->whereIn('learner_docebo_id', $learnersIds);
-    //                     }
-    //                 });
-    //         } else {
-    //             if (!$archive) {
-    //                 $learnersIds = Learner::where('statut', '!=', 'archive')->pluck('docebo_id')->toArray();
-    //                 $softEnrollsQuery->whereIn('learner_docebo_id', $learnersIds);
-    //             }
-    //         }
-
-    //         $softEnrolls = $softEnrollsQuery->get();
-
-    //         (new FastExcel($softEnrolls))->download('rapport_formation_softskills.xlsx', function ($enroll) {
-    //             $userfields = config('tenantconfigfields.userfields');
-    //             $enrollfields = config('tenantconfigfields.enrollmentfields');
-    //             $data = [
-    //                 'Branche' => $enroll->project->name ?? '******',
-    //                 'Filiale' => $enroll->group->name ?? '******',
-    //                 'Module' => $enroll->module->name ?? '******',
-    //                 'Username' => $enroll->module->name ?? '******',
-    //             ];
-
-    //             if (isset($userfields['matricule']) && $userfields['matricule'] === true) {
-    //                 $data['Matricule'] = $enroll->learner->matricule ?? 'Matricule';
-    //             }
-
-    //             $data['Date d\'inscription'] = $enroll->enrollment_created_at ?? 'Date d\'inscription';
-    //             $data['Statut'] = $enroll->status ?? '******';
-    //             $data['Date du dernière modification'] = $enroll->enrollment_updated_at ?? '******';
-    //             $data['Date d\'achèvement'] = $enroll->enrollment_completed_at ?? '******';
-    //             $data['Temps de session'] = $enroll->session_time ?? '******';
-
-    //             if (isset($enrollfields['cmi_time']) && $enrollfields['cmi_time'] === true) {
-    //                 $data['Temps d\'engagement'] = $enroll->cmi_time ?? '******';
-    //             }
-
-    //             if (isset($enrollfields['calculated_time']) && $enrollfields['calculated_time'] === true) {
-    //                 $data['Temps calculé'] = $enroll->calculated_time ?? '******';
-    //             }
-
-    //             if (isset($enrollfields['recommended_time']) && $enrollfields['recommended_time'] === true) {
-    //                 $data['Temps pédagogique recommandé'] = $enroll->recommended_time ?? '******';
-    //             }
-
-    //             return $data;
-    //         });
-    //     } elseif ($rapport == "inactive") {
-    //         $softModules = Module::where(['category' => 'CEGOS', 'status' => CourseStatusEnum::ACTIVE])->pluck('docebo_id')->toArray();
-    //         $softEnrollsQuery = Enrollmodule::whereIn('module_docebo_id', $softModules);
-
-    //         if ($dateDebut != null && $dateFin != null) {
-    //             $softEnrollsQuery->where(function ($query) use ($dateDebut, $dateFin, $archive) {
-    //                 $query->whereNotNull('enrollment_completed_at')
-    //                     ->whereBetween('enrollment_completed_at', [$dateDebut, $dateFin]);
-    //                 if (!$archive) {
-    //                     $learnersIds = Learner::where('statut', '!=', 'archive')->pluck('docebo_id')->toArray();
-    //                     $query->whereIn('learner_docebo_id', $learnersIds);
-    //                 }
-    //             })
-    //                 ->orWhere(function ($query) use ($dateDebut, $dateFin, $archive) {
-    //                     $query->whereNull('enrollment_updated_at')
-    //                         ->whereBetween('enrollment_updated_at', [$dateDebut, $dateFin]);
-    //                     if (!$archive) {
-    //                         $learnersIds = Learner::where('statut', '!=', 'archive')->pluck('docebo_id')->toArray();
-    //                         $query->whereIn('learner_docebo_id', $learnersIds);
-    //                     }
-    //                 });
-    //         } else {
-    //             if (!$archive) {
-    //                 $learnersIds = Learner::where('statut', '!=', 'archive')->pluck('docebo_id')->toArray();
-    //                 $softEnrollsQuery->whereIn('learner_docebo_id', $learnersIds);
-    //             }
-    //         }
-
-    //         $softEnrolls = $softEnrollsQuery->get();
-
-    //         (new FastExcel($softEnrolls))->download('rapport_formation_softskills.xlsx', function ($enroll) {
-    //             $userfields = config('tenantconfigfields.userfields');
-    //             $enrollfields = config('tenantconfigfields.enrollmentfields');
-    //             $data = [
-    //                 'Branche' => $enroll->project->name ?? '******',
-    //                 'Filiale' => $enroll->group->name ?? '******',
-    //                 'Module' => $enroll->module->name ?? '******',
-    //                 'Username' => $enroll->module->name ?? '******',
-    //             ];
-
-    //             if (isset($userfields['matricule']) && $userfields['matricule'] === true) {
-    //                 $data['Matricule'] = $enroll->learner->matricule ?? 'Matricule';
-    //             }
-
-    //             $data['Date d\'inscription'] = $enroll->enrollment_created_at ?? 'Date d\'inscription';
-    //             $data['Statut'] = $enroll->status ?? '******';
-    //             $data['Date du dernière modification'] = $enroll->enrollment_updated_at ?? '******';
-    //             $data['Date d\'achèvement'] = $enroll->enrollment_completed_at ?? '******';
-    //             $data['Temps de session'] = $enroll->session_time ?? '******';
-
-    //             if (isset($enrollfields['cmi_time']) && $enrollfields['cmi_time'] === true) {
-    //                 $data['Temps d\'engagement'] = $enroll->cmi_time ?? '******';
-    //             }
-
-    //             if (isset($enrollfields['calculated_time']) && $enrollfields['calculated_time'] === true) {
-    //                 $data['Temps calculé'] = $enroll->calculated_time ?? '******';
-    //             }
-
-    //             if (isset($enrollfields['recommended_time']) && $enrollfields['recommended_time'] === true) {
-    //                 $data['Temps pédagogique recommandé'] = $enroll->recommended_time ?? '******';
-    //             }
-
-    //             return $data;
-    //         });
-    //     } elseif ($rapport == "tickets") {
-    //         $softModules = Module::where(['category' => 'CEGOS', 'status' => CourseStatusEnum::ACTIVE])->pluck('docebo_id')->toArray();
-    //         $softEnrollsQuery = Enrollmodule::whereIn('module_docebo_id', $softModules);
-
-    //         if ($dateDebut != null && $dateFin != null) {
-    //             $softEnrollsQuery->where(function ($query) use ($dateDebut, $dateFin, $archive) {
-    //                 $query->whereNotNull('enrollment_completed_at')
-    //                     ->whereBetween('enrollment_completed_at', [$dateDebut, $dateFin]);
-    //                 if (!$archive) {
-    //                     $learnersIds = Learner::where('statut', '!=', 'archive')->pluck('docebo_id')->toArray();
-    //                     $query->whereIn('learner_docebo_id', $learnersIds);
-    //                 }
-    //             })
-    //                 ->orWhere(function ($query) use ($dateDebut, $dateFin, $archive) {
-    //                     $query->whereNull('enrollment_updated_at')
-    //                         ->whereBetween('enrollment_updated_at', [$dateDebut, $dateFin]);
-    //                     if (!$archive) {
-    //                         $learnersIds = Learner::where('statut', '!=', 'archive')->pluck('docebo_id')->toArray();
-    //                         $query->whereIn('learner_docebo_id', $learnersIds);
-    //                     }
-    //                 });
-    //         } else {
-    //             if (!$archive) {
-    //                 $learnersIds = Learner::where('statut', '!=', 'archive')->pluck('docebo_id')->toArray();
-    //                 $softEnrollsQuery->whereIn('learner_docebo_id', $learnersIds);
-    //             }
-    //         }
-
-    //         $softEnrolls = $softEnrollsQuery->get();
-
-    //         (new FastExcel($softEnrolls))->download('rapport_formation_softskills.xlsx', function ($enroll) {
-    //             $userfields = config('tenantconfigfields.userfields');
-    //             $enrollfields = config('tenantconfigfields.enrollmentfields');
-    //             $data = [
-    //                 'Branche' => $enroll->project->name ?? '******',
-    //                 'Filiale' => $enroll->group->name ?? '******',
-    //                 'Module' => $enroll->module->name ?? '******',
-    //                 'Username' => $enroll->module->name ?? '******',
-    //             ];
-
-    //             if (isset($userfields['matricule']) && $userfields['matricule'] === true) {
-    //                 $data['Matricule'] = $enroll->learner->matricule ?? 'Matricule';
-    //             }
-
-    //             $data['Date d\'inscription'] = $enroll->enrollment_created_at ?? 'Date d\'inscription';
-    //             $data['Statut'] = $enroll->status ?? '******';
-    //             $data['Date du dernière modification'] = $enroll->enrollment_updated_at ?? '******';
-    //             $data['Date d\'achèvement'] = $enroll->enrollment_completed_at ?? '******';
-    //             $data['Temps de session'] = $enroll->session_time ?? '******';
-
-    //             if (isset($enrollfields['cmi_time']) && $enrollfields['cmi_time'] === true) {
-    //                 $data['Temps d\'engagement'] = $enroll->cmi_time ?? '******';
-    //             }
-
-    //             if (isset($enrollfields['calculated_time']) && $enrollfields['calculated_time'] === true) {
-    //                 $data['Temps calculé'] = $enroll->calculated_time ?? '******';
-    //             }
-
-    //             if (isset($enrollfields['recommended_time']) && $enrollfields['recommended_time'] === true) {
-    //                 $data['Temps pédagogique recommandé'] = $enroll->recommended_time ?? '******';
-    //             }
-
-    //             return $data;
-    //         });
-    //     } elseif ($rapport == "calls") {
-    //         $softModules = Module::where(['category' => 'CEGOS', 'status' => CourseStatusEnum::ACTIVE])->pluck('docebo_id')->toArray();
-    //         $softEnrollsQuery = Enrollmodule::whereIn('module_docebo_id', $softModules);
-
-    //         if ($dateDebut != null && $dateFin != null) {
-    //             $softEnrollsQuery->where(function ($query) use ($dateDebut, $dateFin, $archive) {
-    //                 $query->whereNotNull('enrollment_completed_at')
-    //                     ->whereBetween('enrollment_completed_at', [$dateDebut, $dateFin]);
-    //                 if (!$archive) {
-    //                     $learnersIds = Learner::where('statut', '!=', 'archive')->pluck('docebo_id')->toArray();
-    //                     $query->whereIn('learner_docebo_id', $learnersIds);
-    //                 }
-    //             })
-    //                 ->orWhere(function ($query) use ($dateDebut, $dateFin, $archive) {
-    //                     $query->whereNull('enrollment_updated_at')
-    //                         ->whereBetween('enrollment_updated_at', [$dateDebut, $dateFin]);
-    //                     if (!$archive) {
-    //                         $learnersIds = Learner::where('statut', '!=', 'archive')->pluck('docebo_id')->toArray();
-    //                         $query->whereIn('learner_docebo_id', $learnersIds);
-    //                     }
-    //                 });
-    //         } else {
-    //             if (!$archive) {
-    //                 $learnersIds = Learner::where('statut', '!=', 'archive')->pluck('docebo_id')->toArray();
-    //                 $softEnrollsQuery->whereIn('learner_docebo_id', $learnersIds);
-    //             }
-    //         }
-
-    //         $softEnrolls = $softEnrollsQuery->get();
-
-    //         (new FastExcel($softEnrolls))->download('rapport_formation_softskills.xlsx', function ($enroll) {
-    //             $userfields = config('tenantconfigfields.userfields');
-    //             $enrollfields = config('tenantconfigfields.enrollmentfields');
-    //             $data = [
-    //                 'Branche' => $enroll->project->name ?? '******',
-    //                 'Filiale' => $enroll->group->name ?? '******',
-    //                 'Module' => $enroll->module->name ?? '******',
-    //                 'Username' => $enroll->module->name ?? '******',
-    //             ];
-
-    //             if (isset($userfields['matricule']) && $userfields['matricule'] === true) {
-    //                 $data['Matricule'] = $enroll->learner->matricule ?? 'Matricule';
-    //             }
-
-    //             $data['Date d\'inscription'] = $enroll->enrollment_created_at ?? 'Date d\'inscription';
-    //             $data['Statut'] = $enroll->status ?? '******';
-    //             $data['Date du dernière modification'] = $enroll->enrollment_updated_at ?? '******';
-    //             $data['Date d\'achèvement'] = $enroll->enrollment_completed_at ?? '******';
-    //             $data['Temps de session'] = $enroll->session_time ?? '******';
-
-    //             if (isset($enrollfields['cmi_time']) && $enrollfields['cmi_time'] === true) {
-    //                 $data['Temps d\'engagement'] = $enroll->cmi_time ?? '******';
-    //             }
-
-    //             if (isset($enrollfields['calculated_time']) && $enrollfields['calculated_time'] === true) {
-    //                 $data['Temps calculé'] = $enroll->calculated_time ?? '******';
-    //             }
-
-    //             if (isset($enrollfields['recommended_time']) && $enrollfields['recommended_time'] === true) {
-    //                 $data['Temps pédagogique recommandé'] = $enroll->recommended_time ?? '******';
-    //             }
-
-    //             return $data;
-    //         });
-    //     }
-
-
-    // }
+    public function export2(Request $request)
+    {
+        $rapport = $request->input('rapport');
+        $dateDebut = $request->input('dateDebut');
+        $dateFin = $request->input('dateFin');
+
+        if ($dateDebut && $dateFin) {
+            switch ($rapport) {
+                case 'connexion':
+                    return Excel::download(new ConnexionExport($dateDebut, $dateFin), 'rapport_des_connexions.xlsx');
+                case 'active':
+                    return Excel::download(new ActiveLearnerExport($dateDebut, $dateFin), 'rapport_des_inscrits_actifs.xlsx');
+                case 'inactive':
+                    return Excel::download(new InactiveLearnerExport($dateDebut, $dateFin), 'rapport_des_inscrits_inactifs.xlsx');
+                case 'transverse':
+                    (new LpExport($dateDebut, $dateFin))->queue('rapport_formation_transverse.xlsx')->chain([
+                        new NotifyUserOfCompletedExport(Auth::guard('user')->user(), [
+                            "name" => "des formations transverses",
+                            "link" => tenant_asset('rapport_formation_transverse.xlsx')
+                        ]),
+                    ]);
+                    return response()->json(['message' => 'Le rapport est en cours de génération et vous serez notifié une fois terminé.']);
+                case 'cegos':
+                    (new CegosExport($dateDebut, $dateFin))->queue('rapport_formation_softskills.xlsx')->chain([
+                        new NotifyUserOfCompletedExport(Auth::guard('user')->user(), [
+                            "name" => "des formations softskills",
+                            "link" => tenant_asset('rapport_formation_softskills.xlsx')
+                        ]),
+                    ]);
+                    return response()->json(['message' => 'Le rapport est en cours de génération et vous serez notifié une fois terminé.']);
+                case 'eni':
+                    return Excel::download(new EniExport($dateDebut, $dateFin), 'rapport_formation_digitals.xlsx');
+                case 'speex':
+                    return Excel::download(new SpeexExport($dateDebut, $dateFin), 'rapport_formation_langue.xlsx');
+                case 'sm':
+                    return Excel::download(new SmExport($dateDebut, $dateFin), 'rapport_formation_surmesure.xlsx');
+                case 'mooc':
+                    return Excel::download(new MoocExport($dateDebut, $dateFin), 'rapport_formation_moocs.xlsx');
+                case 'tickets':
+                    return Excel::download(new TicketExport($dateDebut, $dateFin), 'rapport_lsc_tickets.xlsx');
+                case 'calls':
+                    return Excel::download(new CallExport($dateDebut, $dateFin), 'rapport_lsc_calls.xlsx');
+                default:
+                    return response()->json(['error' => 'Type de rapport invalide.'], 400);
+            }
+        } else {
+            switch ($rapport) {
+                case 'connexion':
+                    return Excel::download(new ConnexionExport, 'rapport_des_connexions.xlsx');
+                case 'active':
+                    (new LearnerExport())->queue('rapport_des_inscrits.xlsx')->chain([
+                        new NotifyUserOfCompletedExport(Auth::guard('user')->user(), [
+                            "name" => "des inscrits",
+                            "link" => tenant_asset('rapport_des_inscrits.xlsx')
+                        ]),
+                    ]);
+                    return response()->json(['message' => 'Le rapport est en cours de génération et vous serez notifié une fois terminé.']);
+                case 'inactive':
+                    //return Excel::download(new InactiveLearnerExport, 'rapport_des_inscrits_inactifs.xlsx');
+                    (new InactiveLearnerExport())->queue('rapport_des_inscrits_inactifs.xlsx')->chain([
+                        new NotifyUserOfCompletedExport(Auth::guard('user')->user(), [
+                            "name" => "des inscrits actifs",
+                            "link" => tenant_asset('rapport_des_inscrits_inactifs.xlsx')
+                        ]),
+                    ]);
+                    return response()->json(['message' => 'Le rapport est en cours de génération et vous serez notifié une fois terminé.']);
+                case 'transverse':
+                    (new LpExport())->queue('rapport_formation_transverse.xlsx')->chain([
+                        new NotifyUserOfCompletedExport(Auth::guard('user')->user(), [
+                            "name" => "des formations transverses",
+                            "link" => tenant_asset('rapport_formation_transverse.xlsx')
+                        ]),
+                    ]);
+                    return response()->json(['message' => 'Le rapport est en cours de génération et vous serez notifié une fois terminé.']);
+                case 'cegos':
+                    (new CegosExport())->queue('rapport_formation_softskills.xlsx')->chain([
+                        new NotifyUserOfCompletedExport(Auth::guard('user')->user(), [
+                            "name" => "des formations softskills",
+                            "link" => tenant_asset('rapport_formation_softskills.xlsx')
+                        ]),
+                    ]);
+                    return response()->json(['message' => 'Le rapport est en cours de génération et vous serez notifié une fois terminé.']);
+                case 'eni':
+                    return Excel::download(new EniExport, 'rapport_formation_digitals.xlsx');
+                case 'speex':
+                    return Excel::download(new SpeexExport, 'rapport_formation_langue.xlsx');
+                case 'sm':
+                    return Excel::download(new SmExport, 'rapport_formation_surmesure.xlsx');
+                case 'mooc':
+                    return Excel::download(new MoocExport, 'rapport_formation_moocs.xlsx');
+                case 'tickets':
+                    return Excel::download(new TicketExport, 'rapport_lsc_tickets.xlsx');
+                case 'calls':
+                    return Excel::download(new CallExport, 'rapport_lsc_calls.xlsx');
+                default:
+                    return response()->json(['error' => 'Type de rapport invalide.'], 400);
+            }
+        }
+    }
 }

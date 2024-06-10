@@ -13,7 +13,7 @@ use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithTitle;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class ConnexionExport implements FromArray, WithHeadings, WithStrictNullComparison, WithTitle, ShouldAutoSize, WithStyles
+class ConnexionExport implements FromCollection, WithHeadings, WithStrictNullComparison, WithTitle, ShouldAutoSize, WithStyles
 {
 
     protected $datedebut;
@@ -29,11 +29,11 @@ class ConnexionExport implements FromArray, WithHeadings, WithStrictNullComparis
         return 'rapport des connexions';
     }
 
-    public function array(): array
+    public function collection()
     {
         $groups = Group::where('status', 1)->get();
         $statsConnexions = [];
-        if($this->datedebut !=null && $this->datefin !=null){
+        if ($this->datedebut != null && $this->datefin != null) {
             foreach ($groups as $group) {
                 $actives = $group->learners()->where('statut', 'active')->whereBetween('last_access_date', [$this->datedebut, $this->datefin])->count();
                 $inactives = $group->learners()->where('statut', 'inactive')->whereBetween('creation_date', [$this->datedebut, $this->datefin])->count();
@@ -46,7 +46,7 @@ class ConnexionExport implements FromArray, WithHeadings, WithStrictNullComparis
                     'pourcentage' => round($pourcentage, 2) . " %"
                 ];
             }
-        }else{
+        } else {
             foreach ($groups as $group) {
                 $actives = $group->learners()->where('statut', 'active')->count();
                 $total = $group->learners()->whereIn('statut', ['active', 'inactive'])->count();
@@ -59,7 +59,7 @@ class ConnexionExport implements FromArray, WithHeadings, WithStrictNullComparis
                 ];
             }
         }
-        return $statsConnexions;
+        return collect($statsConnexions);
     }
 
     public function headings(): array

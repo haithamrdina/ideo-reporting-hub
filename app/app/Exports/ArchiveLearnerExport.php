@@ -12,21 +12,22 @@ use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\WithStrictNullComparison;
 use Illuminate\Support\Str;
+use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithTitle;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class ArchiveLearnerExport implements FromArray, WithMapping, WithHeadings, WithStrictNullComparison, WithTitle, ShouldAutoSize, WithStyles
+class ArchiveLearnerExport implements FromCollection, WithMapping, WithHeadings, WithStrictNullComparison, WithTitle, ShouldAutoSize, WithStyles
 {
     public function title(): string
     {
         return 'Liste des apprenants archivés';
     }
 
-    public function array(): array
+    public function collection()
     {
-        $learners = Learner::where('statut', 'archive')->get()->toArray();
+        $learners = Learner::where('statut', 'archive')->get();
         return $learners;
     }
 

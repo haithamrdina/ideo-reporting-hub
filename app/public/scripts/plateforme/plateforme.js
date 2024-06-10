@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
+
     var loader = document.getElementById('loader');
     var content = document.getElementById('content');
     // Create a new XMLHttpRequest object
@@ -1499,3 +1500,46 @@ function markNotificationAsRead(event) {
     };
     xhr.send();
 }
+
+
+
+
+document.getElementById('reportForm').addEventListener('submit', function (event) {
+    event.preventDefault(); // Empêche la soumission du formulaire par défaut
+
+    // Récupérer les données du formulaire
+    var formData = new FormData(this);
+    var modal = bootstrap.Modal.getInstance(document.getElementById('modal-report-plateforme'));
+    modal.hide();
+    // Envoyer les données via fetch ou XMLHttpRequest
+    fetch("/plateforme/home", {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value
+        }
+    })
+        .then(response => response.json())
+        .catch(error => {
+            console.error('Error:', error);
+        });
+});
+
+async function updateNotification() {
+    try {
+        const response = await fetch(location.href);
+        const text = await response.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(text, 'text/html');
+        const newNotificationDiv = doc.querySelector('#notification_div').innerHTML;
+        document.querySelector('#notification_div').innerHTML = newNotificationDiv;
+        console.log("Notification updated");
+    } catch (error) {
+        console.error("Error updating notification:", error);
+    }
+}
+
+// Call updateNotification every 60 seconds (60000 milliseconds)
+setInterval(updateNotification, 10000);
+
+
