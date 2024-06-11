@@ -279,14 +279,46 @@ class HomeController extends Controller
                         ]),
                     ]);
                     return response()->json(['message' => 'Le rapport est en cours de génération et vous serez notifié une fois terminé.']);
-                case 'modules':
-                    (new ModuleExport($dateDebut, $dateFin))->queue('rapport_formation_softskills.xlsx')->chain([
-                        new NotifyUserOfCompletedExport(Auth::guard('user')->user(), [
-                            "name" => "des formations softskills",
-                            "link" => tenant_asset('rapport_formation_softskills.xlsx')
-                        ]),
-                    ]);
-                    return response()->json(['message' => 'Le rapport est en cours de génération et vous serez notifié une fois terminé.']);
+                    case 'cegos':
+                        (new CegosExport($dateDebut, $dateFin))->queue('rapport_formation_softskills.xlsx')->chain([
+                            new NotifyUserOfCompletedExport(Auth::guard('user')->user(), [
+                                "name" => "des formations softskills",
+                                "link" => tenant_asset('rapport_formation_softskills.xlsx')
+                            ]),
+                        ]);
+                        return response()->json(['message' => 'Le rapport est en cours de génération et vous serez notifié une fois terminé.']);
+                    case 'eni':
+                        (new EniExport($dateDebut, $dateFin))->queue('rapport_formation_digital.xlsx')->chain([
+                            new NotifyUserOfCompletedExport(Auth::guard('user')->user(), [
+                                "name" => "des formations digitals",
+                                "link" => tenant_asset('rapport_formation_digital.xlsx')
+                            ]),
+                        ]);
+                        return response()->json(['message' => 'Le rapport est en cours de génération et vous serez notifié une fois terminé.']);
+                    case 'speex':
+                        (new SpeexExport($dateDebut, $dateFin))->queue('rapport_formation_langues.xlsx')->chain([
+                            new NotifyUserOfCompletedExport(Auth::guard('user')->user(), [
+                                "name" => "des formations langues",
+                                "link" => tenant_asset('rapport_formation_langues.xlsx')
+                            ]),
+                        ]);
+                        return response()->json(['message' => 'Le rapport est en cours de génération et vous serez notifié une fois terminé.']);
+                    case 'sm':
+                        (new SmExport($dateDebut, $dateFin))->queue('rapport_formation_surmesure.xlsx')->chain([
+                            new NotifyUserOfCompletedExport(Auth::guard('user')->user(), [
+                                "name" => "des formations sur mesure",
+                                "link" => tenant_asset('rapport_formation_surmesure.xlsx')
+                            ]),
+                        ]);
+                        return response()->json(['message' => 'Le rapport est en cours de génération et vous serez notifié une fois terminé.']);
+                    case 'mooc':
+                        (new MoocExport($dateDebut, $dateFin))->queue('rapport_formation_mooc.xlsx')->chain([
+                            new NotifyUserOfCompletedExport(Auth::guard('user')->user(), [
+                                "name" => "des moocs",
+                                "link" => tenant_asset('rapport_formation_mooc.xlsx')
+                            ]),
+                        ]);
+                        return response()->json(['message' => 'Le rapport est en cours de génération et vous serez notifié une fois terminé.']);
                 case 'lsc':
                     (new LscExport($dateDebut, $dateFin))->queue('rapport_learner_success.xlsx')->chain([
                         new NotifyUserOfCompletedExport(Auth::guard('user')->user(), [
@@ -316,11 +348,43 @@ class HomeController extends Controller
                         ]),
                     ]);
                     return response()->json(['message' => 'Le rapport est en cours de génération et vous serez notifié une fois terminé.']);
-                case 'modules':
-                    (new ModuleExport())->queue('rapport_formation_softskills.xlsx')->chain([
+                case 'cegos':
+                    (new CegosExport())->queue('rapport_formation_softskills.xlsx')->chain([
                         new NotifyUserOfCompletedExport(Auth::guard('user')->user(), [
-                            "name" => "des modules",
+                            "name" => "des formations softskills",
                             "link" => tenant_asset('rapport_formation_softskills.xlsx')
+                        ]),
+                    ]);
+                    return response()->json(['message' => 'Le rapport est en cours de génération et vous serez notifié une fois terminé.']);
+                case 'eni':
+                    (new EniExport())->queue('rapport_formation_digital.xlsx')->chain([
+                        new NotifyUserOfCompletedExport(Auth::guard('user')->user(), [
+                            "name" => "des formations digitals",
+                            "link" => tenant_asset('rapport_formation_digital.xlsx')
+                        ]),
+                    ]);
+                    return response()->json(['message' => 'Le rapport est en cours de génération et vous serez notifié une fois terminé.']);
+                case 'speex':
+                    (new SpeexExport())->queue('rapport_formation_langues.xlsx')->chain([
+                        new NotifyUserOfCompletedExport(Auth::guard('user')->user(), [
+                            "name" => "des formations langues",
+                            "link" => tenant_asset('rapport_formation_langues.xlsx')
+                        ]),
+                    ]);
+                    return response()->json(['message' => 'Le rapport est en cours de génération et vous serez notifié une fois terminé.']);
+                case 'sm':
+                    (new SmExport())->queue('rapport_formation_surmesure.xlsx')->chain([
+                        new NotifyUserOfCompletedExport(Auth::guard('user')->user(), [
+                            "name" => "des formations sur mesure",
+                            "link" => tenant_asset('rapport_formation_surmesure.xlsx')
+                        ]),
+                    ]);
+                    return response()->json(['message' => 'Le rapport est en cours de génération et vous serez notifié une fois terminé.']);
+                case 'mooc':
+                    (new MoocExport())->queue('rapport_formation_mooc.xlsx')->chain([
+                        new NotifyUserOfCompletedExport(Auth::guard('user')->user(), [
+                            "name" => "des moocs",
+                            "link" => tenant_asset('rapport_formation_mooc.xlsx')
                         ]),
                     ]);
                     return response()->json(['message' => 'Le rapport est en cours de génération et vous serez notifié une fois terminé.']);
