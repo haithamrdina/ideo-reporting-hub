@@ -332,13 +332,13 @@
                                 <select class="form-select" name="rapport">
                                     <option value="" disabled selected>Choisir votre rapport</option>
                                     <option value="inscriptions">Rapport des inscriptions</option>
-                                    <option value="modules">Rapport des formations softskills</option>
-                                    <option value="modules">Rapport des formations digitals</option>
-                                    <option value="modules">Rapport des formations langues</option>
+                                    <option value="cegos">Rapport des formations softskills</option>
+                                    <option value="eni">Rapport des formations digitals</option>
+                                    <option value="speex">Rapport des formations langues</option>
                                     @if ($sur_mesure)
-                                        <option value="modules">Rapport des formations sur mesure</option>
+                                        <option value="sm">Rapport des formations sur mesure</option>
                                     @endif
-                                    <option value="modules">Rapport des formations moocs</option>
+                                    <option value="mooc">Rapport des formations moocs</option>
                                     <option value="transverse">Rapport de formation tranverse</option>
                                     <option value="lsc">Rapport de learner success center</option>
                                 </select>
