@@ -54,7 +54,7 @@ class SmExport implements FromCollection, WithMapping, WithHeadings, WithStrictN
                 })
                     ->orWhere(function ($query) use ($smModules, $startDate, $endDate) {
                         $query->whereIn('module_docebo_id', $smModules)
-                            ->whereNull('enrollment_updated_at')
+                            ->whereNull('enrollment_completed_at')
                             ->whereBetween('enrollment_updated_at', [$startDate, $endDate]);
                     })
                     ->get();
@@ -70,7 +70,7 @@ class SmExport implements FromCollection, WithMapping, WithHeadings, WithStrictN
                     ->orWhere(function ($query) use ($smModules, $learnersIds, $startDate, $endDate) {
                         $query->whereIn('module_docebo_id', $smModules)
                             ->whereIn('learner_docebo_id', $learnersIds)
-                            ->whereNull('enrollment_updated_at')
+                            ->whereNull('enrollment_completed_at')
                             ->whereBetween('enrollment_updated_at', [$startDate, $endDate]);
                     })
                     ->get();

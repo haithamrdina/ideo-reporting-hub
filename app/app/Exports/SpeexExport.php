@@ -54,7 +54,7 @@ class SpeexExport implements FromCollection, WithMapping, WithHeadings, WithStri
                 })
                     ->orWhere(function ($query) use ($speexModules, $startDate, $endDate) {
                         $query->whereIn('module_docebo_id', $speexModules)
-                            ->whereNull('enrollment_updated_at')
+                            ->whereNull('enrollment_completed_at')
                             ->whereBetween('enrollment_updated_at', [$startDate, $endDate]);
                     })
                     ->get();
@@ -71,7 +71,7 @@ class SpeexExport implements FromCollection, WithMapping, WithHeadings, WithStri
                     ->orWhere(function ($query) use ($speexModules, $learnersIds, $startDate, $endDate) {
                         $query->whereIn('module_docebo_id', $speexModules)
                             ->whereIn('learner_docebo_id', $learnersIds)
-                            ->whereNull('enrollment_updated_at')
+                            ->whereNull('enrollment_completed_at')
                             ->whereBetween('enrollment_updated_at', [$startDate, $endDate]);
                     })
                     ->get();

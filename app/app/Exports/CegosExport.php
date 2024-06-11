@@ -53,7 +53,7 @@ class CegosExport implements FromCollection, WithMapping, WithHeadings, WithStri
                 })
                     ->orWhere(function ($query) use ($softModules, $startDate, $endDate) {
                         $query->whereIn('module_docebo_id', $softModules)
-                            ->whereNull('enrollment_updated_at')
+                            ->whereNull('enrollment_completed_at')
                             ->whereBetween('enrollment_updated_at', [$startDate, $endDate]);
                     })
                     ->get();
@@ -69,7 +69,7 @@ class CegosExport implements FromCollection, WithMapping, WithHeadings, WithStri
                     ->orWhere(function ($query) use ($softModules, $learnersIds, $startDate, $endDate) {
                         $query->whereIn('module_docebo_id', $softModules)
                             ->whereIn('learner_docebo_id', $learnersIds)
-                            ->whereNull('enrollment_updated_at')
+                            ->whereNull('enrollment_completed_at')
                             ->whereBetween('enrollment_updated_at', [$startDate, $endDate]);
                     })
                     ->get();

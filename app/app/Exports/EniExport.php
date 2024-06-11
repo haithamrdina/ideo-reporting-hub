@@ -54,7 +54,7 @@ class EniExport implements FromCollection, WithMapping, WithHeadings, WithStrict
                 })
                     ->orWhere(function ($query) use ($eniModules, $startDate, $endDate) {
                         $query->whereIn('module_docebo_id', $eniModules)
-                            ->whereNull('enrollment_updated_at')
+                            ->whereNull('enrollment_completed_at')
                             ->whereBetween('enrollment_updated_at', [$startDate, $endDate]);
                     })
                     ->get();
@@ -70,7 +70,7 @@ class EniExport implements FromCollection, WithMapping, WithHeadings, WithStrict
                     ->orWhere(function ($query) use ($eniModules, $learnersIds, $startDate, $endDate) {
                         $query->whereIn('module_docebo_id', $eniModules)
                             ->whereIn('learner_docebo_id', $learnersIds)
-                            ->whereNull('enrollment_updated_at')
+                            ->whereNull('enrollment_completed_at')
                             ->whereBetween('enrollment_updated_at', [$startDate, $endDate]);
                     })
                     ->get();

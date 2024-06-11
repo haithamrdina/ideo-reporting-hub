@@ -50,7 +50,7 @@ class MoocExport implements FromCollection, WithMapping, WithHeadings, WithStric
                         ->whereBetween('enrollment_completed_at', [$startDate, $endDate]);
                 })
                     ->orWhere(function ($query) use ($startDate, $endDate) {
-                        $query->whereNull('enrollment_updated_at')
+                        $query->whereNull('enrollment_completed_at')
                             ->whereBetween('enrollment_updated_at', [$startDate, $endDate]);
                     })
                     ->get();
@@ -64,7 +64,7 @@ class MoocExport implements FromCollection, WithMapping, WithHeadings, WithStric
                 })
                     ->orWhere(function ($query) use ($learnersIds, $startDate, $endDate) {
                         $query->whereIn('learner_docebo_id', $learnersIds)
-                            ->whereNull('enrollment_updated_at')
+                            ->whereNull('enrollment_completed_at')
                             ->whereBetween('enrollment_updated_at', [$startDate, $endDate]);
                     })
                     ->get();
