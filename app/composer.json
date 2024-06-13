@@ -21,6 +21,7 @@
         "saloonphp/rate-limit-plugin": "^2.0",
         "spatie/simple-excel": "^3.6",
         "stancl/tenancy": "^3.7",
+        "usmanhalalit/laracsv": "^2.1",
         "vladimir-yuldashev/laravel-queue-rabbitmq": "^13.3"
     },
     "require-dev": {

@@ -42,9 +42,7 @@
                             </svg>
                         </a>
                     </div>
-                    @if (request()->routeIs('tenant.plateforme.home') ||
-                            request()->routeIs('tenant.project.home') ||
-                            request()->routeIs('tenant.group.home'))
+                    {{-- @if (request()->routeIs('tenant.plateforme.home') || request()->routeIs('tenant.project.home') || request()->routeIs('tenant.group.home'))
                         <div class="col-auto">
                             <a href="javascript:void(0)" class="btn  text-black" aria-label="Button" id="btnLscExport"
                                 data-bs-toggle="tooltip" data-bs-placement="top" title="Générer votre rapport">
@@ -63,7 +61,7 @@
                                 Générer votre rapport
                             </a>
                         </div>
-                    @endif
+                    @endif --}}
                 </div>
             </div>
         </div>

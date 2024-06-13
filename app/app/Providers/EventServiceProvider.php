@@ -2,6 +2,17 @@
 
 namespace App\Providers;
 
+use App\Jobs\ExportActiveJob;
+use App\Jobs\ExportCallJob;
+use App\Jobs\ExportCegosJob;
+use App\Jobs\ExportConnexionJob;
+use App\Jobs\ExportEniJob;
+use App\Jobs\ExportInactiveJob;
+use App\Jobs\ExportMoocJob;
+use App\Jobs\ExportSmJob;
+use App\Jobs\ExportSpeexJob;
+use App\Jobs\ExportTicketsJob;
+use App\Jobs\ExportTransverseJob;
 use App\Jobs\NotifyUserOfCompletedExport;
 use App\Jobs\UpdateBadgeJob;
 use App\Jobs\UpdateCallJob;
@@ -18,7 +29,6 @@ use App\Jobs\UpdateTicketJob;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
-use Illuminate\Support\Facades\Event;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -51,6 +61,17 @@ class EventServiceProvider extends ServiceProvider
             UpdateEnrollementModuleJob::class,
             UpdateEnrollementsLpsJob::class,
             UpdateBadgeJob::class,
+            ExportConnexionJob::class,
+            ExportActiveJob::class,
+            ExportInactiveJob::class,
+            ExportTransverseJob::class,
+            ExportCegosJob::class,
+            ExportEniJob::class,
+            ExportSmJob::class,
+            ExportMoocJob::class,
+            ExportSpeexJob::class,
+            ExportTicketsJob::class,
+            ExportCallJob::class,
             NotifyUserOfCompletedExport::class
         ]);
     }

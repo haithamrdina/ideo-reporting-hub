@@ -4,13 +4,11 @@
 <div class="col-md-12">
     <div class="card">
         <div
-            class="card-header {{ request()->routeIs('tenant.plateforme.home') || request()->routeIs('tenant.project.home') || request()->routeIs('tenant.group.home') ? '' : 'my-4' }}">
+            class="card-header mt-4 {{ request()->routeIs('tenant.plateforme.home') || request()->routeIs('tenant.project.home') || request()->routeIs('tenant.group.home') ? '' : 'my-4' }}">
             <div class="ribbon ribbon-start bg-bleu h2">
                 Modules
             </div>
-            @if (request()->routeIs('tenant.plateforme.home') ||
-                    request()->routeIs('tenant.project.home') ||
-                    request()->routeIs('tenant.group.home'))
+            {{-- @if (request()->routeIs('tenant.plateforme.home') || request()->routeIs('tenant.project.home') || request()->routeIs('tenant.group.home'))
                 <div class="card-actions btn-actions d-md-block d-sm-block d-lg-block">
                     <div class="row g-2">
                         <div class="col-auto">
@@ -33,7 +31,7 @@
                         </div>
                     </div>
                 </div>
-            @endif
+            @endif --}}
         </div>
         <div class="card-body p-2">
             <div class="row row-cards">

@@ -1,6 +1,8 @@
 <?php
 
 declare(strict_types=1);
+
+use App\Enums\CourseStatusEnum;
 use App\Http\Controllers\Tenant\Plateforme\HomeController as PlateformeHomeController;
 use App\Http\Controllers\Tenant\Plateforme\GroupController as PlateformeGroupController;
 use App\Http\Controllers\Tenant\Plateforme\ProjectController as PlateformeProjectController;
@@ -11,8 +13,16 @@ use App\Http\Controllers\Tenant\Project\GroupController as ProjectGroupControlle
 use App\Http\Controllers\Tenant\Group\HomeController as GroupHomeController;
 use App\Http\Integrations\Docebo\DoceboConnector;
 use App\Http\Integrations\Docebo\Requests\getLeaderboardsData;
+use App\Models\Enrollmodule;
+use App\Models\Group;
+use App\Models\Learner;
+use App\Models\Module;
+use App\Models\Project;
 use App\Models\Tenant;
+use App\Services\TimeConversionService;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
+use League\Csv\CharsetConverter;
 use Stancl\Tenancy\Middleware\InitializeTenancyByDomainOrSubdomain;
 use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 use Stancl\Tenancy\Middleware\ScopeSessions;
@@ -43,10 +53,89 @@ Route::middleware([
     });
     Route::name('tenant.')->group(function () {
         require __DIR__ . '/tenant-auth.php';
+        Route::get('test-export', function () {
 
+
+            $userfields = config('tenantconfigfields.userfields');
+            $enrollfields = config('tenantconfigfields.enrollmentfields');
+
+            $fields['project_id'] = 'Branche';
+            $fields['group_id'] = 'Filiale';
+            $fields['module_docebo_id'] = 'Module';
+            $fields['learner_docebo_id'] = 'Username';
+
+            if (isset($userfields['matricule']) && $userfields['matricule'] === true) {
+                $fields['matricule'] = 'Matricule';
+            }
+
+            $fields['enrollment_created_at'] = 'Date d\'inscription';
+            $fields['status'] = 'Statut';
+            $fields['enrollment_updated_at'] = 'Date du dernière modification';
+            $fields['enrollment_completed_at'] = 'Date d\'achèvement';
+            $fields['session_time'] = 'Temps de session';
+
+            if (isset($enrollfields['cmi_time']) && $enrollfields['cmi_time'] === true) {
+                $fields['cmi_time'] = 'Temps d\'engagement';
+            }
+
+            if (isset($enrollfields['calculated_time']) && $enrollfields['calculated_time'] === true) {
+                $fields['calculated_time'] = 'Temps calculé';
+            }
+
+            if (isset($enrollfields['recommended_time']) && $enrollfields['recommended_time'] === true) {
+                $fields['recommended_time'] = 'Temps pédagogique recommandé';
+            }
+            //dd($fields);
+            $softModules = Module::where(['category' => 'CEGOS', 'status' => CourseStatusEnum::ACTIVE])->pluck('docebo_id')->toArray();
+            $softEnrolls = Enrollmodule::whereIn('module_docebo_id', $softModules)->get();
+            $csvExporter = new \Laracsv\Export();
+
+            $csvExporter->beforeEach(function ($enroll) use ($userfields, $enrollfields) {
+                $timeConversionService = new TimeConversionService();
+                $enroll->project_id = Project::find($enroll->project_id)->name;
+                $enroll->group_id = Group::find($enroll->group_id)->name;
+                $enroll->module_docebo_id = Module::where('docebo_id', $enroll->module_docebo_id)->first()->name;
+                $enroll->learner_docebo_id = Learner::where('docebo_id', $enroll->learner_docebo_id)->first()->username;
+                if (isset($userfields['matricule']) && $userfields['matricule'] === true) {
+                    $enroll->matricule = Learner::where('docebo_id', $enroll->learner_docebo_id)->first()->matricule;
+                }
+
+                $enroll->enrollment_created_at = $enroll->enrollment_created_at != null ? $enroll->enrollment_created_at : '******';
+
+                if ($enroll->status == 'waiting') {
+                    $enroll->status = "En attente";
+                } elseif ($enroll->status == 'enrolled') {
+                    $enroll->status = "Inscrit";
+                } elseif ($enroll->status == 'in_progress') {
+                    $enroll->status = "En cours";
+                } elseif ($enroll->status == 'completed') {
+                    $enroll->status = "Terminé";
+                }
+
+
+                $enroll->enrollment_updated_at = $enroll->enrollment_updated_at != null ? $enroll->enrollment_updated_at : '******';
+                $enroll->enrollment_completed_at = $enroll->enrollment_completed_at != null ? $enroll->enrollment_completed_at : '******';
+                $enroll->session_time = $timeConversionService->convertSecondsToTime($enroll->session_time);
+
+                if (isset($enrollfields['cmi_time']) && $enrollfields['cmi_time'] === true) {
+                    $enroll->cmi_time = $timeConversionService->convertSecondsToTime($enroll->cmi_time);
+                }
+
+                if (isset($enrollfields['calculated_time']) && $enrollfields['calculated_time'] === true) {
+                    $enroll->calculated_time = $timeConversionService->convertSecondsToTime($enroll->calculated_time);
+                }
+
+                if (isset($enrollfields['recommended_time']) && $enrollfields['recommended_time'] === true) {
+                    $enroll->recommended_time = $timeConversionService->convertSecondsToTime($enroll->recommended_time);
+                }
+            });
+            $writer = $csvExporter->build($softEnrolls, $fields)->getWriter();
+            Storage::put('enrollements.csv', "\xEF\xBB\xBF" . $writer->getContent());
+
+        });
         Route::middleware(['user.auth:user', 'plateforme'])->prefix('plateforme')->name('plateforme.')->group(function () {
             Route::get('/home', [PlateformeHomeController::class, 'index'])->name('home');
-            Route::post('/home', [PlateformeHomeController::class, 'export'])->name('export');
+            Route::post('/home', [PlateformeHomeController::class, 'export2'])->name('export');
             Route::get('/getdata', [PlateformeHomeController::class, 'getData']);
             Route::get('/notifications/{notification}/mark-as-read', [PlateformeHomeController::class, 'markAsRead'])->name('notifications.markAsRead');
             Route::get('/getlanguagedata/{selectedLanguage}', [PlateformeHomeController::class, 'getLanguageData']);

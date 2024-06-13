@@ -331,16 +331,30 @@
                                 <label class="form-label">Liste des rapports</label>
                                 <select class="form-select" name="rapport">
                                     <option value="" disabled selected>Choisir votre rapport</option>
-                                    <option value="inscriptions">Rapport des inscriptions</option>
-                                    <option value="cegos">Rapport des formations softskills</option>
-                                    <option value="eni">Rapport des formations digitals</option>
-                                    <option value="speex">Rapport des formations langues</option>
-                                    @if ($sur_mesure)
-                                        <option value="sm">Rapport des formations sur mesure</option>
-                                    @endif
-                                    <option value="mooc">Rapport des formations moocs</option>
-                                    <option value="transverse">Rapport de formation tranverse</option>
-                                    <option value="lsc">Rapport de learner success center</option>
+                                    <optgroup label="Inscriptions">
+                                        <option value="active">Rapport des inscrits actifs</option>
+                                        <option value="inactive">Rapport des inscrits inactifs</option>
+                                        <option value="connexion">Rapport des connexions</option>
+                                    </optgroup>
+                                    <optgroup label="Formation Transverse">
+                                        <option value="transverse">Rapport des inscriptions au formation transverse
+                                        </option>
+                                    </optgroup>
+                                    <optgroup label="Modules">
+                                        <option value="cegos">Rapport des inscriptions au formation softskills
+                                        </option>
+                                        <option value="eni">Rapport des inscriptions au formation digital</option>
+                                        <option value="speex">Rapport des inscriptions au formation langue</option>
+                                        @if ($sur_mesure == true)
+                                            <option value="sm">Rapport des inscriptions au formation sur mesure
+                                            </option>
+                                        @endif
+                                        <option value="mooc">Rapport des inscriptions au mooc</option>
+                                    </optgroup>
+                                    <optgroup label="Learner Success Center">
+                                        <option value="tickets">Rapport des tickets</option>
+                                        <option value="calls">Rapport des appels</option>
+                                    </optgroup>
                                 </select>
                             </div>
                         </div>

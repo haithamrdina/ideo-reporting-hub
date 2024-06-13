@@ -220,18 +220,18 @@ document.getElementById('btnLscReload').addEventListener('click', function () {
     xhr.send();
 });
 
-document.getElementById('btnInsExport').addEventListener('click', function () {
-    window.location.href = "/plateforme/inscrits/export";
-});
-document.getElementById('btnModulesExport').addEventListener('click', function () {
-    window.location.href = "/plateforme/modules/export";
-});
-document.getElementById('btnLpsExport').addEventListener('click', function () {
-    window.location.href = "/plateforme/lps/export";
-});
-document.getElementById('btnLscExport').addEventListener('click', function () {
-    window.location.href = "/plateforme/lsc/export";
-});
+// document.getElementById('btnInsExport').addEventListener('click', function () {
+//     window.location.href = "/plateforme/inscrits/export";
+// });
+// document.getElementById('btnModulesExport').addEventListener('click', function () {
+//     window.location.href = "/plateforme/modules/export";
+// });
+// document.getElementById('btnLpsExport').addEventListener('click', function () {
+//     window.location.href = "/plateforme/lps/export";
+// });
+// document.getElementById('btnLscExport').addEventListener('click', function () {
+//     window.location.href = "/plateforme/lsc/export";
+// });
 
 
 function updateDataInscritPerDate(learnersInscriptionsPerStatDate, timingDetailsPerStatDate) {
