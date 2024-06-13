@@ -113,11 +113,11 @@
                         <div class="row row-cards">
                             <div class="col-12">
                                 <div class="card">
-                                    <div class="card-header">
+                                    <div class="card-header mt-4">
                                         <div class="ribbon ribbon-start bg-green h2">
                                             Gamification
                                         </div>
-                                        <div class="card-actions btn-actions d-md-block d-sm-block d-lg-block">
+                                        {{-- <div class="card-actions btn-actions d-md-block d-sm-block d-lg-block">
                                             <div class="row g-2">
                                                 <div class="col-auto">
                                                     <a href="{{ route('tenant.plateforme.gamification.export') }}"
@@ -141,7 +141,7 @@
                                                     </a>
                                                 </div>
                                             </div>
-                                        </div>
+                                        </div> --}}
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12 col-lg-12">

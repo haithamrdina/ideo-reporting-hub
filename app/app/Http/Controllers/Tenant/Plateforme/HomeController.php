@@ -25,6 +25,7 @@ use App\Jobs\ExportEniJob;
 use App\Jobs\ExportInactiveJob;
 use App\Jobs\ExportMoocJob;
 use App\Jobs\ExportSmJob;
+use App\Jobs\ExportSpeexJob;
 use App\Jobs\ExportTicketsJob;
 use App\Jobs\ExportTransverseJob;
 use App\Jobs\NotifyUserOfCompletedExport;
@@ -33,6 +34,7 @@ use App\Models\Call;
 use App\Models\Enrollmodule;
 use App\Models\Enrollmooc;
 use App\Models\Group;
+use App\Models\Langenroll;
 use App\Models\Learner;
 use App\Models\Lpenroll;
 use App\Models\Module;
@@ -922,8 +924,8 @@ class HomeController extends Controller
             $fields['learner_docebo_id'] = 'Username';
             $fields['status'] = 'Statut';
             $fields['subject'] = 'Sujet';
-            $fields['ticket_created_at'] = 'Sujet';
-            $fields['ticket_udpated_at'] = 'Sujet';
+            $fields['ticket_created_at'] = 'Date de création';
+            $fields['ticket_udpated_at'] = 'Date du dernière modification';
 
             if ($dateDebut != null && $dateFin != null) {
                 if ($archive == true) {
@@ -976,6 +978,82 @@ class HomeController extends Controller
                     "link" => tenant_asset($filename)
                 ]),
             ])->dispatch($calls, $fields, $filename);
+        } elseif ($rapport == 'speex') {
+            $filename = 'rapport_formation_langues.csv';
+
+            $fields['project_id'] = 'Branche';
+            $fields['group_id'] = 'Filiale';
+            $fields['module_docebo_id'] = 'Module';
+            $fields['learner_docebo_id'] = 'Username';
+            if (isset($userfields['matricule']) && $userfields['matricule'] === true) {
+                $fields['matricule'] = 'Matricule';
+            }
+            $fields['enrollment_created_at'] = 'Date d\'inscription';
+            $fields['status'] = 'Statut';
+            $fields['niveau'] = 'Niveau';
+            $fields['language'] = 'Langue';
+            $fields['enrollment_updated_at'] = 'Date du dernière modification';
+            $fields['enrollment_completed_at'] = 'Date d\'achèvement';
+            $fields['session_time'] = 'Temps de session';
+            if (isset($enrollfields['cmi_time']) && $enrollfields['cmi_time'] === true) {
+                $fields['cmi_time'] = 'Temps d\'engagement';
+            }
+            if (isset($enrollfields['calculated_time']) && $enrollfields['calculated_time'] === true) {
+                $fields['calculated_time'] = 'Temps calculé';
+            }
+            if (isset($enrollfields['recommended_time']) && $enrollfields['recommended_time'] === true) {
+                $fields['recommended_time'] = 'Temps pédagogique recommandé';
+            }
+
+            $speexModules = Module::where(['category' => 'SPEEX', 'status' => CourseStatusEnum::ACTIVE])->pluck('docebo_id')->toArray();
+            if ($dateDebut != null && $dateFin != null) {
+                if ($archive == true) {
+                    $speexEnrolls = Enrollmodule::where(function ($query) use ($speexModules, $dateDebut, $dateFin) {
+                        $query->whereIn('module_docebo_id', $speexModules)
+                            ->whereNotNull('enrollment_completed_at')
+                            ->whereBetween('enrollment_completed_at', [$dateDebut, $dateFin]);
+                    })
+                        ->orWhere(function ($query) use ($speexModules, $dateDebut, $dateFin) {
+                            $query->whereIn('module_docebo_id', $speexModules)
+                                ->whereNull('enrollment_completed_at')
+                                ->whereBetween('enrollment_updated_at', [$dateDebut, $dateFin]);
+                        })
+                        ->get();
+                } else {
+
+                    $learnersIds = Learner::where('statut', '!=', 'archive')->pluck('docebo_id')->toArray();
+                    $speexEnrolls = Langenroll::where(function ($query) use ($speexModules, $learnersIds, $dateDebut, $dateFin) {
+                        $query->whereIn('module_docebo_id', $speexModules)
+                            ->whereIn('learner_docebo_id', $learnersIds)
+                            ->whereNotNull('enrollment_completed_at')
+                            ->whereBetween('enrollment_completed_at', [$dateDebut, $dateFin]);
+                    })
+                        ->orWhere(function ($query) use ($speexModules, $learnersIds, $dateDebut, $dateFin) {
+                            $query->whereIn('module_docebo_id', $speexModules)
+                                ->whereIn('learner_docebo_id', $learnersIds)
+                                ->whereNull('enrollment_completed_at')
+                                ->whereBetween('enrollment_updated_at', [$dateDebut, $dateFin]);
+                        })
+                        ->get();
+                }
+
+            } else {
+                if ($archive == true) {
+                    $speexEnrolls = Langenroll::whereIn('module_docebo_id', $speexModules)->get();
+                } else {
+                    $learnersIds = Learner::where('statut', '!=', 'archive')->pluck('docebo_id')->toArray();
+                    $speexEnrolls = Langenroll::whereIn('module_docebo_id', $speexModules)->whereIn(
+                        'learner_docebo_id',
+                        $learnersIds
+                    )->get();
+                }
+            }
+            ExportSpeexJob::withChain([
+                new NotifyUserOfCompletedExport(Auth::guard('user')->user(), [
+                    "name" => "des formations langues",
+                    "link" => tenant_asset($filename)
+                ]),
+            ])->dispatch($speexEnrolls, $fields, $filename);
         }
 
         return response()->json(['message' => 'Le rapport est en cours de génération et vous serez notifié une fois terminé.']);
