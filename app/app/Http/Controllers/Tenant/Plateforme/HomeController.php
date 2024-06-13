@@ -779,7 +779,7 @@ class HomeController extends Controller
             }
             ExportTransverseJob::withChain([
                 new NotifyUserOfCompletedExport(Auth::guard('user')->user(), [
-                    "name" => "des formations transverse",
+                    "name" => "des formations transverses",
                     "link" => tenant_asset($filename)
                 ]),
             ])->dispatch($lpEnrolls, $fields, $filename);
@@ -815,7 +815,7 @@ class HomeController extends Controller
             }
             ExportConnexionJob::withChain([
                 new NotifyUserOfCompletedExport(Auth::guard('user')->user(), [
-                    "name" => "des formations transverse",
+                    "name" => "des connexions",
                     "link" => tenant_asset($filename)
                 ]),
             ])->dispatch($statsConnexions, ['filiale', 'Nombre de connexions', 'total', 'pourcentage'], $filename);
@@ -911,7 +911,7 @@ class HomeController extends Controller
             }
             ExportInactiveJob::withChain([
                 new NotifyUserOfCompletedExport(Auth::guard('user')->user(), [
-                    "name" => "des inscrits actifs",
+                    "name" => "des inscrits inactifs",
                     "link" => tenant_asset($filename)
                 ]),
             ])->dispatch($learners, $fields, $filename);
