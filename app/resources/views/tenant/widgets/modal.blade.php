@@ -396,9 +396,8 @@
     <div class="modal modal-blur fade" id="modal-report-group" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
-                <form action="{{ route('tenant.group.export') }}" method="post">
+                <form id="reportFormGroup">
                     @csrf
-                    <input type="hidden" class="form-control" name="group_id" value={{ $group->id }}>
                     <div class="modal-header">
                         <h5 class="modal-title">Nouveau Rapport</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -415,19 +414,17 @@
                                             <option value="inactive">Rapport des inscrits inactifs</option>
                                         </optgroup>
                                         <optgroup label="Formation Transverse">
-                                            <option value="transverse">Rapport des inscriptions au formation
-                                                transverse</option>
+                                            <option value="transverse">Rapport des inscriptions au formation transverse
+                                            </option>
                                         </optgroup>
                                         <optgroup label="Modules">
-                                            <option value="cegos">Rapport des inscriptions au formation
-                                                softskills</option>
-                                            <option value="eni">Rapport des inscriptions au formation digital
+                                            <option value="cegos">Rapport des inscriptions au formation softskills
                                             </option>
-                                            <option value="speex">Rapport des inscriptions au formation langue
-                                            </option>
+                                            <option value="eni">Rapport des inscriptions au formation digital</option>
+                                            <option value="speex">Rapport des inscriptions au formation langue</option>
                                             @if ($sur_mesure == true)
-                                                <option value="sm">Rapport des inscriptions au formation sur
-                                                    mesure</option>
+                                                <option value="sm">Rapport des inscriptions au formation sur mesure
+                                                </option>
                                             @endif
                                             <option value="mooc">Rapport des inscriptions au mooc</option>
                                         </optgroup>
@@ -450,13 +447,14 @@
                                     <input type="date" class="form-control" name="dateFin">
                                 </div>
                             </div>
+                            <input type="hidden" class="form-control" name="group_id" value={{ $group->id }}>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <a href="#" class="btn btn-link  link-secondary" data-bs-dismiss="modal">
+                        <a href="#" class="btn btn-link link-secondary" data-bs-dismiss="modal">
                             Cancel
                         </a>
-                        <button type="submit" class="btn btn-red ms-auto" data-bs-dismiss="modal">
+                        <button type="submit" class="btn btn-red ms-auto">
                             <!-- Download SVG icon from http://tabler-icons.io/i/plus -->
                             <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
                                 viewbox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
@@ -477,9 +475,8 @@
     <div class="modal modal-blur fade" id="modal-report-project" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
-                <form action="{{ route('tenant.project.export') }}" method="post">
+                <form id="reportFormProject">
                     @csrf
-                    <input type="hidden" class="form-control" name="project_id" value={{ $project->id }}>
                     <div class="modal-header">
                         <h5 class="modal-title">Nouveau Rapport</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -496,19 +493,17 @@
                                             <option value="inactive">Rapport des inscrits inactifs</option>
                                         </optgroup>
                                         <optgroup label="Formation Transverse">
-                                            <option value="transverse">Rapport des inscriptions au formation
-                                                transverse</option>
+                                            <option value="transverse">Rapport des inscriptions au formation transverse
+                                            </option>
                                         </optgroup>
                                         <optgroup label="Modules">
-                                            <option value="cegos">Rapport des inscriptions au formation
-                                                softskills</option>
-                                            <option value="eni">Rapport des inscriptions au formation digital
+                                            <option value="cegos">Rapport des inscriptions au formation softskills
                                             </option>
-                                            <option value="speex">Rapport des inscriptions au formation langue
-                                            </option>
+                                            <option value="eni">Rapport des inscriptions au formation digital</option>
+                                            <option value="speex">Rapport des inscriptions au formation langue</option>
                                             @if ($sur_mesure == true)
-                                                <option value="sm">Rapport des inscriptions au formation sur
-                                                    mesure</option>
+                                                <option value="sm">Rapport des inscriptions au formation sur mesure
+                                                </option>
                                             @endif
                                             <option value="mooc">Rapport des inscriptions au mooc</option>
                                         </optgroup>
@@ -531,13 +526,14 @@
                                     <input type="date" class="form-control" name="dateFin">
                                 </div>
                             </div>
+                            <input type="hidden" class="form-control" name="project_id" value={{ $project->id }}>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <a href="#" class="btn btn-link  link-secondary" data-bs-dismiss="modal">
+                        <a href="#" class="btn btn-link link-secondary" data-bs-dismiss="modal">
                             Cancel
                         </a>
-                        <button type="submit" class="btn btn-red ms-auto" data-bs-dismiss="modal">
+                        <button type="submit" class="btn btn-red ms-auto">
                             <!-- Download SVG icon from http://tabler-icons.io/i/plus -->
                             <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
                                 viewbox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"

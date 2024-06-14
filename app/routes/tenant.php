@@ -175,8 +175,9 @@ Route::middleware([
 
         Route::middleware(['user.auth:user', 'project'])->prefix('project')->name('project.')->group(function () {
             Route::get('/home', [ProjectHomeController::class, 'index'])->name('home');
-            Route::post('/home', [ProjectHomeController::class, 'export'])->name('export');
+            Route::post('/home', [ProjectHomeController::class, 'export2'])->name('export');
             Route::get('/{projectId}/getdata', [ProjectHomeController::class, 'getData']);
+            Route::get('/notifications/{notification}/mark-as-read', [ProjectHomeController::class, 'markAsRead'])->name('notifications.markAsRead');
             Route::get('/{projectId}/getlanguagedata/{selectedLanguage}', [ProjectHomeController::class, 'getLanguageData']);
             Route::get('/{projectId}/getdigitaldata/{selectedDigital}', [ProjectHomeController::class, 'getDigitalData']);
             Route::get('/{projectId}/getsmdata/{selectedSM}', [ProjectHomeController::class, 'getSMData']);
@@ -200,8 +201,9 @@ Route::middleware([
 
         Route::middleware(['user.auth:user', 'group'])->prefix('group')->name('group.')->group(function () {
             Route::get('/home', [GroupHomeController::class, 'index'])->name('home');
-            Route::post('/home', [GroupHomeController::class, 'export'])->name('export');
+            Route::post('/home', [GroupHomeController::class, 'export2'])->name('export');
             Route::get('/{groupId}/getdata', [GroupHomeController::class, 'getData']);
+            Route::get('/notifications/{notification}/mark-as-read', [GroupHomeController::class, 'markAsRead'])->name('notifications.markAsRead');
             Route::get('/{groupId}/getlanguagedata/{selectedLanguage}', [GroupHomeController::class, 'getLanguageData']);
             Route::get('/{groupId}/getdigitaldata/{selectedDigital}', [GroupHomeController::class, 'getDigitalData']);
             Route::get('/{groupId}/getsmdata/{selectedSM}', [GroupHomeController::class, 'getSMData']);
