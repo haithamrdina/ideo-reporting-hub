@@ -45,12 +45,13 @@ class ExportCegosJob implements ShouldQueue
         $csvExporter = new Export();
         $csvExporter->beforeEach(function ($enroll) use ($userfields, $enrollfields) {
             $timeConversionService = new TimeConversionService();
+            $learner = Learner::where('docebo_id', $enroll->learner_docebo_id)->first();
             $enroll->project_id = Project::find($enroll->project_id)->name;
             $enroll->group_id = Group::find($enroll->group_id)->name;
             $enroll->module_docebo_id = Module::where('docebo_id', $enroll->module_docebo_id)->first()->name;
             $enroll->learner_docebo_id = Learner::where('docebo_id', $enroll->learner_docebo_id)->first()->username;
             if (isset($userfields['matricule']) && $userfields['matricule'] === true) {
-                $enroll->matricule = Learner::where('docebo_id', $enroll->learner_docebo_id)->first()->matricule != null ? Learner::where('docebo_id', $enroll->learner_docebo_id)->first()->matricule : '******';
+                $enroll->matricule = $learner->matricule != null ? $learner->matricule : '******';
             }
             $enroll->enrollment_created_at = $enroll->enrollment_created_at != null ? $enroll->enrollment_created_at : '******';
             if ($enroll->status == 'waiting') {
