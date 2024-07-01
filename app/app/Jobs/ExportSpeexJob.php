@@ -50,7 +50,7 @@ class ExportSpeexJob implements ShouldQueue
             $enroll->module_docebo_id = Module::where('docebo_id', $enroll->module_docebo_id)->first()->name;
             $enroll->learner_docebo_id = Learner::where('docebo_id', $enroll->learner_docebo_id)->first()->username;
             if (isset($userfields['matricule']) && $userfields['matricule'] === true) {
-                $enroll->matricule = Learner::where('docebo_id', $enroll->learner_docebo_id)->first()->matricule;
+                $enroll->matricule = Learner::where('docebo_id', $enroll->learner_docebo_id)->first()->matricule != null ? Learner::where('docebo_id', $enroll->learner_docebo_id)->first()->matricule : '******';
             }
             $enroll->enrollment_created_at = $enroll->enrollment_created_at != null ? $enroll->enrollment_created_at : '******';
             if ($enroll->status == 'waiting') {

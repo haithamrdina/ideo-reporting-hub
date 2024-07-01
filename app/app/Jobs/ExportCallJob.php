@@ -43,6 +43,7 @@ class ExportCallJob implements ShouldQueue
             $call->project_id = Project::find($call->project_id)->name;
             $call->group_id = Group::find($call->group_id)->name;
             $call->learner_docebo_id = Learner::where('docebo_id', $call->learner_docebo_id)->first()->username;
+
             $call->status = $call->status;
             $call->subject = $call->subject;
             $call->date_call = $call->date_call;
