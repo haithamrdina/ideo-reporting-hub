@@ -50,9 +50,6 @@ class ExportCegosJob implements ShouldQueue
             $enroll->group_id = Group::find($enroll->group_id)->name;
             $enroll->module_docebo_id = Module::where('docebo_id', $enroll->module_docebo_id)->first()->name;
             $enroll->learner_docebo_id = $learner->username;
-            if (isset($userfields['matricule']) && $userfields['matricule'] === true) {
-                $enroll->matricule = $learner->matricule != null ? $learner->matricule : '******';
-            }
             $enroll->enrollment_created_at = $enroll->enrollment_created_at != null ? $enroll->enrollment_created_at : '******';
             if ($enroll->status == 'waiting') {
                 $enroll->status = "En attente";

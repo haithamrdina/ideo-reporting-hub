@@ -49,9 +49,6 @@ class ExportTransverseJob implements ShouldQueue
             $enroll->group_id = Group::find($enroll->group_id)->name;
             $enroll->lp_docebo_id = Lp::where('docebo_id', $enroll->lp_docebo_id)->first()->name;
             $enroll->learner_docebo_id = Learner::where('docebo_id', $enroll->learner_docebo_id)->first()->username;
-            if (isset($userfields['matricule']) && $userfields['matricule'] === true) {
-                $enroll->matricule = Learner::where('docebo_id', $enroll->learner_docebo_id)->first()->matricule != null ? Learner::where('docebo_id', $enroll->learner_docebo_id)->first()->matricule : '******';
-            }
             $enroll->enrollment_created_at = $enroll->enrollment_created_at != null ? $enroll->enrollment_created_at : '******';
             if ($enroll->status == 'waiting') {
                 $enroll->status = "En attente";

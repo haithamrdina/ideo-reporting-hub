@@ -435,9 +435,6 @@ class HomeController extends Controller
             $fields['group_id'] = 'Filiale';
             $fields['module_docebo_id'] = 'Module';
             $fields['learner_docebo_id'] = 'Username';
-            if (isset($userfields['matricule']) && $userfields['matricule'] === true) {
-                $fields['matricule'] = 'Matricule';
-            }
             $fields['enrollment_created_at'] = 'Date d\'inscription';
             $fields['status'] = 'Statut';
             $fields['enrollment_updated_at'] = 'Date du dernière modification';
@@ -511,9 +508,6 @@ class HomeController extends Controller
             $fields['group_id'] = 'Filiale';
             $fields['module_docebo_id'] = 'Module';
             $fields['learner_docebo_id'] = 'Username';
-            if (isset($userfields['matricule']) && $userfields['matricule'] === true) {
-                $fields['matricule'] = 'Matricule';
-            }
             $fields['enrollment_created_at'] = 'Date d\'inscription';
             $fields['status'] = 'Statut';
             $fields['enrollment_updated_at'] = 'Date du dernière modification';
@@ -587,9 +581,6 @@ class HomeController extends Controller
             $fields['group_id'] = 'Filiale';
             $fields['module_docebo_id'] = 'Module';
             $fields['learner_docebo_id'] = 'Username';
-            if (isset($userfields['matricule']) && $userfields['matricule'] === true) {
-                $fields['matricule'] = 'Matricule';
-            }
             $fields['enrollment_created_at'] = 'Date d\'inscription';
             $fields['status'] = 'Statut';
             $fields['enrollment_updated_at'] = 'Date du dernière modification';
@@ -663,9 +654,6 @@ class HomeController extends Controller
             $fields['group_id'] = 'Filiale';
             $fields['mooc_docebo_id'] = 'Mooc';
             $fields['learner_docebo_id'] = 'Username';
-            if (isset($userfields['matricule']) && $userfields['matricule'] === true) {
-                $fields['matricule'] = 'Matricule';
-            }
             $fields['enrollment_created_at'] = 'Date d\'inscription';
             $fields['status'] = 'Statut';
             $fields['enrollment_updated_at'] = 'Date du dernière modification';
@@ -730,9 +718,6 @@ class HomeController extends Controller
             $fields['group_id'] = 'Filiale';
             $fields['lp_docebo_id'] = 'Plan de formation';
             $fields['learner_docebo_id'] = 'Username';
-            if (isset($userfields['matricule']) && $userfields['matricule'] === true) {
-                $fields['matricule'] = 'Matricule';
-            }
             $fields['enrollment_created_at'] = 'Date d\'inscription';
             $fields['status'] = 'Statut';
             $fields['enrollment_completion_percentage'] = 'Avancement';
@@ -839,9 +824,6 @@ class HomeController extends Controller
             $fields['firstname'] = 'Prénom';
             $fields['creation_date'] = 'Date de création';
             $fields['last_access_date'] = 'Date du dernier accès';
-            if (isset($userfields['matricule']) && $userfields['matricule'] === true) {
-                $fields['matricule'] = 'Matricule';
-            }
 
             if (isset($userfields['fonction']) && $userfields['fonction'] === true) {
                 $fields['fonction'] = 'Fonction';
@@ -895,9 +877,6 @@ class HomeController extends Controller
             $fields['lastname'] = 'Nom';
             $fields['firstname'] = 'Prénom';
             $fields['creation_date'] = 'Date de création';
-            if (isset($userfields['matricule']) && $userfields['matricule'] === true) {
-                $fields['matricule'] = 'Matricule';
-            }
 
             if (isset($userfields['fonction']) && $userfields['fonction'] === true) {
                 $fields['fonction'] = 'Fonction';
@@ -997,9 +976,6 @@ class HomeController extends Controller
             $fields['group_id'] = 'Filiale';
             $fields['module_docebo_id'] = 'Module';
             $fields['learner_docebo_id'] = 'Username';
-            if (isset($userfields['matricule']) && $userfields['matricule'] === true) {
-                $fields['matricule'] = 'Matricule';
-            }
             $fields['enrollment_created_at'] = 'Date d\'inscription';
             $fields['status'] = 'Statut';
             $fields['niveau'] = 'Niveau';
