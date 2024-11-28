@@ -44,11 +44,12 @@ class ExportSmJob implements ShouldQueue
         $enrollfields = config('tenantconfigfields.enrollmentfields');
         $csvExporter = new Export();
         $csvExporter->beforeEach(function ($enroll) use ($userfields, $enrollfields) {
+            $learner = Learner::where('docebo_id', $enroll->learner_docebo_id)->first();
             $timeConversionService = new TimeConversionService();
             $enroll->project_id = Project::find($enroll->project_id)->name;
             $enroll->group_id = Group::find($enroll->group_id)->name;
             $enroll->module_docebo_id = Module::where('docebo_id', $enroll->module_docebo_id)->first()->name;
-            $enroll->learner_docebo_id = Learner::where('docebo_id', $enroll->learner_docebo_id)->first()->username;
+            $enroll->learner_docebo_id = $learner->username;
             $enroll->enrollment_created_at = $enroll->enrollment_created_at != null ? $enroll->enrollment_created_at : '******';
             if ($enroll->status == 'waiting') {
                 $enroll->status = "En attente";
