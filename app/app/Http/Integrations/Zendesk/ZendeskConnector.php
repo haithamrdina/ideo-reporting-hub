@@ -60,14 +60,13 @@ class ZendeskConnector extends Connector implements HasPagination
 
     protected function defaultAuth(): BasicAuthenticator
     {
-        return new BasicAuthenticator('midrissi@ideolearning.com/token', 'u3VzAMoFa2JajiFPEoPz9SVaVQFVcHIXpX5sK9OC');
+        return new BasicAuthenticator('ahaouari@ideolearning.com/token', 'u3VzAMoFa2JajiFPEoPz9SVaVQFVcHIXpX5sK9OC');
     }
 
 
     public function paginate(Request $request): CursorPaginator
     {
-        return new class($this,$request) extends CursorPaginator
-        {
+        return new class ($this, $request) extends CursorPaginator {
             protected bool $detectInfiniteLoop = false;
             protected function getNextCursor(Response $response): string
             {
