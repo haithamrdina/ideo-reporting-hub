@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', function () {
             var data = JSON.parse(xhr.responseText);
             // Call a function to update the page with the data
             updateDataInscritPerDate(data.learnersInscriptionsPerStatDate, data.timingDetailsPerStatDate);
-            updateDataInscrit(data.learnersInscriptions, data.timingDetails, data.learnersCharts)
+            updateDataInscrit(data.learnersInscriptions, data.timingDetails, data.learnersCharts, data.learnersWithCompletedModules, data.learnersWithCompletedLPs)
             updateSoftModules(data.softStats);
             updateDigitalModules(data.digitalStats);
             updateMoocModules(data.moocStats);
@@ -108,7 +108,7 @@ document.getElementById('btnInsFilter').addEventListener('click', function () {
         if (xhr.readyState === XMLHttpRequest.DONE) {
             if (xhr.status === 200) {
                 var data = JSON.parse(xhr.responseText);
-                updateDataInscrit(data.learnersInscriptions, data.timingDetails, data.learnersCharts)
+                updateDataInscrit(data.learnersInscriptions, data.timingDetails, data.learnersCharts, data.learnersWithCompletedModules, data.learnersWithCompletedLPs)
                 contentIns.classList.remove('d-none');
                 loaderIns.classList.add('d-none');
             } else {
@@ -234,7 +234,7 @@ document.getElementById('btnLscReload').addEventListener('click', function () {
 // });
 
 
-function updateDataInscritPerDate(learnersInscriptionsPerStatDate, timingDetailsPerStatDate) {
+function updateDataInscritPerDate(learnersInscriptionsPerStatDate, timingDetailsPerStatDate, learnersWithCompletedModules, learnersWithCompletedLPs) {
     var inscritsAY = document.getElementById('inscritsAY');
     var actifsAY = document.getElementById('actifsAY');
     var inactifsAY = document.getElementById('inactifsAY');
@@ -246,6 +246,8 @@ function updateDataInscritPerDate(learnersInscriptionsPerStatDate, timingDetails
     var avgtcAY = document.getElementById('avgtcAY');
     var tprAY = document.getElementById('tprAY');
     var avgtprAY = document.getElementById('avgtprAY');
+    var learnersCompletedModules = document.getElementById('learnersWithCompletedModules');
+    var learnersCompletedLPs = document.getElementById('learnersWithCompletedLPs');
 
     if (inscritsAY != null) {
         inscritsAY.textContent = learnersInscriptionsPerStatDate.total;
@@ -280,9 +282,15 @@ function updateDataInscritPerDate(learnersInscriptionsPerStatDate, timingDetails
     if (avgtprAY != null) {
         avgtprAY.textContent = timingDetailsPerStatDate.avg_recommended_time;
     }
+    if (learnersCompletedModules != null) {
+        learnersCompletedModules.textContent = learnersWithCompletedModules;
+    }
+    if (learnersCompletedLPs != null) {
+        learnersCompletedLPs.textContent = learnersWithCompletedLPs;
+    }
 }
 
-function updateDataInscrit(learnersInscriptions, timingDetails, learnersCharts) {
+function updateDataInscrit(learnersInscriptions, timingDetails, learnersCharts, learnersWithCompletedModules, learnersWithCompletedLPs) {
     var inscrits = document.getElementById('inscrits');
     var actifs = document.getElementById('actifs');
     var inactifs = document.getElementById('inactifs');
@@ -295,7 +303,8 @@ function updateDataInscrit(learnersInscriptions, timingDetails, learnersCharts) 
     var avgtc = document.getElementById('avgtc');
     var tpr = document.getElementById('tpr');
     var avgtpr = document.getElementById('avgtpr');
-
+    var learnersCompletedModules = document.getElementById('learnersWithCompletedModules');
+    var learnersCompletedLPs = document.getElementById('learnersWithCompletedLPs');
     inscrits.textContent = learnersInscriptions.total;
     actifs.textContent = learnersInscriptions.active;
     inactifs.textContent = learnersInscriptions.inactive;
@@ -310,6 +319,8 @@ function updateDataInscrit(learnersInscriptions, timingDetails, learnersCharts) 
     avgtc.textContent = timingDetails.avg_calculated_time;
     tpr.textContent = timingDetails.total_recommended_time;
     avgtpr.textContent = timingDetails.avg_recommended_time;
+    learnersCompletedModules.textContent = learnersWithCompletedModules;
+    learnersCompletedLPs.textContent = learnersWithCompletedLPs;
 
     if (learnersCharts.chartInscritPerCategorie != null) {
         window.ApexCharts && (new ApexCharts(document.getElementById('chart-demo-pie'), {

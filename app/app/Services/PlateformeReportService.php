@@ -1356,4 +1356,84 @@ class PlateformeReportService
         ];
     }
 
+
+    public function getLearnersWithCompletedModules()
+    {
+        $archive = config('tenantconfigfields.archive');
+
+        // Get appropriate learner IDs based on archive setting
+        if ($archive == true) {
+            $learnersIds = Learner::whereIn('statut', ['active', 'archive'])->pluck('docebo_id')->toArray();
+        } else {
+            $learnersIds = Learner::where('statut', 'active')->pluck('docebo_id')->toArray();
+        }
+
+        // Count unique learners who have completed at least one module
+        $learnersWithCompletedModules = Enrollmodule::whereIn('learner_docebo_id', $learnersIds)
+            ->where('status', 'completed')
+            ->distinct('learner_docebo_id')
+            ->count('learner_docebo_id');
+
+        return $learnersWithCompletedModules;
+    }
+
+    public function getLearnersWithCompletedLPs()
+    {
+        $archive = config('tenantconfigfields.archive');
+
+        // Get appropriate learner IDs based on archive setting
+        if ($archive == true) {
+            $learnersIds = Learner::whereIn('statut', ['active', 'archive'])->pluck('docebo_id')->toArray();
+        } else {
+            $learnersIds = Learner::where('statut', 'active')->pluck('docebo_id')->toArray();
+        }
+
+        // Count unique learners who have completed at least one learning path
+        $learnersWithCompletedLPs = Lpenroll::whereIn('learner_docebo_id', $learnersIds)
+            ->where('status', 'completed')
+            ->distinct('learner_docebo_id')
+            ->count('learner_docebo_id');
+
+        return $learnersWithCompletedLPs;
+    }
+
+
+    public function getLearnersWithCompletedModulesPerDate($startDate, $endDate)
+    {
+        $archive = config('tenantconfigfields.archive');
+
+        if ($archive == true) {
+            $learnersIds = Learner::whereIn('statut', ['active', 'archive'])->pluck('docebo_id')->toArray();
+        } else {
+            $learnersIds = Learner::where('statut', 'active')->pluck('docebo_id')->toArray();
+        }
+
+        $learnersWithCompletedModules = Enrollmodule::whereIn('learner_docebo_id', $learnersIds)
+            ->where('status', 'completed')
+            ->whereBetween('enrollment_completed_at', [$startDate, $endDate])
+            ->distinct('learner_docebo_id')
+            ->count('learner_docebo_id');
+
+        return $learnersWithCompletedModules;
+    }
+
+    public function getLearnersWithCompletedLPsPerDate($startDate, $endDate)
+    {
+        $archive = config('tenantconfigfields.archive');
+
+        if ($archive == true) {
+            $learnersIds = Learner::whereIn('statut', ['active', 'archive'])->pluck('docebo_id')->toArray();
+        } else {
+            $learnersIds = Learner::where('statut', 'active')->pluck('docebo_id')->toArray();
+        }
+
+        $learnersWithCompletedLPs = Lpenroll::whereIn('learner_docebo_id', $learnersIds)
+            ->where('status', 'completed')
+            ->whereBetween('enrollment_completed_at', [$startDate, $endDate])
+            ->distinct('learner_docebo_id')
+            ->count('learner_docebo_id');
+
+        return $learnersWithCompletedLPs;
+    }
+
 }

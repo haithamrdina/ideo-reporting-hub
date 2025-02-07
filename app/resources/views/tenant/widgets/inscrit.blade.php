@@ -286,6 +286,30 @@
                         </div>
                     </div>
                 </div>
+                @if(request()->routeIs('tenant.plateforme.home'))
+                <div class="col-md-6">
+                    <div class="card h-100 bg-gray-500">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-center">
+                                <div class="h2 mb-0 me-2"> Nombre des inscrits ayant achevé au moins un module <br />
+                                    <span class="h1 mb-0 me-2" id="learnersWithCompletedModules"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card h-100 bg-gray-500">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-center">
+                                <div class="h2 mb-0 me-2"> Nombre des inscrits ayant achevé au moins un parcours <br />
+                                    <span class="h1 mb-0 me-2" id="learnersWithCompletedLPs"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @endif
                 @if ($categorie)
                     <div class="col-md-6 col-lg-5">
                         <div class="card h-100">

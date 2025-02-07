@@ -99,6 +99,8 @@ class HomeController extends Controller
         $timingCalculatedChart = $plateformeReportService->getCalculatedTimingStats($enrollfields);
         $lpStats = $plateformeReportService->getLpStats($enrollfields);
         $lscStats = $plateformeReportService->getLscStats();
+        $learnersWithCompletedModules = $plateformeReportService->getLearnersWithCompletedModules();
+        $learnersWithCompletedLPs = $plateformeReportService->getLearnersWithCompletedLPs();
 
         return response()->json([
             'learnersInscriptionsPerStatDate' => $learnersInscriptionsPerStatDate,
@@ -115,7 +117,8 @@ class HomeController extends Controller
             'timingChart' => $timingChart,
             'lpStats' => $lpStats,
             'lscStats' => $lscStats,
-
+            'learnersWithCompletedModules' => $learnersWithCompletedModules,
+            'learnersWithCompletedLPs' => $learnersWithCompletedLPs,
         ]);
     }
 
@@ -175,15 +178,22 @@ class HomeController extends Controller
             $learnersInscriptions = $plateformeReportService->getLearnersInscriptionsPerDate($dateStart, $dateEnd);
             $timingDetails = $plateformeReportService->getTimingDetailsPerDate($enrollfields, $dateStart, $dateEnd);
             $learnersCharts = $plateformeReportService->getLearnersChartsPerDate($categorie, $dateStart, $dateEnd);
+            $learnersWithCompletedModules = $plateformeReportService->getLearnersWithCompletedModulesPerDate($dateStart, $dateEnd);
+            $learnersWithCompletedLPs = $plateformeReportService->getLearnersWithCompletedLPsPerDate($dateStart, $dateEnd);
         } else {
             $learnersInscriptions = $plateformeReportService->getLearnersInscriptions();
             $timingDetails = $plateformeReportService->getTimingDetails($enrollfields);
             $learnersCharts = $plateformeReportService->getLearnersCharts($categorie);
+            $learnersWithCompletedModules = $plateformeReportService->getLearnersWithCompletedModules();
+            $learnersWithCompletedLPs = $plateformeReportService->getLearnersWithCompletedLPs();
         }
         return response()->json([
             'learnersInscriptions' => $learnersInscriptions,
             'timingDetails' => $timingDetails,
             'learnersCharts' => $learnersCharts,
+            'learnersWithCompletedModules' => $learnersWithCompletedModules,
+            'learnersWithCompletedLPs' => $learnersWithCompletedLPs,
+
         ]);
     }
 
