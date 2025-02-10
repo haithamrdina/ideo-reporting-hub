@@ -56,7 +56,7 @@ return [
 
     'prefix' => env(
         'HORIZON_PREFIX',
-        Str::slug(env('APP_NAME', 'laravel'), '_').'_horizon:'
+        Str::slug(env('APP_NAME', 'laravel'), '_') . '_horizon:'
     ),
 
     /*
@@ -185,7 +185,7 @@ return [
             'queue' => ['default'],
             'balance' => 'simple',
             'autoScalingStrategy' => 'time',
-            'maxProcesses' => 3,
+            'maxProcesses' => 10,
             'memory' => 128,
             'tries' => 3,
             'timeout' => 0,
@@ -208,7 +208,7 @@ return [
                 'connection' => 'rabbitmq',
                 'queue' => ['default'],
                 'balance' => 'simple',
-                'processes' => 3,
+                'processes' => 10,
                 'tries' => 3,
             ],
         ],
