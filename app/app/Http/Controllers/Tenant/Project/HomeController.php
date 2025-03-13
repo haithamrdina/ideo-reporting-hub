@@ -866,7 +866,7 @@ class HomeController extends Controller
 
             if ($dateDebut != null && $dateFin != null) {
                 if ($archive == true) {
-                    $speexEnrolls = Enrollmodule::where(function ($query) use ($speexModules, $dateDebut, $dateFin, $project) {
+                    $speexEnrolls = Langenroll::where(function ($query) use ($speexModules, $dateDebut, $dateFin, $project) {
                         $query->whereIn('module_docebo_id', $speexModules)
                             ->whereNotNull('enrollment_completed_at')
                             ->whereBetween('enrollment_completed_at', [$dateDebut, $dateFin])
