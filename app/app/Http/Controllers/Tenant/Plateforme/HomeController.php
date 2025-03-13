@@ -1006,7 +1006,7 @@ class HomeController extends Controller
             $speexModules = Module::where(['category' => 'SPEEX', 'status' => CourseStatusEnum::ACTIVE])->pluck('docebo_id')->toArray();
             if ($dateDebut != null && $dateFin != null) {
                 if ($archive == true) {
-                    $speexEnrolls = Enrollmodule::where(function ($query) use ($speexModules, $dateDebut, $dateFin) {
+                    $speexEnrolls = Langenroll::where(function ($query) use ($speexModules, $dateDebut, $dateFin) {
                         $query->whereIn('module_docebo_id', $speexModules)
                             ->whereNotNull('enrollment_completed_at')
                             ->whereBetween('enrollment_completed_at', [$dateDebut, $dateFin]);
