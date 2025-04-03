@@ -47,31 +47,33 @@ class ExportMoocJob implements ShouldQueue
         $csvExporter->beforeEach(function ($enroll) use ($userfields, $enrollfields) {
             $timeConversionService = new TimeConversionService();
             $learner = Learner::where('docebo_id', $enroll->learner_docebo_id)->first();
-            $enroll->project_id = Project::find($enroll->project_id)->name;
-            $enroll->group_id = Group::find($enroll->group_id)->name;
-            $enroll->mooc_docebo_id = Mooc::where('docebo_id', $enroll->mooc_docebo_id)->first()->name;
-            $enroll->learner_docebo_id = $learner->username;
-            $enroll->enrollment_created_at = $enroll->enrollment_created_at != null ? $enroll->enrollment_created_at : '******';
-            if ($enroll->status == 'waiting') {
-                $enroll->status = "En attente";
-            } elseif ($enroll->status == 'enrolled') {
-                $enroll->status = "Inscrit";
-            } elseif ($enroll->status == 'in_progress') {
-                $enroll->status = "En cours";
-            } elseif ($enroll->status == 'completed') {
-                $enroll->status = "Terminé";
-            }
-            $enroll->enrollment_updated_at = $enroll->enrollment_updated_at != null ? $enroll->enrollment_updated_at : '******';
-            $enroll->enrollment_completed_at = $enroll->enrollment_completed_at != null ? $enroll->enrollment_completed_at : '******';
-            $enroll->session_time = $enroll->session_time != null ? $timeConversionService->convertSecondsToTime($enroll->session_time) : '******';
-            if (isset($enrollfields['cmi_time']) && $enrollfields['cmi_time'] === true) {
-                $enroll->cmi_time = $enroll->cmi_time != null ? $timeConversionService->convertSecondsToTime($enroll->cmi_time) : '******';
-            }
-            if (isset($enrollfields['calculated_time']) && $enrollfields['calculated_time'] === true) {
-                $enroll->calculated_time = $enroll->calculated_time != null ? $timeConversionService->convertSecondsToTime($enroll->calculated_time) : '******';
-            }
-            if (isset($enrollfields['recommended_time']) && $enrollfields['recommended_time'] === true) {
-                $enroll->recommended_time = $enroll->recommended_time != null ? $timeConversionService->convertSecondsToTime($enroll->recommended_time) : '******';
+            if ($learner) {
+                $enroll->project_id = Project::find($enroll->project_id)->name;
+                $enroll->group_id = Group::find($enroll->group_id)->name;
+                $enroll->mooc_docebo_id = Mooc::where('docebo_id', $enroll->mooc_docebo_id)->first()->name;
+                $enroll->learner_docebo_id = $learner->username;
+                $enroll->enrollment_created_at = $enroll->enrollment_created_at != null ? $enroll->enrollment_created_at : '******';
+                if ($enroll->status == 'waiting') {
+                    $enroll->status = "En attente";
+                } elseif ($enroll->status == 'enrolled') {
+                    $enroll->status = "Inscrit";
+                } elseif ($enroll->status == 'in_progress') {
+                    $enroll->status = "En cours";
+                } elseif ($enroll->status == 'completed') {
+                    $enroll->status = "Terminé";
+                }
+                $enroll->enrollment_updated_at = $enroll->enrollment_updated_at != null ? $enroll->enrollment_updated_at : '******';
+                $enroll->enrollment_completed_at = $enroll->enrollment_completed_at != null ? $enroll->enrollment_completed_at : '******';
+                $enroll->session_time = $enroll->session_time != null ? $timeConversionService->convertSecondsToTime($enroll->session_time) : '******';
+                if (isset($enrollfields['cmi_time']) && $enrollfields['cmi_time'] === true) {
+                    $enroll->cmi_time = $enroll->cmi_time != null ? $timeConversionService->convertSecondsToTime($enroll->cmi_time) : '******';
+                }
+                if (isset($enrollfields['calculated_time']) && $enrollfields['calculated_time'] === true) {
+                    $enroll->calculated_time = $enroll->calculated_time != null ? $timeConversionService->convertSecondsToTime($enroll->calculated_time) : '******';
+                }
+                if (isset($enrollfields['recommended_time']) && $enrollfields['recommended_time'] === true) {
+                    $enroll->recommended_time = $enroll->recommended_time != null ? $timeConversionService->convertSecondsToTime($enroll->recommended_time) : '******';
+                }
             }
         });
         $csvExporter->build($this->data, $this->fields);
