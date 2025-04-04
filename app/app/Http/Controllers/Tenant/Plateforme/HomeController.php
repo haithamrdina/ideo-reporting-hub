@@ -439,7 +439,7 @@ class HomeController extends Controller
 
         if ($rapport == 'cegos') {
             $date = date('Ymd_His');
-            $filename = 'rapport_formation_softskills' . $date . '.csv';
+            $filename = 'rapport_formation_softskills' . $date . '.xlsx';
 
             $fields['project_id'] = 'Branche';
             $fields['group_id'] = 'Filiale';
@@ -491,7 +491,6 @@ class HomeController extends Controller
                         })
                         ->get();
                 }
-
             } else {
                 if ($archive == true) {
                     $softEnrolls = Enrollmodule::whereIn('module_docebo_id', $softModules)->get();
@@ -512,7 +511,7 @@ class HomeController extends Controller
             ])->dispatch($softEnrolls, $fields, $filename);
         } elseif ($rapport == 'eni') {
             $date = date('Ymd_His');
-            $filename = 'rapport_formation_digitals' . $date . '.csv';
+            $filename = 'rapport_formation_digitals' . $date . '.xlsx';
 
             $fields['project_id'] = 'Branche';
             $fields['group_id'] = 'Filiale';
@@ -564,7 +563,6 @@ class HomeController extends Controller
                         })
                         ->get();
                 }
-
             } else {
                 if ($archive == true) {
                     $softEnrolls = Enrollmodule::whereIn('module_docebo_id', $softModules)->get();
@@ -585,7 +583,7 @@ class HomeController extends Controller
             ])->dispatch($softEnrolls, $fields, $filename);
         } elseif ($rapport == 'sm') {
             $date = date('Ymd_His');
-            $filename = 'rapport_formation_surmesure' . $date . '.csv';
+            $filename = 'rapport_formation_surmesure' . $date . '.xlsx';
 
             $fields['project_id'] = 'Branche';
             $fields['group_id'] = 'Filiale';
@@ -637,7 +635,6 @@ class HomeController extends Controller
                         })
                         ->get();
                 }
-
             } else {
                 if ($archive == true) {
                     $softEnrolls = Enrollmodule::whereIn('module_docebo_id', $softModules)->get();
@@ -658,7 +655,7 @@ class HomeController extends Controller
             ])->dispatch($softEnrolls, $fields, $filename);
         } elseif ($rapport == 'mooc') {
             $date = date('Ymd_His');
-            $filename = 'rapport_formation_mooc' . $date . '.csv';
+            $filename = 'rapport_formation_mooc' . $date . '.xlsx';
 
             $fields['project_id'] = 'Branche';
             $fields['group_id'] = 'Filiale';
@@ -705,7 +702,6 @@ class HomeController extends Controller
                         })
                         ->get();
                 }
-
             } else {
                 if ($archive == true) {
                     $moocEnrolls = Enrollmooc::get();
@@ -722,7 +718,7 @@ class HomeController extends Controller
             ])->dispatch($moocEnrolls, $fields, $filename);
         } elseif ($rapport == 'transverse') {
             $date = date('Ymd_His');
-            $filename = 'rapport_formation_transverse' . $date . '.csv';
+            $filename = 'rapport_formation_transverse' . $date . '.xlsx';
 
             $fields['project_id'] = 'Branche';
             $fields['group_id'] = 'Filiale';
@@ -770,7 +766,6 @@ class HomeController extends Controller
                         })
                         ->get();
                 }
-
             } else {
                 if ($archive == true) {
                     $lpEnrolls = Lpenroll::get();
@@ -787,7 +782,7 @@ class HomeController extends Controller
             ])->dispatch($lpEnrolls, $fields, $filename);
         } elseif ($rapport == 'connexion') {
             $date = date('Ymd_His');
-            $filename = 'rapport_des_connexions' . $date . '.csv';
+            $filename = 'rapport_des_connexions' . $date . '.xlsx';
 
             $groups = Group::where('status', 1)->get();
             $statsConnexions = [];
@@ -825,7 +820,7 @@ class HomeController extends Controller
             ])->dispatch($statsConnexions, ['filiale', 'Nombre de connexions', 'total', 'pourcentage'], $filename);
         } elseif ($rapport == 'active') {
             $date = date('Ymd_His');
-            $filename = 'rapport_inscrits_actifs' . $date . '.csv';
+            $filename = 'rapport_inscrits_actifs' . $date . '.xlsx';
 
             $fields['project_id'] = 'Branche';
             $fields['group_id'] = 'Filiale';
@@ -876,10 +871,9 @@ class HomeController extends Controller
                     "link" => tenant_asset($filename)
                 ]),
             ])->dispatch($learners, $fields, $filename);
-
         } elseif ($rapport == 'inactive') {
             $date = date('Ymd_His');
-            $filename = 'rapport_inscrits_inactifs' . $date . '.csv';
+            $filename = 'rapport_inscrits_inactifs' . $date . '.xlsx';
 
             $fields['project_id'] = 'Branche';
             $fields['group_id'] = 'Filiale';
@@ -916,7 +910,7 @@ class HomeController extends Controller
             ])->dispatch($learners, $fields, $filename);
         } elseif ($rapport == 'tickets') {
             $date = date('Ymd_His');
-            $filename = 'rapport_tickets' . $date . '.csv';
+            $filename = 'rapport_tickets' . $date . '.xlsx';
 
             $fields['project_id'] = 'Branche';
             $fields['group_id'] = 'Filiale';
@@ -949,7 +943,7 @@ class HomeController extends Controller
             ])->dispatch($tickets, $fields, $filename);
         } elseif ($rapport == 'calls') {
             $date = date('Ymd_His');
-            $filename = 'rapport_appels_telephoniques' . $date . '.csv';
+            $filename = 'rapport_appels_telephoniques' . $date . '.xlsx';
 
             $fields['project_id'] = 'Branche';
             $fields['group_id'] = 'Filiale';
@@ -980,7 +974,7 @@ class HomeController extends Controller
             ])->dispatch($calls, $fields, $filename);
         } elseif ($rapport == 'speex') {
             $date = date('Ymd_His');
-            $filename = 'rapport_formation_langues' . $date . '.csv';
+            $filename = 'rapport_formation_langues' . $date . '.xlsx';
 
             $fields['project_id'] = 'Branche';
             $fields['group_id'] = 'Filiale';
@@ -1034,7 +1028,6 @@ class HomeController extends Controller
                         })
                         ->get();
                 }
-
             } else {
                 if ($archive == true) {
                     $speexEnrolls = Langenroll::whereIn('module_docebo_id', $speexModules)->get();

@@ -22,14 +22,21 @@ class ProjectReportService
     {
 
         if ($contract_start_date_conf != null) {
-            $date = \Carbon\Carbon::createFromFormat('Y-m-d', $contract_start_date_conf);
-            $yearOfDate = $date->year;
+            $date = Carbon::createFromFormat('Y-m-d', $contract_start_date_conf);
+            $dayMonth = $date->format('-m-d');
             $currentYear = now()->year;
 
-            if ($yearOfDate < $currentYear) {
-                $startDate = now()->year . $date->format('-m-d');
+            // Créer un objet Carbon pour la date du contrat dans l'année courante
+            $contractDateThisYear = Carbon::createFromFormat('Y-m-d', $currentYear . $dayMonth);
+            $now = Carbon::now();
+
+            // Si la date du contrat dans l'année courante est dans le futur
+            if ($contractDateThisYear->gt($now)) {
+                // Utiliser l'année précédente
+                $startDate = ($currentYear - 1) . $dayMonth;
             } else {
-                $startDate = (now()->year - 1) . $date->format('-m-d');
+                // Utiliser l'année courante
+                $startDate = $currentYear . $dayMonth;
             }
             $endDate = Carbon::now()->format('Y-m-d');
             $total_learners = Learner::whereBetween('creation_date', [$startDate, $endDate])->where('project_id', $project->id)->count();
@@ -49,21 +56,27 @@ class ProjectReportService
         }
 
         return $statsLearners;
-
     }
 
     public function getTimingDetailsPerStatDate($contract_start_date_conf, $enrollfields, $project)
     {
 
         if ($contract_start_date_conf != null) {
-            $date = \Carbon\Carbon::createFromFormat('Y-m-d', $contract_start_date_conf);
-            $yearOfDate = $date->year;
+            $date = Carbon::createFromFormat('Y-m-d', $contract_start_date_conf);
+            $dayMonth = $date->format('-m-d');
             $currentYear = now()->year;
 
-            if ($yearOfDate < $currentYear) {
-                $startDate = now()->year . $date->format('-m-d');
+            // Créer un objet Carbon pour la date du contrat dans l'année courante
+            $contractDateThisYear = Carbon::createFromFormat('Y-m-d', $currentYear . $dayMonth);
+            $now = Carbon::now();
+
+            // Si la date du contrat dans l'année courante est dans le futur
+            if ($contractDateThisYear->gt($now)) {
+                // Utiliser l'année précédente
+                $startDate = ($currentYear - 1) . $dayMonth;
             } else {
-                $startDate = (now()->year - 1) . $date->format('-m-d');
+                // Utiliser l'année courante
+                $startDate = $currentYear . $dayMonth;
             }
 
             $endDate = Carbon::now()->format('Y-m-d');
@@ -127,7 +140,6 @@ class ProjectReportService
                 'avg_recommended_time' => $avg_recommended_time,
 
             ];
-
         } else {
             $statsTimes = [
                 'total_session_time' => "**h **min **s",
@@ -190,8 +202,7 @@ class ProjectReportService
         }
 
         if ($enrollfields['calculated_time'] == true) {
-            $total_calculated_time = intval($enrollModules->sum('calculated_time')) + intval($enrollMoocs->sum('calculated_time')) + intval($enrollSpeex->sum('calculated_time'));
-            ;
+            $total_calculated_time = intval($enrollModules->sum('calculated_time')) + intval($enrollMoocs->sum('calculated_time')) + intval($enrollSpeex->sum('calculated_time'));;
             $avg_calculated_time = $learners != 0 ? intval($total_calculated_time / $learners) : 0;
             $total_calculated_time = $timeConversionService->convertSecondsToTime($total_calculated_time);
             $avg_calculated_time = $timeConversionService->convertSecondsToTime($avg_calculated_time);
@@ -201,8 +212,7 @@ class ProjectReportService
         }
 
         if ($enrollfields['recommended_time'] == true) {
-            $total_recommended_time = intval($enrollModules->sum('recommended_time')) + intval($enrollMoocs->sum('recommended_time')) + intval($enrollSpeex->sum('recommended_time'));
-            ;
+            $total_recommended_time = intval($enrollModules->sum('recommended_time')) + intval($enrollMoocs->sum('recommended_time')) + intval($enrollSpeex->sum('recommended_time'));;
             $avg_recommended_time = $learners != 0 ? intval($total_recommended_time / $learners) : 0;
             $total_recommended_time = $timeConversionService->convertSecondsToTime($total_recommended_time);
             $avg_recommended_time = $timeConversionService->convertSecondsToTime($avg_recommended_time);
@@ -223,7 +233,6 @@ class ProjectReportService
             'avg_recommended_time' => $avg_recommended_time,
 
         ];
-
     }
 
     public function getLearnersCharts($categorie, $project)
@@ -276,7 +285,6 @@ class ProjectReportService
                 'actives' => $counts['Active'],
                 'inactives' => $counts['Inactive'],
             ];
-
         } else {
             $chartInscritPerCategorie = null;
             $chartInscritPerCategoryAndStatus = null;
@@ -352,7 +360,6 @@ class ProjectReportService
             'statSoftTimes' => $statSoftTimes,
             'softCharts' => $softCharts,
         ];
-
     }
 
     public function getStatDigital($enrollfields, $project)
@@ -1003,7 +1010,6 @@ class ProjectReportService
             'lpCharts' => $lpCharts,
             'lps' => $lps
         ];
-
     }
 
     public function geStatsPerLp($enrollfields, $selectedLp, $projectId)
@@ -1072,7 +1078,6 @@ class ProjectReportService
             'lpCharts' => $lpCharts,
             'lps' => $lps
         ];
-
     }
 
     public function getLscStats($project)
@@ -1160,7 +1165,6 @@ class ProjectReportService
             'callsPerSubjectAndTypeChart' => $callsPerSubjectAndTypeChart,
             'callsPerStatutAndTypeChart' => $callsPerStatutAndTypeChart,
         ];
-
     }
 
     public function getLearnersInscriptionsPerDate($startDate, $endDate, $projectId)
@@ -1237,7 +1241,6 @@ class ProjectReportService
             'avg_recommended_time' => $avg_recommended_time,
 
         ];
-
     }
 
     public function getLearnersChartsPerDate($categorie, $startDate, $endDate, $projectId)
@@ -1253,7 +1256,6 @@ class ProjectReportService
                     ->get();
 
                 $totalLearners = DB::table('learners')->whereBetween('creation_date', [$startDate, $endDate])->where('project_id', $projectId)->count();
-
             } else {
                 $learnerCounts = DB::table('learners')
                     ->select('categorie', DB::raw('count(*) as total'))
@@ -1298,7 +1300,6 @@ class ProjectReportService
                 'actives' => $counts['Active'],
                 'inactives' => $counts['Inactive'],
             ];
-
         } else {
             $chartInscritPerCategorie = null;
             $chartInscritPerCategoryAndStatus = null;
@@ -1394,7 +1395,5 @@ class ProjectReportService
             'callsPerSubjectAndTypeChart' => $callsPerSubjectAndTypeChart,
             'callsPerStatutAndTypeChart' => $callsPerStatutAndTypeChart,
         ];
-
     }
-
 }

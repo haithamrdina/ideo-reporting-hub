@@ -42,6 +42,10 @@ class ExportActiveJob implements ShouldQueue
         $userfields = config('tenantconfigfields.userfields');
         $enrollfields = config('tenantconfigfields.enrollmentfields');
         $csvExporter = new Export();
+
+        // Définir le délimiteur comme tabulation au lieu de la virgule par défaut
+        $csvExporter->getWriter()->setDelimiter("\t");
+
         $csvExporter->beforeEach(function ($learner) use ($userfields, $enrollfields) {
             $timeConversionService = new TimeConversionService();
             $learner->project_id = Project::find($learner->project_id)->name;
@@ -103,11 +107,48 @@ class ExportActiveJob implements ShouldQueue
             }
             $learner->count_ticket = $totalTickets;
             $learner->count_call = $totalCalls;
-
         });
+
+        // Construction du CSV avec les données et les champs définis
         $csvExporter->build($this->data, $this->fields);
         $writer = $csvExporter->getWriter();
+
+        // Ajout du BOM UTF-8 pour assurer la compatibilité avec Excel
         Storage::put($this->filename, "\xEF\xBB\xBF" . $writer->getContent());
+
+        // Si vous préférez enregistrer en format Excel directement
+        // Décommentez le code ci-dessous et commentez la ligne Storage::put au-dessus
+
+        // Changer l'extension du fichier en .xlsx
+        $excelFilename = str_replace('.csv', '.xlsx', $this->filename);
+
+        // Créer un objet Excel avec le contenu CSV
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $reader = new \PhpOffice\PhpSpreadsheet\Reader\Csv();
+        $reader->setDelimiter("\t");
+        $reader->setInputEncoding('UTF-8');
+        $csv_content = $writer->getContent();
+
+        // Écrire le contenu dans un fichier temporaire
+        $tempFile = tempnam(sys_get_temp_dir(), 'csv');
+        file_put_contents($tempFile, "\xEF\xBB\xBF" . $csv_content);
+
+        // Lire le fichier CSV dans un objet SpreadSheet
+        $spreadsheet = $reader->load($tempFile);
+
+        // Supprimer le fichier temporaire
+        unlink($tempFile);
+
+        // Enregistrer en format Excel
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+
+        // Écrire dans le stockage
+        $tempExcelFile = tempnam(sys_get_temp_dir(), 'xlsx');
+        $writer->save($tempExcelFile);
+        Storage::put($excelFilename, file_get_contents($tempExcelFile));
+        unlink($tempExcelFile);
+
+
         $end_datetime = date('Y-m-d H:i:s');
         Log::info("['end'][$end_datetime]: Export data inscrits actifs has finished.");
     }

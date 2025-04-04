@@ -277,7 +277,7 @@ class HomeController extends Controller
 
         if ($rapport == 'cegos') {
             $date = date('Ymd_His');
-            $filename = 'rapport_formation_softskills' . $date . '.csv';
+            $filename = 'rapport_formation_softskills' . $date . '.xlsx';
 
             $fields['project_id'] = 'Branche';
             $fields['group_id'] = 'Filiale';
@@ -314,8 +314,7 @@ class HomeController extends Controller
                             $query->whereIn('module_docebo_id', $softModules)
                                 ->whereNull('enrollment_completed_at')
                                 ->whereBetween('enrollment_updated_at', [$dateDebut, $dateFin])
-                                ->where('group_id', $group->id);
-                            ;
+                                ->where('group_id', $group->id);;
                         })
                         ->get();
                 } else {
@@ -337,7 +336,6 @@ class HomeController extends Controller
                         })
                         ->get();
                 }
-
             } else {
                 if ($archive == true) {
                     $softEnrolls = Enrollmodule::whereIn('module_docebo_id', $softModules)->where('group_id', $group->id)->get();
@@ -358,7 +356,7 @@ class HomeController extends Controller
             ])->dispatch($softEnrolls, $fields, $filename);
         } elseif ($rapport == 'eni') {
             $date = date('Ymd_His');
-            $filename = 'rapport_formation_digitals_' . $date . '.csv';
+            $filename = 'rapport_formation_digitals_' . $date . '.xlsx';
 
             $fields['project_id'] = 'Branche';
             $fields['group_id'] = 'Filiale';
@@ -395,8 +393,7 @@ class HomeController extends Controller
                             $query->whereIn('module_docebo_id', $softModules)
                                 ->whereNull('enrollment_completed_at')
                                 ->whereBetween('enrollment_updated_at', [$dateDebut, $dateFin])
-                                ->where('group_id', $group->id);
-                            ;
+                                ->where('group_id', $group->id);;
                         })
                         ->get();
                 } else {
@@ -418,7 +415,6 @@ class HomeController extends Controller
                         })
                         ->get();
                 }
-
             } else {
                 if ($archive == true) {
                     $softEnrolls = Enrollmodule::whereIn('module_docebo_id', $softModules)->where('group_id', $group->id)->get();
@@ -439,7 +435,7 @@ class HomeController extends Controller
             ])->dispatch($softEnrolls, $fields, $filename);
         } elseif ($rapport == 'sm') {
             $date = date('Ymd_His');
-            $filename = 'rapport_formation_surmesure' . $date . '.csv';
+            $filename = 'rapport_formation_surmesure' . $date . '.xlsx';
 
             $fields['project_id'] = 'Branche';
             $fields['group_id'] = 'Filiale';
@@ -476,8 +472,7 @@ class HomeController extends Controller
                             $query->whereIn('module_docebo_id', $softModules)
                                 ->whereNull('enrollment_completed_at')
                                 ->whereBetween('enrollment_updated_at', [$dateDebut, $dateFin])
-                                ->where('group_id', $group->id);
-                            ;
+                                ->where('group_id', $group->id);;
                         })
                         ->get();
                 } else {
@@ -499,7 +494,6 @@ class HomeController extends Controller
                         })
                         ->get();
                 }
-
             } else {
                 if ($archive == true) {
                     $softEnrolls = Enrollmodule::whereIn('module_docebo_id', $softModules)->where('group_id', $group->id)->get();
@@ -520,7 +514,7 @@ class HomeController extends Controller
             ])->dispatch($softEnrolls, $fields, $filename);
         } elseif ($rapport == 'mooc') {
             $date = date('Ymd_His');
-            $filename = 'rapport_formation_mooc' . $date . '.csv';
+            $filename = 'rapport_formation_mooc' . $date . '.xlsx';
 
             $fields['project_id'] = 'Branche';
             $fields['group_id'] = 'Filiale';
@@ -546,14 +540,12 @@ class HomeController extends Controller
                     $moocEnrolls = Enrollmooc::where(function ($query) use ($dateDebut, $dateFin, $group) {
                         $query->whereNotNull('enrollment_completed_at')
                             ->whereBetween('enrollment_completed_at', [$dateDebut, $dateFin])
-                            ->where('group_id', $group->id);
-                        ;
+                            ->where('group_id', $group->id);;
                     })
                         ->orWhere(function ($query) use ($dateDebut, $dateFin, $group) {
                             $query->whereNull('enrollment_completed_at')
                                 ->whereBetween('enrollment_updated_at', [$dateDebut, $dateFin])
-                                ->where('group_id', $group->id);
-                            ;
+                                ->where('group_id', $group->id);;
                         })
                         ->get();
                 } else {
@@ -563,19 +555,16 @@ class HomeController extends Controller
                         $query->whereIn('learner_docebo_id', $learnersIds)
                             ->whereNotNull('enrollment_completed_at')
                             ->whereBetween('enrollment_completed_at', [$dateDebut, $dateFin])
-                            ->where('group_id', $group->id);
-                        ;
+                            ->where('group_id', $group->id);;
                     })
                         ->orWhere(function ($query) use ($learnersIds, $dateDebut, $dateFin, $group) {
                             $query->whereIn('learner_docebo_id', $learnersIds)
                                 ->whereNull('enrollment_completed_at')
                                 ->whereBetween('enrollment_updated_at', [$dateDebut, $dateFin])
-                                ->where('group_id', $group->id);
-                            ;
+                                ->where('group_id', $group->id);;
                         })
                         ->get();
                 }
-
             } else {
                 if ($archive == true) {
                     $moocEnrolls = Enrollmooc::where('group_id', $group->id)->get();
@@ -592,7 +581,7 @@ class HomeController extends Controller
             ])->dispatch($moocEnrolls, $fields, $filename);
         } elseif ($rapport == 'transverse') {
             $date = date('Ymd_His');
-            $filename = 'rapport_formation_transverse' . $date . '.csv';
+            $filename = 'rapport_formation_transverse' . $date . '.xlsx';
 
             $fields['project_id'] = 'Branche';
             $fields['group_id'] = 'Filiale';
@@ -644,7 +633,6 @@ class HomeController extends Controller
                         })
                         ->get();
                 }
-
             } else {
                 if ($archive == true) {
                     $lpEnrolls = Lpenroll::where('group_id', $group->id)->get();
@@ -661,7 +649,7 @@ class HomeController extends Controller
             ])->dispatch($lpEnrolls, $fields, $filename);
         } elseif ($rapport == 'active') {
             $date = date('Ymd_His');
-            $filename = 'rapport_inscrits_actifs' . $date . '.csv';
+            $filename = 'rapport_inscrits_actifs' . $date . '.xlsx';
 
             $fields['project_id'] = 'Branche';
             $fields['group_id'] = 'Filiale';
@@ -712,10 +700,9 @@ class HomeController extends Controller
                     "link" => tenant_asset($filename)
                 ]),
             ])->dispatch($learners, $fields, $filename);
-
         } elseif ($rapport == 'inactive') {
             $date = date('Ymd_His');
-            $filename = 'rapport_inscrits_inactifs' . $date . '.csv';
+            $filename = 'rapport_inscrits_inactifs' . $date . '.xlsx';
 
             $fields['project_id'] = 'Branche';
             $fields['group_id'] = 'Filiale';
@@ -752,7 +739,7 @@ class HomeController extends Controller
             ])->dispatch($learners, $fields, $filename);
         } elseif ($rapport == 'tickets') {
             $date = date('Ymd_His');
-            $filename = 'rapport_tickets' . $date . '.csv';
+            $filename = 'rapport_tickets' . $date . '.xlsx';
 
             $fields['project_id'] = 'Branche';
             $fields['group_id'] = 'Filiale';
@@ -785,7 +772,7 @@ class HomeController extends Controller
             ])->dispatch($tickets, $fields, $filename);
         } elseif ($rapport == 'calls') {
             $date = date('Ymd_His');
-            $filename = 'rapport_appels_telephoniques' . $date . '.csv';
+            $filename = 'rapport_appels_telephoniques' . $date . '.xlsx';
 
             $fields['project_id'] = 'Branche';
             $fields['group_id'] = 'Filiale';
@@ -816,7 +803,7 @@ class HomeController extends Controller
             ])->dispatch($calls, $fields, $filename);
         } elseif ($rapport == 'speex') {
             $date = date('Ymd_His');
-            $filename = 'rapport_formation_langues' . $date . '.csv';
+            $filename = 'rapport_formation_langues' . $date . '.xlsx';
 
             $fields['project_id'] = 'Branche';
             $fields['group_id'] = 'Filiale';
@@ -876,7 +863,6 @@ class HomeController extends Controller
                         })
                         ->get();
                 }
-
             } else {
                 if ($archive == true) {
                     $speexEnrolls = Langenroll::whereIn('module_docebo_id', $speexModules)->where('group_id', $group->id)->get();

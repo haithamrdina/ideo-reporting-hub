@@ -8,14 +8,24 @@
     $calculated_time_conf = config('tenantconfigfields.enrollmentfields.calculated_time');
     $recommended_time_conf = config('tenantconfigfields.enrollmentfields.recommended_time');
     $categorie = config('tenantconfigfields.userfields.categorie');
+
     if ($contract_start_date_conf != null) {
         $date = \Carbon\Carbon::createFromFormat('Y-m-d', $contract_start_date_conf);
-        $yearOfDate = $date->year;
-        $currentYear = now()->year;
-        if ($yearOfDate < $currentYear) {
-            $statDate = $date->format('d-m-') . now()->year;
+        $dayMonth = $date->format('d-m-');
+        $currentYear = now()->year; // Supposons que nous sommes en 2025
+
+        // Le problème est que la comparaison de chaînes de dates ne fonctionne pas comme prévu
+        // Convertir en objets Carbon pour comparer correctement les dates
+        $contractDateThisYear = \Carbon\Carbon::createFromFormat('d-m-Y', $dayMonth . $currentYear);
+        $now = \Carbon\Carbon::now();
+
+        // Si la date du contrat avec l'année en cours n'est pas encore arrivée
+        if ($contractDateThisYear->gt($now)) {
+            // Utiliser l'année précédente
+            $statDate = $dayMonth . ($currentYear - 1);
         } else {
-            $statDate = $date->format('d-m-') . (now()->year - 1);
+            // Utiliser l'année en cours
+            $statDate = $dayMonth . $currentYear;
         }
     }
 @endphp
